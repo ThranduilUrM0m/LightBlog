@@ -25,7 +25,7 @@ module.exports = {
       },
 
       {
-        test: /\.(jpe?g|png|gif|svg)$/i,
+        test: /\.(jpe?g|png|gif|svg|ico)$/i,
         use: {
           loader: 'file-loader',
           options: {
@@ -67,6 +67,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './resources/index.html',
       filename: './index.html',
+      favicon: './resources/media/favicon.ico',
       hash: true,
     }),
   ],
