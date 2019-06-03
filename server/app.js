@@ -23,7 +23,12 @@ if(!isProduction) {
   app.use(errorHandler());
 }
 
-mongoose.connect('mongodb://localhost/lightblog');
+const config = {
+  autoIndex: false,
+  useNewUrlParser: true,
+};
+
+mongoose.connect('mongodb://localhost/lightblog', config);
 mongoose.set('debug', true);
 
 // Add models

@@ -50,6 +50,28 @@ class Home extends React.Component {
             // always executed
             self._handleClick();
             self._handleTap();
+
+            $(".login").hide();
+            $(".togglebtn").click(function(){
+                $(".login").toggle(420);
+            });
+            const loginBtn =  document.querySelector('#login_toggle');
+            const signupBtn = document.querySelector('#signup_toggle');
+            function slideUp(){
+                if(this.id == 'signup_toggle'){
+                    const parent = this.parentElement;
+                    const sibling = parent.nextElementSibling;
+                    parent.classList.remove('slide-up');
+                    sibling.classList.add('slide-up');
+                } else {
+                    const parent = this.parentElement;
+                    const sibling = parent.previousElementSibling;
+                    parent.classList.remove('slide-up');
+                    sibling.classList.add('slide-up');
+                }
+            }
+            loginBtn.addEventListener('click', slideUp);
+            signupBtn.addEventListener('click', slideUp);
         });
     }
     _handleDelete(id) {
@@ -65,6 +87,31 @@ class Home extends React.Component {
             $('.navToggle').toggleClass('active');
             $('.menu').toggleClass('menu--is-closed');
         });
+        document.querySelectorAll(".js-fr").forEach(trigger => {
+            // pull trigger
+            trigger.onclick = () => {
+              // langTrigger
+              trigger.parentNode.querySelectorAll(".js-fr").forEach(el => {
+                el.classList.add("is-active");
+              });
+              trigger.parentNode.querySelectorAll(".js-en").forEach(el => {
+                el.classList.remove("is-active");
+              });
+            };
+          });
+          document.querySelectorAll(".js-en").forEach(trigger => {
+            // pull trigger
+            trigger.onclick = () => {
+              // langTorigger
+              trigger.parentNode.querySelectorAll(".js-fr").forEach(el => {
+                el.classList.remove("is-active");
+              });
+              trigger.parentNode.querySelectorAll(".js-en").forEach(el => {
+                el.classList.add("is-active");
+              });
+            };
+          });
+          
     }
     _handleTap() {
         let searchWrapper = document.querySelector('.search-wrapper'),
@@ -105,14 +152,24 @@ class Home extends React.Component {
                     container.find('.card').wrap('<div class="img-wrap"></div>');
                     this.imgs = container.find('.img-wrap');
                     this.imgCount = (this.imgs.length) - 1;
+                    /* Caption */
+                    this.imgs.each(function(){
+                        var caption = $(this).find('.card').data('index');
+                        $(this).append('<p class="index_card">'+caption+'</p>');
+                    });
+                    this.captions = container.find('.img-wrap').find('p');
                     /* Controls */
                     container.append('<span id="controls"><a href="#" id="prev"><span id="prev_"></span>prev.</a><a href="#" id="next">next.<span id="next_"></span></a></span>');
                     this.navNext = $('#next');
                     this.navPrev = $('#prev');
                     /* Navigation */
-                    container.after('<div class="nav"></div>');
+                    container.after('<ol class="nav carousel-indicators"></ol>');
                     var nav = $(".nav");
-                    this.bullets = nav.find("a");
+                    this.imgs.each(function(){
+                        var caption = $(this).find('img').attr('title');
+                        nav.append('<li href="#">'+ caption +'</li>');
+                    });
+                    this.bullets = nav.find("li");
                     //==========
                     // Méthodes
                     //==========
@@ -264,15 +321,98 @@ class Home extends React.Component {
                             <a className="logoHolder" href="#">
                                 <img className="logo img-fluid" src={logo} alt="Risala"/>
                             </a>
+                            <div className="js-lang u-mb-15">
+                                <span className="js-fr is-active">fr</span>
+                                <span className="js-en">en</span>
+                            </div>
                             <form>
                                 <div className="search-wrapper">
                                     <input className="search-input" type="text" placeholder="Search"/>
+                                    <span></span>
                                     <div className='search'></div>
                                 </div>
                             </form>
-                            <a className="accountHolder" href="#">
+                            <div href="#" className="icon-button accountHolder">
+                                <i className="far fa-user togglebtn"></i>
+                                <span className="hover_effect"></span>
+                                <div className="login form-structor">
+                                    <div className="signup_form slide-up">
+                                        <div className="form-title" id="signup_toggle">
+                                            <a className="question_signup" href="#" title="">Don't have an account yet?</a>
+                                            <a className="title_signup" href="#" title="">Sign Up</a>
+                                        </div>
+                                        <form className="form-holder">
 
-                            </a>
+                                            <div className='row'>
+                                                <div className='input-field col s12'>
+                                                    <input className='validate form-group-input' type='text' name='name' id='name' required="required" />
+                                                    <label htmlFor='name'>Joe Doe</label>
+                                                    <div className="form-group-line"></div>
+                                                </div>
+                                            </div>
+
+                                            <div className='row'>
+                                                <div className='input-field col s12'>
+                                                    <input className='validate form-group-input' type='email' name='email' id='email_signup' required="required" />
+                                                    <label htmlFor='email'>@email</label>
+                                                    <div className="form-group-line"></div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className='row'>
+                                                <div className='input-field col s12'>
+                                                    <input className='validate form-group-input' type='password' name='password' id='password_signup' required="required" />
+                                                    <label htmlFor='password'>Password</label>
+                                                    <div className="form-group-line"></div>
+                                                </div>
+                                            </div>
+
+                                            <section className="center">
+                                                <div className='row'>
+                                                    <button type='submit' name='btn_login' className='col s12 btn btn-large waves-effect login'>Signup</button>
+                                                </div>
+                                            </section>
+
+                                        </form>
+                                    </div>
+                                    <div className="login_form">
+                                        <div className="form-title" id="login_toggle">
+                                            <a className="title_login" href="#" title="">Log in</a>
+                                            <a className="question_login" href="#" title="">Already have an account?</a>
+                                        </div>
+                                        <form className="form-holder">
+                                            
+                                            <div className='row'>
+                                                <div className='input-field col s12'>
+                                                    <input className='validate form-group-input' type='email' name='email' id='email_login' required="required" />
+                                                    <label htmlFor='email'>@email</label>
+                                                    <div className="form-group-line"></div>
+                                                </div>
+                                            </div>
+
+                                            <div className='row'>
+                                                <div className='input-field col s12'>
+                                                    <input className='validate form-group-input' type='password' name='password' id='password_login' required="required" />
+                                                    <label htmlFor='password'>Password</label>
+                                                    <div className="form-group-line"></div>
+                                                </div>
+                                            </div>
+
+                                            <label>
+                                                <input type="checkbox"/>Remember me
+                                            </label>
+
+                                            <section className="center">
+                                                <div className='row'>
+                                                    <button type='submit' name='btn_login' className='col s12 btn btn-large waves-effect login'>Login</button>
+                                                </div>
+                                            </section>
+
+                                            <a href="#" title="">Forgot your password?</a>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </header>
                     </div>
                 </div>
@@ -288,19 +428,19 @@ class Home extends React.Component {
                 <section className="first_section">
                     <div className="wrapper left_part">
                         <div id="slider">
-                        {
-                            articles.map((article, index) => {
-                                return (
-                                    <div className={"card card_" + index} data-title={article.title}>
-                                        <div className="card-body">
-                                            <h2>{article.title}</h2>
-                                            <h6 className="body">{article.body}</h6>
-                                            <p className="text-muted author"><b>{article.author}</b> {moment(new Date(article.createdAt)).fromNow()}</p>
+                            {
+                                articles.map((article, index) => {
+                                    return (
+                                        <div className={"card card_" + index} data-title={article.title} data-index={index+1}>
+                                            <div className="card-body">
+                                                <h2>{article.title}</h2>
+                                                <h6 className="body">{article.body}</h6>
+                                                <p className="text-muted author">by <b>{article.author}</b>, {moment(new Date(article.createdAt)).fromNow()}</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                )
-                            })
-                        }
+                                    )
+                                })
+                            }
                         </div>
                     </div>
                     <div className="wrapper right_part">
@@ -407,39 +547,12 @@ class Home extends React.Component {
                         </span>
                     </div>
                 </footer>
-                {/* <div className="row pt-5">
+                {/*<div className="row pt-5">
                     <div className="col-12 col-lg-6 offset-lg-3">
                         <h1 className="text-center">LightBlog</h1>
                     </div>
                     <Form />
-                </div>
-                <div className="row pt-5">
-                    <div className="col-12 col-lg-6 offset-lg-3">
-                        {articles.map((article) => {
-                            return (
-                                <div className="card my-3">
-                                    <div className="card-header">
-                                        {article.title}
-                                    </div>
-                                    <div className="card-body">
-                                        {article.body}
-                                        <p className="mt-5 text-muted"><b>{article.author}</b> {moment(new Date(article.createdAt)).fromNow()}</p>
-                                    </div>
-                                    <div className="card-footer">
-                                        <div className="row">
-                                            <button onClick={() => this._handleEdit(article)} className="btn btn-primary mx-3">
-                                                Edit
-                                            </button>
-                                            <button onClick={() => this._handleDelete(article._id)} className="btn btn-danger">
-                                                Delete
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            )
-                        })}
-                    </div>
-                </div> */}
+                </div>*/}
             </div>
         );
     }
