@@ -23,12 +23,11 @@ if(!isProduction) {
   app.use(errorHandler());
 }
 
-const config = {
-  autoIndex: false,
-  useNewUrlParser: true,
-};
-
-mongoose.connect('mongodb://localhost/lightblog', config);
+mongoose.connect('mongodb://127.0.0.1:27017/lightblog', { useNewUrlParser: true });
+const connection = mongoose.connection;
+connection.once('open', function() {
+  console.log("MongoDB database connection established successfully");
+});
 mongoose.set('debug', true);
 
 // Add models

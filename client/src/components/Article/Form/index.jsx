@@ -15,7 +15,6 @@ class Form extends React.Component {
         this.handleChangeField = this.handleChangeField.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
-
     componentWillReceiveProps(nextProps) {
         if(nextProps.articleToEdit) {
             this.setState({
@@ -25,7 +24,6 @@ class Form extends React.Component {
             });
         }
     }
-
     handleSubmit(){
         const { onSubmit, articleToEdit, onEdit } = this.props;
         const { title, body, author } = this.state;
@@ -48,13 +46,11 @@ class Form extends React.Component {
                 .then(() => this.setState({ title: '', body: '', author: '' }));
         }
     }
-
     handleChangeField(key, event) {
         this.setState({
             [key]: event.target.value,
         });
     }
-
     render() {
         const { articleToEdit } = this.props;
         const { title, body, author } = this.state;

@@ -12,17 +12,3 @@ const App = (props) => {
 }
 
 export default withRouter(App);
-
-// const App = (props) => {
-//     return (
-//         <table>
-//             <tr>
-//                 <td><img alt="#" src="#"/></td>
-//                 <td>TITLE</td>
-//                 <td><h5>DESCRIPTION</h5></td>
-//                 <td><a href="#">LINK</a></td>
-//                 <td>DATE</td>
-//             </tr>
-//         </table>
-//     )
-// }
