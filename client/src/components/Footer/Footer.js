@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
 import { connect } from 'react-redux';
+import 'whatwg-fetch';
 var _ = require('lodash');
 
 class Footer extends React.Component {
@@ -13,17 +14,17 @@ class Footer extends React.Component {
         this._handleMouseMove();
         const {onLoad} = this.props;
         axios('http://localhost:8000/api/articles')
-        .then(function (response) {
-            // handle success
-            onLoad(response.data);
-        })
-        .catch(function (error) {
-            // handle error
-            console.log(error);
-        })
-        .then(function () {
-            // always executed
-        });
+            .then(function (response) {
+                // handle success
+                onLoad(response.data);
+            })
+            .catch(function (error) {
+                // handle error
+                console.log(error);
+            })
+            .then(function () {
+                // always executed
+            });
     }
     _handleMouseMove() {
         $('.footer').mousemove(function(e){
@@ -84,7 +85,7 @@ class Footer extends React.Component {
                                     <fieldset className="input-field form-group">
                                         <textarea className="validate form-group-input materialize-textarea content" id="content" name="content" required="required"/>
                                         <label htmlFor='content'>Content</label>
-                                        <div className="form-group-line"></div>
+                                        <div className="form-group-line textarea_line"></div>
                                     </fieldset>
 
                                     <button className="btn btn-primary pull-right" type="submit">Submit</button>
@@ -102,7 +103,7 @@ class Footer extends React.Component {
                                 </div>
                                 <div className="adresse">
                                     <span className="title">Adresse</span>
-                                    <span className="body">1305 Mississipi St. Unit A<br></br>San Fransisco, CA 94110</span>
+                                    <span className="body">Meknès, MOROCCO<br></br>Marjane 1st, 2nd Block</span>
                                 </div>
                             </div>
 
@@ -135,12 +136,12 @@ class Footer extends React.Component {
         )
     }
 }
-  
+
 const mapStateToProps = state => ({
-    articles: state.home.articles,
+  articles: state.home.articles,
 });
 
 const mapDispatchToProps = dispatch => ({
-    onLoad: data => dispatch({ type: 'HOME_PAGE_LOADED', data }),
+  onLoad: data => dispatch({ type: 'HOME_PAGE_LOADED', data }),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Footer);

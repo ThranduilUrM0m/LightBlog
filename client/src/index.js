@@ -1,19 +1,32 @@
 import React from 'react';
-import createHistory from 'history/createBrowserHistory';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { Route, Switch, Router } from 'react-router-dom';
 import store from './store';
-import { App } from './components';
+
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Switch
+} from 'react-router-dom'
+
+import App from './components/App/App';
+import NotFound from './components/App/NotFound';
+import Home from './components/Home/Home';
+import Blog from './components/Blog/Blog';
 
 import '../resources/scss/style.scss';
 
 ReactDOM.render(
-  <Router history={createHistory()}>
+  <Router>
     <Provider store={store}>
-      <Switch>
-        <Route path="/" component={App} />
-      </Switch>
+      <App>
+        <Switch>
+          <Route exact path="/" component={Home}/>
+          <Route path="/blog" component={Blog}/>
+          <Route component={NotFound}/>
+        </Switch>
+      </App>
     </Provider>
   </Router>,
   document.getElementById('root'),

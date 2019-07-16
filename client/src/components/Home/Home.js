@@ -1,12 +1,13 @@
 import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
+import Footer from '../Footer/Footer';
 import { connect } from 'react-redux';
 import { FullPage, Slide } from 'react-full-page';
-import { Footer } from '../../../components/Article';
+import 'whatwg-fetch';
 var _ = require('lodash');
 
-class Accueil extends React.Component {
+class Home extends React.Component {
     constructor(props) {
         super(props);
         this._handleSlider = this._handleSlider.bind(this);
@@ -241,6 +242,11 @@ class Accueil extends React.Component {
                 <Slide>
                     <section className="active first_section">
                         <div className="wrapper left_part">
+                            <div id="image">
+                                
+                            </div>
+                        </div>
+                        <div className="wrapper right_part">
                             <div id="slider">
                                 {
                                     articles.map((article, index) => {
@@ -256,10 +262,6 @@ class Accueil extends React.Component {
                                         )
                                     })
                                 }
-                            </div>
-                        </div>
-                        <div className="wrapper right_part">
-                            <div id="image">
                                 <div id="social_media">
                                     <a href="#" className="icon-button instagram"><i className="fab fa-instagram"></i><span></span></a>
                                     <a href="#" className="icon-button facebook"><i className="icon-facebook"></i><span></span></a>
@@ -360,7 +362,29 @@ class Accueil extends React.Component {
 
                                         <div className="overlay__content">
                                             <div className="overlay__content-inner">
-                                                {/* put an image */}
+                                                <fieldset className="tasks-list">
+                                                    <h5>Our Master to do List</h5>
+                                                    <label className="tasks-list-item">
+                                                        <input type="checkbox" name="task_1" value="1" className="tasks-list-cb" defaultChecked/>
+                                                        <span className="tasks-list-desc">Build The plateform</span>
+                                                        <span className="tasks-list-mark"></span>
+                                                    </label>
+                                                    <label className="tasks-list-item">
+                                                        <input type="checkbox" name="task_2" value="1" className="tasks-list-cb" defaultChecked/>
+                                                        <span className="tasks-list-desc">Reach a school in a rural harsh zone</span>
+                                                        <span className="tasks-list-mark"></span>
+                                                    </label>
+                                                    <label className="tasks-list-item">
+                                                        <input type="checkbox" name="task_3" value="1" className="tasks-list-cb"/>
+                                                        <span className="tasks-list-desc">Reach a 100 school in just as harsh a zone</span>
+                                                        <span className="tasks-list-mark"></span>
+                                                    </label>
+                                                    <label className="tasks-list-item">
+                                                        <input type="checkbox" name="task_3" value="1" className="tasks-list-cb"/>
+                                                        <span className="tasks-list-desc">Change the World</span>
+                                                        <span className="tasks-list-mark"></span>
+                                                    </label>
+                                                </fieldset>
                                             </div>
                                         </div>
 
@@ -411,56 +435,6 @@ class Accueil extends React.Component {
                         </div>
                     </section>
                 </Slide>
-                {/* <Slide>
-                    <section className="fourth_section">
-                        <div className="wrapper_full">
-                            <div className="top_side">
-                                <div className="some_text">
-                                    <h1 className="display-4">Hello, world!</h1>
-                                    <p>This is a simple hero unit, <br/> a simple jumbotron-style component for calling extra attention <br/> to featured content or information.</p>
-                                    <hr className="my-4"></hr>
-                                </div>
-                                <div className="overlay__content">
-                                    <div className="overlay__content-inner">
-                                        <h1 className="display-4">Hello, world!</h1>
-                                        <p>This is a simple hero unit, <br/> a simple jumbotron-style component for calling extra attention <br/> to featured content or information.</p>
-                                        <hr className="my-4"></hr>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="bottom_side">
-                                <div className="col-7 col-sm-7 col-md-7 col-lg-7 col-xl-7">
-                                    <div className="some_text">
-                                        <h1 className="display-4">Hello, world!</h1>
-                                        <p>This is a simple hero unit, <br/> a simple jumbotron-style component for calling extra attention <br/> to featured content or information.</p>
-                                        <hr className="my-4"></hr>
-                                    </div>
-                                    <div className="overlay__content">
-                                        <div className="overlay__content-inner">
-                                            <h1 className="display-4">Hello, world!</h1>
-                                            <p>This is a simple hero unit, <br/> a simple jumbotron-style component for calling extra attention <br/> to featured content or information.</p>
-                                            <hr className="my-4"></hr>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-5 col-sm-5 col-md-5 col-lg-5 col-xl-5">
-                                    <div className="some_text">
-                                        <h1 className="display-4">Hello, world!</h1>
-                                        <p>This is a simple hero unit, <br/> a simple jumbotron-style component for calling extra attention <br/> to featured content or information.</p>
-                                        <hr className="my-4"></hr>
-                                    </div>
-                                    <div className="overlay__content">
-                                        <div className="overlay__content-inner">
-                                            <h1 className="display-4">Hello, world!</h1>
-                                            <p>This is a simple hero unit, <br/> a simple jumbotron-style component for calling extra attention <br/> to featured content or information.</p>
-                                            <hr className="my-4"></hr>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </Slide> */}
                 <Slide>
                     <Footer/>
                 </Slide>
@@ -477,4 +451,4 @@ const mapDispatchToProps = dispatch => ({
     onLoad: data => dispatch({ type: 'HOME_PAGE_LOADED', data }),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Accueil);
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
