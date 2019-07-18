@@ -15,6 +15,32 @@ class Form extends React.Component {
         this.handleChangeField = this.handleChangeField.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
+    componentDidMount() {
+        var toolbarOptions = [
+            ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+            ['blockquote', 'code-block'],
+          
+            [{ 'align': [] }],
+            ['link', 'image'],                                        // image and link
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+            [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+            [{ 'direction': 'rtl' }],                         // text direction
+          
+            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+          
+            [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+            [{ 'font': [] }]
+        ];
+        var quill = new Quill('#editor', {
+            debug: 'info',
+            placeholder: 'Compose an epic...',
+            modules: {
+                toolbar: toolbarOptions
+            },
+            theme: 'snow'
+        });
+    }
     componentWillReceiveProps(nextProps) {
         if(nextProps.articleToEdit) {
             this.setState({
@@ -56,25 +82,31 @@ class Form extends React.Component {
         const { title, body, author } = this.state;
     
         return (
-            <div className="col-12 col-lg-6 offset-lg-3">
+            <div className="wrapper">
+
                 <input
                 onChange={(ev) => this.handleChangeField('title', ev)}
                 value={title}
-                className="form-control my-3"
-                placeholder="Article Title"
+                className="form-control my-3 title_article"
+                placeholder="Title"
                 />
-                <textarea
+
+                <div id="editor"></div>
+
+                {/* <textarea
                 onChange={(ev) => this.handleChangeField('body', ev)}
-                className="form-control my-3"
+                className="form-control my-3 body_article editableContent"
                 placeholder="Article Body"
                 value={body}>
-                </textarea>
+                </textarea> */}
+
                 <input
                 onChange={(ev) => this.handleChangeField('author', ev)}
                 value={author}
-                className="form-control my-3"
-                placeholder="Article Author"
+                className="form-control my-3 author_article"
+                placeholder="Author"
                 />
+
                 <button onClick={this.handleSubmit} className="btn btn-primary float-right">{articleToEdit ? 'Update' : 'Submit'}</button>
             </div>
         )
@@ -82,8 +114,9 @@ class Form extends React.Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-    onSubmit: data => dispatch({ type: 'SUBMIT_ARTICLE', data }),
-    onEdit: data => dispatch({ type: 'EDIT_ARTICLE', data }),
+	onLoad: data => dispatch({ type: 'HOME_PAGE_LOADED', data }),
+	onDelete: id => dispatch({ type: 'DELETE_ARTICLE', id }),
+	setEdit: article => dispatch({ type: 'SET_EDIT', article }),
 });
   
 const mapStateToProps = state => ({

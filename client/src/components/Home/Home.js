@@ -243,7 +243,7 @@ class Home extends React.Component {
                     <section className="active first_section">
                         <div className="wrapper left_part">
                             <div id="image">
-                                
+                                <div className="highlight"></div>
                             </div>
                         </div>
                         <div className="wrapper right_part">
@@ -255,7 +255,15 @@ class Home extends React.Component {
                                                 <div className="shadow_title">{_.head(_.words(article.title))}</div>
                                                 <div className="card-body">
                                                     <h2>{article.title}</h2>
-                                                    <h6 className="body">{article.body}</h6>
+                                                    <button>
+                                                        <span>
+                                                            <span>
+                                                                <span data-attr-span="Read More About it">
+                                                                    Read More About it
+                                                                </span>
+                                                            </span>
+                                                        </span>
+                                                    </button>
                                                     <p className="text-muted author">by <b>{article.author}</b>, {moment(new Date(article.createdAt)).fromNow()}</p>
                                                 </div>
                                             </div>
@@ -265,6 +273,13 @@ class Home extends React.Component {
                                 <div id="social_media">
                                     <a href="#" className="icon-button instagram"><i className="fab fa-instagram"></i><span></span></a>
                                     <a href="#" className="icon-button facebook"><i className="icon-facebook"></i><span></span></a>
+                                    <a href="#" className="icon-button scroll">
+                                        <span className="scroll-icon">
+                                            <span className="scroll-icon__wheel-outer">
+                                                <span className="scroll-icon__wheel-inner"></span>
+                                            </span>
+                                        </span>
+                                    </a>
                                 </div>
                             </div>
                         </div>
