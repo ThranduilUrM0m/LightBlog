@@ -40,8 +40,9 @@ class Blog extends React.Component {
 						<div className="wrapper_full">
 							<div id="box">
 								<h2>{_.get(_.head(_.orderBy(articles, ['createdAt'], ['desc'])), 'title')}</h2>
-								<h6 className="body">{_.get(_.head(_.orderBy(articles, ['createdAt'], ['desc'])), 'body')}</h6>
 								<p className="text-muted author">by <b>{_.get(_.head(_.orderBy(articles, ['createdAt'], ['desc'])), 'author')}</b>, {moment(new Date(_.get(_.head(_.orderBy(articles, ['createdAt'], ['desc'])), 'createdAt'))).fromNow()}</p>
+								<h6 className="text-muted body">{_.get(_.head(_.orderBy(articles, ['createdAt'], ['desc'])), 'body')}</h6>
+								<a href="#" className="readmore">Read More</a>
 							</div>
 							<div id="social_media">
 								<a href="#" className="icon-button instagram"><i className="fab fa-instagram"></i><span></span></a>

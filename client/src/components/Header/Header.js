@@ -39,14 +39,14 @@ class Header extends React.Component {
         $('.navToggle').click(function(event) {
             $('.navToggle').toggleClass('active');
             $('.menu').toggleClass('menu--is-closed');
-            //$('.overlay_menu').toggleClass('overlay_menu--is-closed');
+            $('.overlay_menu').toggleClass('overlay_menu--is-closed');
         });
         
         /* menu active */
         $('.nav-link').click(function(){
             $('.navToggle').toggleClass('active');
             $('.menu').toggleClass('menu--is-closed');
-            //$('.overlay_menu').toggleClass('overlay_menu--is-closed');
+            $('.overlay_menu').toggleClass('overlay_menu--is-closed');
             $(this).addClass('active');
             $('.nav-link').not(this).removeClass('active');
         });
