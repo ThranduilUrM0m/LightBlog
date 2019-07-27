@@ -19,6 +19,11 @@ $Gradient: #453178;
 $lightGradient: lighten($color: $Gradient, $amount: 50);
 $softLightGradient: lighten($color: $Gradient, $amount: 10);
 
+$arrow-width: 1rem;
+$arrow-height: ($arrow-width * 0.3);
+$arrow-angle: 25deg;
+$transition-speed: 300ms;
+
 $slack-size: 1rem;
 $duration: 2s;
 $dot-diameter: 0.25rem;
@@ -1151,23 +1156,115 @@ body, html {
 						border-left: 0.05rem solid black;
 						padding-left: 1rem;
 						width: 50%;
+						img {
+							position: absolute;
+							left: 10%;
+							top: 50%;
+							width: 25%;
+							transform: translate(-10%, -50%);
+							box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+							transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+							&:hover {
+								left: 9%;
+								width: 26%;
+								transform: translate(-9%, -50%);
+								box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+							}
+						}
+						br{
+							display: none;
+						}
 					}
 					.readmore{
 						position: relative;
-						text-align: -webkit-left;
-						font-size: x-small;
-						width: 50%;
-						margin-top: 5%;
-						&::after{
-							content: "";
-							position: absolute;
-							display: inline-block;
-							background: black;
-							width: 5rem;
-							height: 0.1rem;
-							top: 50%;
-							transform: translateX(25%);
+						button {
+							border: none;
+							background-color: transparent;
 						}
+						[data-am-linearrow] {
+							padding: 15px;
+							cursor: pointer;
+							width: (($arrow-width * 2) - $arrow-height);
+							height: $arrow-height;
+							box-sizing: content-box;
+							.line {
+								position: absolute;
+								top: 50%;
+								margin-top: -($arrow-height / 2);
+								width: $arrow-width;
+								height: $arrow-height;
+								background-color: #ccc;
+								transition: transform $transition-speed ease, background-color $transition-speed ease;
+							}
+							.line-1 {
+								right: 50%;
+								margin-right: -($arrow-height / 2);
+							}
+							.line-2 {
+								left: 50%;
+								margin-left: -($arrow-height / 2);
+							}
+							&:hover,
+							&:focus {
+								.line-1 {
+									transform: rotate($arrow-angle);
+								}
+								.line-2 {
+									transform: rotate(-($arrow-angle));
+								}
+							}
+							&:focus {
+								outline: none;
+								.line {
+									background-color: darken(#ccc, 20%);
+								}
+							}
+						}
+						[data-am-linearrow~="inverted"] {
+							&:hover,
+							&:focus {
+								.line-1 {
+									transform: rotate(-($arrow-angle));
+								}
+								.line-2 {
+									transform: rotate($arrow-angle);
+								}
+							}
+						}
+						[data-am-linearrow~="tooltip"] {
+							&:after {
+								content: attr(display-name);
+								white-space: nowrap;
+								position: absolute;
+								left: 50%;
+								transform: translateX(-50%);
+								transition: opacity $transition-speed ease-out, color $transition-speed ease;
+							   opacity: 0;
+								color: #ccc;
+							}
+							&:hover,
+							&:focus {
+								&:after {
+									opacity: 1;
+								}	
+							}
+							&:focus {
+								&:after {
+									color: darken(#ccc, 20%);	
+								}
+							}
+						}
+						[data-am-linearrow~="tooltip-top"] {
+							&:after {
+								bottom: 100%;	
+							}
+						}
+						[data-am-linearrow~="tooltip-bottom"] {
+							&:after {
+								top: 100%;	
+							}
+						}	
+
 					}
 					&::after{
 						position: absolute;
@@ -1827,7 +1924,7 @@ body, html {
 			flex-wrap: wrap;
 			border-top: 0.5rem solid $itemBg1;
 			overflow: hidden;
-			.wrapper {
+			/* .wrapper {
 				position: absolute;
 				width: 80vw;
 				height: 80vh;
@@ -1836,11 +1933,19 @@ body, html {
 				transform: translate(-50%, -50%);
 				border: 0.5rem solid lighten($color: $liteBg_gray, $amount: 1);
 				background: #fff;
-				padding: 2.5rem;
+				padding: 0 2.5rem 1rem 2.5rem;
 				display: flex;
  				flex-direction: column;
 				input{
 					border-bottom: none;
+					&:focus {
+						border-bottom: 1px solid #26a69a;
+					}
+					box-shadow: none;
+				}
+				.title_article{
+					margin-top: 0 !important;
+					margin-bottom: 0.5rem !important;
 				}
 				.ql-toolbar {
 					.ql-align{
@@ -1854,6 +1959,10 @@ body, html {
 				.ql-container {
 					height: unset;
 					flex: 1;
+					overflow: hidden;
+					.ql-editor {
+						font-family: 'Poppins', sans-serif;
+					}
 				}
 				.tools {
 					padding: 0;
@@ -1887,7 +1996,34 @@ body, html {
 					background: blue;
 					color:white;
 				}
-			}
+				.tag_Container {
+					margin-bottom: 0 !important;
+					display: flex;
+					align-items: center;
+					margin-top: 0.5rem;
+					li {
+						border: 1px solid #ddd;
+						background: #eee;
+						font-size: 12px;
+						display: inline-block;
+						padding: 5px;
+						margin: 0 5px;
+						height: fit-content;
+					}
+					input {
+						outline: none;
+						font-size: 14px;
+						width: unset;
+						display: inline-block;
+						margin: 0 !important;
+						flex: 1;
+					}
+				}
+				.author_article {
+					margin-top: 0 !important;
+					margin-bottom: 0.5rem !important;
+				}
+			} */
 		}
 		.second_section{
 			position: relative;

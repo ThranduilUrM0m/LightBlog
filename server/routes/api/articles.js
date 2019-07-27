@@ -13,6 +13,14 @@ router.post('/', (req, res, next) => {
     });
   }
 
+  if(!body.body) {
+    return res.status(422).json({
+      errors: {
+        body: 'is required',
+      },
+    });
+  }
+
   if(!body.author) {
     return res.status(422).json({
       errors: {
@@ -21,10 +29,10 @@ router.post('/', (req, res, next) => {
     });
   }
 
-  if(!body.body) {
+  if(!body.tag) {
     return res.status(422).json({
       errors: {
-        body: 'is required',
+        tag: 'is required',
       },
     });
   }
@@ -72,6 +80,22 @@ router.patch('/:id', (req, res, next) => {
 
   if(typeof body.body !== 'undefined') {
     req.article.body = body.body;
+  }
+
+  if(typeof body.tag !== 'undefined') {
+    req.article.tag = body.tag;
+  }
+
+  if(typeof body.comment !== 'undefined') {
+    req.article.comment = body.comment;
+  }
+
+  if(typeof body.upvotes !== 'undefined') {
+    req.article.upvotes = body.upvotes;
+  }
+
+  if(typeof body.downvotes !== 'undefined') {
+    req.article.downvotes = body.downvotes;
   }
 
   return req.article.save()
