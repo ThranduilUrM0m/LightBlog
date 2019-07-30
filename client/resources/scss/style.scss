@@ -322,7 +322,7 @@ body, html {
 		padding-right: 0;
 		padding-left: 0;
 		.scrolled{
-			background-color: rgba(white, 0.25);
+			background-color: rgba(white, 0.75);
 			box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
 		}
 		.fixedHeaderContainer {
@@ -1174,6 +1174,29 @@ body, html {
 						br{
 							display: none;
 						}
+						p:nth-child(3) {
+							display: inline-block; 
+							max-height: 2.5rem;
+							overflow: hidden; 
+							text-overflow: ellipsis;
+						}
+					}
+					.comments_up_down {
+						display: inline-flex;
+						width: 50%;
+						.comments{
+							text-align: -webkit-left;
+							font-size: small;
+							flex: 1;
+						}
+						.upvotes, .downvotes {
+							margin-left: 1rem;
+							text-align: -webkit-right;
+							font-size: small;
+						}
+						i {
+							margin-left: 0.5rem;
+						}
 					}
 					.readmore{
 						position: relative;
@@ -1917,13 +1940,362 @@ body, html {
 		.second_section_blog{
 			position: relative;
 			width: 100%;
-			height: -webkit-fill-available;
+			height: fit-content;
 			padding: 0;
 			margin: 0 auto;
 			display: flex;
 			flex-wrap: wrap;
 			border-top: 0.5rem solid $itemBg1;
-			overflow: hidden;
+			&::-webkit-scrollbar {
+				width: 0px;  /* Remove scrollbar space */
+				background: transparent;  /* Optional: just make scrollbar invisible */
+				-webkit-transition: all 0.3s;
+					-moz-transition: all 0.3s;
+						-o-transition: all 0.3s;
+						transition: all 0.3s;
+			}
+			/* Optional: show position indicator in red */
+			&::-webkit-scrollbar-thumb {
+				background: $color1Faded;
+			}
+			.data-container {
+				width: 100%;
+				ul {
+					margin-top: 1rem;
+					.article_card{
+						position: relative;
+						display: flex;
+						padding: 2.5rem;
+						width: 100%;
+						height: 55vh;
+						margin: 2rem 0;
+						.card {
+							width: 35vw;
+							height: fit-content;
+							border: 0;
+							-webkit-transition: all 0.3s;
+							-moz-transition: all 0.3s;
+								-o-transition: all 0.3s;
+								transition: all 0.3s;
+							box-shadow: none;
+							.shadow_title{
+								opacity: 0.1;
+								font-size: 5rem;
+								position: absolute;
+								left: -2rem;
+							}
+							.shadow_letter{
+								opacity: 0.1;
+								font-size: 20rem;
+								position: absolute;
+							}
+							.card-body {
+								position: relative;
+								h2{
+									color:$color1;
+									letter-spacing: 2px;
+									transition: all 0.15s ease 0s; 
+									position: relative;
+									z-index: 10;
+								}
+								h1, h2, h3, h4, h5, h6{
+									text-align: -webkit-left;
+								}
+								.author{
+									text-align: -webkit-right;
+									font-size: xx-small;
+								}
+								.comments_up_down {
+									display: inline-flex;
+									width: 100%;
+									.comments{
+										text-align: -webkit-left;
+										font-size: xx-small;
+										flex: 1;
+									}
+									.upvotes, .downvotes {
+										margin-left: 1rem;
+										text-align: -webkit-right;
+										font-size: x-small;
+									}
+								}
+								.tags {
+									margin-bottom: 0 !important;
+									display: flex;
+									align-items: center;
+									margin-top: 0.5rem;
+									li {
+										font-size: xx-small;
+										border: 1px solid #ddd;
+										background: #eee;
+										display: inline-block;
+										padding: 5px;
+										margin: 0 5px;
+										border-radius: 4px;
+										height: fit-content;
+									}
+								}
+								p{
+									transition: all 0.15s ease 0s; 
+									position: relative;
+									z-index: 10;
+								}
+								.body{
+									border-left: 0.05rem solid black;
+									padding-left: 1rem;
+								}
+								button{
+									-webkit-appearance: none;
+									border: none;
+									background: none;
+									color:black;
+									width: 15rem;
+									height: 3rem;
+									font-size: 1.2rem;
+									margin-bottom: 1rem;
+									padding: 0;
+									outline: none;
+									position: relative;
+									z-index: 10;
+									span{
+										display: block;
+										position: relative;
+										line-height: 50px;
+										height: 100%;
+										cursor: pointer;
+									}
+									& > span {
+										& > span {
+											& > span{
+												transition: color 0.15s ease-out 0.3s;
+												color: transparent;
+												&::after{
+													position: absolute;
+													top:0;left:0;right:0;bottom:0;
+													color:$liteBg_gray;
+													content: attr(data-attr-span);
+													width: 0%;
+													height: 100%;
+													background: $color1;
+													white-space: nowrap;
+													text-align: center;
+													margin: auto;
+													overflow: hidden;
+													display: flex;
+													justify-content: center;
+													transition: width 0.2s;
+												}
+											}
+											&::before{
+												content:'';
+												position: absolute;
+												bottom:0;
+												right: 0%;
+												width: 1px;
+												height: 1px;
+												opacity: 0;
+											}
+											&::after{
+												content:'';
+												position: absolute;
+												bottom:0;
+												left: 0%;
+												width: 1px;
+												height: 1px;
+												opacity: 0;
+											}
+										}
+										&::before {
+											content:'';
+											position: absolute;
+											top:0;
+											right: 50%;
+											width: 20px;
+											height: 0;
+											border: 1px solid $color1;
+											border-right: none;
+											border-bottom: none;
+											transition: height 0.15s ease-out, width 0.15s ease-out 0.15s;
+										}
+										&::after {
+											content:'';
+											position: absolute;
+											top:0;
+											left: 50%;
+											width: 20px;
+											height: 0;
+											border: 1px solid $color1;
+											border-left: none;
+											border-bottom: none;
+											transition: height 0.15s ease-out, width 0.15s ease-out 0.15s;
+										}
+									}
+									&:hover{
+										& > span {
+											& > span {
+												& > span {
+													&::after {
+														width: 100%;
+													}
+												}
+											}
+										}
+									}
+								}
+								&::after{
+									position: absolute;
+									top:0;
+									left: 0;
+									right:0;
+									bottom: 0;
+									/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#a29ca9+0,95909b+99 */
+									background: #a29ca9; /* Old browsers */
+									background: -moz-linear-gradient(-45deg, #a29ca9 0%, #95909b 99%); /* FF3.6-15 */
+									background: -webkit-linear-gradient(-45deg, #a29ca9 0%,#95909b 99%); /* Chrome10-25,Safari5.1-6 */
+									background: linear-gradient(135deg, #a29ca9 0%,#95909b 99%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+									filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a29ca9', endColorstr='#95909b',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+									content: '';
+									opacity: 0;
+									transition: opacity 0.9s ease 0s; 
+								}
+								&:hover {
+									h2 {
+										transform: translateY(-10px);
+									}
+									p{
+										transform: translateY(10px);
+									}
+									&::after{
+										opacity: 0.4;
+									}
+									button {
+										& > span {
+											&::after {
+												width: 50%;
+												height: 100%;
+												transition: width 0.15s ease-out, height 0.15s ease-out 0.15s;
+											}
+											&::before {
+												width: 50%;
+												height: 100%;
+												transition: width 0.15s ease-out, height 0.15s ease-out 0.15s;
+											}
+											& > span {
+												&::after {
+													opacity: 1;
+													border-bottom: 1px solid $color1;
+													width: calc(50%);
+													height: 1px;
+													transition: opacity 0s ease-out 0.29s, width 0.15s ease-out 0.3s;
+												}
+												&::before {
+													opacity: 1;
+													border-bottom: 1px solid $color1;
+													width: calc(50%);
+													height: 1px;
+													transition: opacity 0s ease-out 0.29s, width 0.15s ease-out 0.3s;
+												}
+												& > span {
+													color:$color1;
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+						.body_to_preview {
+							color: #292929;
+							position: absolute;
+							top: 0%;
+							left: 75%;
+							height: 100%;
+							flex: 1;
+							transform: translateX(-50%);
+							img {
+								height: 100%;
+								object-fit: contain;
+								box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+								transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+								margin-top: -0.1rem;
+								position: relative;
+								&:hover {
+									height: 102%;
+									margin-top: calc(-0.25rem - 2%);
+									box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+								}
+							}
+							.index_article {
+								position: absolute;
+								top: -1.5rem;
+    							right: -0.5rem;
+							}
+							&::after {
+								position: absolute;
+								content: '';
+								z-index: -1;
+								border: 0.1rem solid $mainColor;
+								height: 100%;
+								width: 100%;
+								top: -1rem;
+								right: 0;
+								bottom: 0;
+								left: -1rem;
+								opacity: 0.2;
+							}
+						}
+					}
+				}
+			}
+			#pagination-demo1 {
+				position: absolute;
+				width: 2.6rem;
+				right: calc(0.5rem + 5px);
+				top: 0;
+				transform: translate(0, 50%);
+				ul {
+					display: flex;
+					flex-direction: column;
+					justify-content: center;
+					align-items: center;
+					li {
+						display: block;
+						border: 1px solid $mainColor;
+						width: 20%;
+						height: 100%;
+						overflow: hidden;    
+						opacity: 0.6;
+						text-align: center;
+						margin-bottom: 20%;
+						transition: all 0.2s ease-out;
+						a {
+							display: inline-block;
+							width: 100%;
+							line-height: 2.5rem;
+							color: transparent;
+							text-decoration: none;
+						}
+						&.active {
+							a {
+								background-color: $mainColor;
+							}
+						}
+						&:hover {
+							width: 200%;
+							transform: translateX(-45%);
+							opacity: 1;
+							a {
+								  color: $mainColor;
+							}
+							&.active {
+								a {
+									color: white;
+								}
+							}
+						}
+					}
+				}
+			}
 			/* .wrapper {
 				position: absolute;
 				width: 80vw;
@@ -2009,6 +2381,7 @@ body, html {
 						padding: 5px;
 						margin: 0 5px;
 						height: fit-content;
+						border-radius: 4px;
 					}
 					input {
 						outline: none;

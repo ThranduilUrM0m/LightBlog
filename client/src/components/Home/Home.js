@@ -48,6 +48,14 @@ class Home extends React.Component {
         });
     }
     _handleSlider() {
+        function FormatNumberLength(num, length) {
+            var r = "" + num;
+            while (r.length < length) {
+                r = "0" + r;
+            }
+            return r;
+        }
+
         (function($) {
             $.fn.jooSlider = function(options) {
                 var opt = {
@@ -70,7 +78,8 @@ class Home extends React.Component {
                     /* Caption */
                     this.imgs.each(function(){
                         var caption = $(this).find('.card').data('index');
-                        $(this).append('<p class="index_card">'+caption+'</p>');
+                        caption = FormatNumberLength(JSON.parse(caption), 2);
+                        $(this).append('<p class="index_card">'+caption+'.</p>');
                     });
                     this.captions = container.find('.img-wrap').find('p');
                     /* Controls */
