@@ -4,6 +4,13 @@ import moment from 'moment';
 import Footer from '../Footer/Footer';
 import { connect } from 'react-redux';
 import { FullPage, Slide } from 'react-full-page';
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Switch
+} from 'react-router-dom'
+import { Form } from '../Article';
 import 'whatwg-fetch';
 var _ = require('lodash');
 
@@ -246,8 +253,12 @@ class Home extends React.Component {
     }
     render() {
         const { articles } = this.props;
+		const { match } = this.props;
         return (
             <FullPage>
+                {/* <Slide>
+                    <Form />
+                </Slide> */}
                 <Slide>
                     <section className="active first_section">
                         <div className="wrapper left_part">
@@ -258,21 +269,23 @@ class Home extends React.Component {
                         <div className="wrapper right_part">
                             <div id="slider">
                                 {
-                                    articles.map((article, index) => {
+                                    _.orderBy(articles, ['upvotes'], ['desc']).map((article, index) => {
                                         return (
                                             <div className={"card card_" + index} data-title={article.title} data-index={index+1}>
                                                 <div className="shadow_title">{_.head(_.words(article.title))}</div>
                                                 <div className="card-body">
                                                     <h2>{article.title}</h2>
-                                                    <button>
-                                                        <span>
+                                                    <Link to={`/blog/${article._id}`}>
+                                                        <button>
                                                             <span>
-                                                                <span data-attr-span="Read More About it">
-                                                                    Read More About it
+                                                                <span>
+                                                                    <span data-attr-span="Read More About it">
+                                                                        Read More About it
+                                                                    </span>
                                                                 </span>
                                                             </span>
-                                                        </span>
-                                                    </button>
+                                                        </button>
+                                                    </Link>
                                                     <p className="text-muted author">by <b>{article.author}</b>, {moment(new Date(article.createdAt)).fromNow()}</p>
                                                 </div>
                                             </div>
@@ -387,27 +400,7 @@ class Home extends React.Component {
                                         <div className="overlay__content">
                                             <div className="overlay__content-inner">
                                                 <fieldset className="tasks-list">
-                                                    <h5>Our Master to do List</h5>
-                                                    <label className="tasks-list-item">
-                                                        <input type="checkbox" name="task_1" value="1" className="tasks-list-cb" defaultChecked/>
-                                                        <span className="tasks-list-desc">Build The plateform</span>
-                                                        <span className="tasks-list-mark"></span>
-                                                    </label>
-                                                    <label className="tasks-list-item">
-                                                        <input type="checkbox" name="task_2" value="1" className="tasks-list-cb" defaultChecked/>
-                                                        <span className="tasks-list-desc">Reach a school in a rural harsh zone</span>
-                                                        <span className="tasks-list-mark"></span>
-                                                    </label>
-                                                    <label className="tasks-list-item">
-                                                        <input type="checkbox" name="task_3" value="1" className="tasks-list-cb"/>
-                                                        <span className="tasks-list-desc">Reach a 100 school in just as harsh a zone</span>
-                                                        <span className="tasks-list-mark"></span>
-                                                    </label>
-                                                    <label className="tasks-list-item">
-                                                        <input type="checkbox" name="task_3" value="1" className="tasks-list-cb"/>
-                                                        <span className="tasks-list-desc">Change the World</span>
-                                                        <span className="tasks-list-mark"></span>
-                                                    </label>
+                                                    
                                                 </fieldset>
                                             </div>
                                         </div>

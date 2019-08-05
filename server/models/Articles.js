@@ -10,6 +10,7 @@ const ArticlesSchema = new Schema({
   comment: [{
     author: String,
     body: String,
+    date: Date,
     upvotes: Number,
     downvotes: Number,
   }],

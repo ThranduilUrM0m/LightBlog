@@ -14,6 +14,7 @@ import App from './components/App/App';
 import NotFound from './components/App/NotFound';
 import Home from './components/Home/Home';
 import Blog from './components/Blog/Blog';
+import Post from './components/Post/Post';
 
 import '../resources/scss/style.scss';
 
@@ -23,7 +24,8 @@ ReactDOM.render(
       <App>
         <Switch>
           <Route exact path="/" component={Home}/>
-          <Route path="/blog" component={Blog}/>
+          <Route exact path="/blog" component={Blog}/>
+				  <Route path={`/blog/:postId`} component={Post}/>
           <Route component={NotFound}/>
         </Switch>
       </App>

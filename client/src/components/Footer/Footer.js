@@ -2,6 +2,12 @@ import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
 import { connect } from 'react-redux';
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Switch
+} from 'react-router-dom';
 import 'whatwg-fetch';
 var _ = require('lodash');
 
@@ -47,11 +53,13 @@ class Footer extends React.Component {
                             <h6>Latest Articles!</h6>
                             <ul>
                                 {
-                                    articles.map((article, index) => {
+                                    _.orderBy(articles, ['createdAt'], ['desc']).map((article, index) => {
                                         return (
                                             <li>
-                                                <span>{article.title}</span>
-                                                <p className="text-muted author">by <b>{article.author}</b>, {moment(new Date(article.createdAt)).fromNow()}</p>
+                                                <Link to={`/blog/${article._id}`}>
+                                                    <span>{article.title}</span>
+                                                    <p className="text-muted author">by <b>{article.author}</b>, {moment(new Date(article.createdAt)).fromNow()}</p>
+                                                </Link>
                                             </li>
                                         )
                                     })
@@ -126,6 +134,18 @@ class Footer extends React.Component {
                     </span>
                     <span className="push-right">
                         <ul className="list-inline">
+                            <li className="list-inline-item">
+                                <a href="#">About Us</a>
+                            </li>
+                            <li className="list-inline-item">
+                                <a href="#">Privacy Policy</a>
+                            </li>
+                            <li className="list-inline-item">
+                                <a href="#">Legal Notice</a>
+                            </li>
+                            <li className="list-inline-item">
+                                <a href="#">Newsroom</a>
+                            </li>
                             <li className="list-inline-item">
                                 <span className="name">Zakariae.</span>
                             </li>

@@ -145,9 +145,10 @@ class Form extends React.Component {
     }
     handleInputKeyDown(key, event) {
         if ( event.keyCode === 32 || event.keyCode === 9 || event.keyCode === 13 ) {
-            const {value} = event.target;
+            const { value } = event.target;
+            event.stopPropagation();
             this.setState(state => ({
-                tag: [...state.tag, value],
+                tag: [...state.tag, _.camelCase(value)],
                 tagInput: ''
             }));
         }
@@ -162,7 +163,7 @@ class Form extends React.Component {
         const { title, body, author, tag, tagInput } = this.state;
     
         return (
-            <div className="wrapper">
+            <div className="wrapper_form">
 
                 <input
                 onChange={(ev) => this.handleChangeField('title', ev)}

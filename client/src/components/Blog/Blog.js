@@ -3,29 +3,114 @@ import axios from 'axios';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import { FullPage, Slide } from 'react-full-page';
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Switch
+} from 'react-router-dom';
 import 'whatwg-fetch';
-import { pagination } from 'paginationjs';
 import Footer from '../Footer/Footer';
 
 var _ = require('lodash');
+import { pagination } from 'paginationjs';
+
+class ReadMoreLink extends React.Component {
+	constructor(props) {
+		super(props);
+	}
+	render() {
+		return (
+			<Link to={this.props.readmore_link}>
+				<button>
+					<span>
+						<span>
+							<span data-attr-span="Read More About it">Read More About it</span>
+						</span>
+					</span>
+				</button>
+			</Link>
+		)
+	}
+}
+class ArticleCard extends React.Component {
+	constructor(props) {
+		super(props);
+	}
+	render() {
+		return (
+			<li className="article_card row">
+				<div className={"col card card_" + this.props.single_article.index} data-title={_.snakeCase(this.props.single_article.title)} data-index={_.add(this.props.single_article.index,1)}>
+					<div className="shadow_title">{_.head(_.words(this.props.single_article.title))}</div>
+					<div className="shadow_letter">{_.head(_.head(_.words(this.props.single_article.title)))}</div>
+					<div className="card-body">
+						<h2>{this.props.single_article.title}</h2>
+						<p className="text-muted author">by <b>{this.props.single_article.author}</b>, {moment(new Date(this.props.single_article.createdAt)).fromNow()}</p>
+						<ReadMoreLink readmore_link={`${this.props.url}/${this.props.single_article._id}`}/>
+						<br/>
+						<div className="comments_up_down">
+							<p className="text-muted comments"><b>{_.size(this.props.single_article.comment)}</b> <i className="fas fa-comment-alt"></i></p>
+							<p className="text-muted upvotes"><b>{this.props.single_article.upvotes}</b> <i className="fas fa-thumbs-up"></i></p>
+							<p className="text-muted downvotes"><b>{this.props.single_article.downvotes}</b> <i className="fas fa-thumbs-down"></i></p>
+						</div>
+						<ul className="text-muted tags">
+							{
+								this.props.single_article.tag.map((t, i) => {
+									return (
+										<li class="tag_item">{t}</li>
+									)
+								})
+							}
+						</ul>
+					</div>
+				</div>
+				<div className="col card">
+					<div className="body_to_preview">
+						<img src={$($(JSON.parse(this.props.single_article.body)).find('img')[0]).attr('src')}/>
+						<span className="index_article">{this.props.FormatNumberLengthIndex}.</span>
+					</div>
+				</div>
+			</li>
+		)
+	}
+}
+class ArticleCards extends React.Component {
+	constructor(props) {
+		super(props);
+		this._FormatNumberLength = this._FormatNumberLength.bind(this);
+	}
+	_FormatNumberLength(num, length) {
+		var r = "" + num;
+		while (r.length < length) {
+			r = "0" + r;
+		}
+		return r;
+	}
+	render () {
+		return (
+			<div className="data-container">
+				<ul>
+					{
+						_.orderBy(this.props.articles_props, ['createdAt'], ['desc']).map((article, index) => {
+							return (
+								<ArticleCard url={this.props.url} single_article={article} FormatNumberLengthIndex={this._FormatNumberLength(index+1, 2)}/>
+							)
+						})
+					}
+				</ul>
+			</div>
+		)
+	}
+}
 
 class Blog extends React.Component {
 	constructor(props) {
 		super(props);
-		
 		this.handleDelete = this.handleDelete.bind(this);
 		this.handleEdit = this.handleEdit.bind(this);
 		this.handleJSONTOHTML = this.handleJSONTOHTML.bind(this);
 	}
 	componentDidMount() {
-		function FormatNumberLength(num, length) {
-            var r = "" + num;
-            while (r.length < length) {
-                r = "0" + r;
-            }
-            return r;
-		}
-		
         const {onLoad} = this.props;
 		axios('http://localhost:8000/api/articles')
 			.then((res) => onLoad(res.data))
@@ -37,27 +122,13 @@ class Blog extends React.Component {
 							dataSource: res.data.articles,
 							pageSize: 5,
 							autoHidePrevious: true,
-    						autoHideNext: true,
-							callback: function(response, pagination){
-								var dataHtml = '<ul>';
-								$.each(_.orderBy(response, ['upvotes'], ['asc']), function(index, article){
-									var image = $(JSON.parse(article.body)).find('img')[0];
-									var tags = "";
-									$.each(article.tag, (i, t) => {
-										tags += '<li class="tag_item">'+t+'</li>';
-									});
-									dataHtml += '<li class="article_card"><div class="card card_'+ index +'" data-title='+ _.snakeCase(article.title) +' data-index='+ index+1 +'><div class="shadow_title">'+_.head(_.words(article.title))+'</div><div class="shadow_letter">'+_.head(_.head(_.words(article.title)))+'</div><div class="card-body"><h2>'+article.title+'</h2><p class="text-muted author">by <b>'+article.author+'</b>, '+moment(new Date(article.createdAt)).fromNow()+'</p><button><span><span><span data-attr-span="Read More About it">Read More About it</span></span></span></button><br/><div class="comments_up_down"><p class="text-muted comments"><b>'+_.size(article.comment)+'</b> <i class="fas fa-comment-alt"></i></p><p class="text-muted upvotes"><b>'+article.upvotes+'</b> <i class="fas fa-thumbs-up"></i></p><p class="text-muted downvotes"><b>'+article.downvotes+'</b> <i class="fas fa-thumbs-down"></i></p></div><ul class="text-muted tags">'+tags+'</ul></div></div><div class="body_to_preview"><img src="'+$(image).attr('src')+'"/><span class="index_article">'+FormatNumberLength(index+1,2)+'.</span></div></li>';
-								});
-								dataHtml += '</ul>';
-								container.prev().html(dataHtml);
-							}
+							autoHideNext: true,
 						};
 						container.pagination(options);
-
 					  	return container;
 					}
 					createDemo('demo1');
-				  });
+				});
 			});
 		document.getElementById('articles_blog').parentElement.style.height = 'initial';
 	}
@@ -95,6 +166,7 @@ class Blog extends React.Component {
 	}
 	render() {
 		const { articles } = this.props;
+		const { match } = this.props;
 		return (
 			<FullPage scrollMode={'normal'}>
 				<Slide>
@@ -113,12 +185,16 @@ class Blog extends React.Component {
 									<p className="text-muted upvotes"><b>{_.get(_.head(_.orderBy(articles, ['createdAt'], ['asc'])), 'upvotes')}</b><i className="fas fa-thumbs-up"></i></p>
 									<p className="text-muted downvotes"><b>{_.get(_.head(_.orderBy(articles, ['createdAt'], ['asc'])), 'downvotes')}</b><i className="fas fa-thumbs-down"></i></p>
 								</div>
-								<div className="readmore">
-									<button data-am-linearrow="tooltip tooltip-bottom" display-name="Read More">
-										<div className="line line-1"></div>
-										<div className="line line-2"></div>
-									</button>
-								</div>
+
+								<Link to={`${match.url}/${_.get(_.head(_.orderBy(articles, ['createdAt'], ['asc'])), '_id')}`}>
+									<div className="readmore">
+										<button data-am-linearrow="tooltip tooltip-bottom" display-name="Read More">
+											<div className="line line-1"></div>
+											<div className="line line-2"></div>
+										</button>
+									</div>
+								</Link>
+
 							</div>
 							<div id="social_media">
 								<a href="#" className="icon-button instagram"><i className="fab fa-instagram"></i><span></span></a>
@@ -136,9 +212,8 @@ class Blog extends React.Component {
 				</Slide>
 				<Slide>
 					<section id='articles_blog' className="second_section_blog">
-						{/* <Form /> */}
-						<div className="data-container"></div>
-        				<div id="pagination-demo1"></div>
+        				<ArticleCards url={match.url} articles_props={articles}/>
+						<div id="pagination-demo1"></div>
 					</section>
 				</Slide>
 				<Slide>
