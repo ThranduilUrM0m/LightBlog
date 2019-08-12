@@ -197,15 +197,17 @@ class Blog extends React.Component {
 								</Link>
 							</div>
 							<div id="social_media">
-								<a href="#" className="icon-button instagram"><i className="fab fa-instagram"></i><span></span></a>
-								<a href="#" className="icon-button facebook"><i className="icon-facebook"></i><span></span></a>
-								<a href="#" className="icon-button scroll">
-									<span className="scroll-icon">
-										<span className="scroll-icon__wheel-outer">
-											<span className="scroll-icon__wheel-inner"></span>
+								<div className="icons_gatherer">
+									<a href="#" className="icon-button instagram"><i className="fab fa-instagram"></i><span></span></a>
+									<a href="#" className="icon-button facebook"><i className="icon-facebook"></i><span></span></a>
+									<a href="#" className="icon-button scroll">
+										<span className="scroll-icon">
+											<span className="scroll-icon__wheel-outer">
+												<span className="scroll-icon__wheel-inner"></span>
+											</span>
 										</span>
-									</span>
-								</a>
+									</a>
+								</div>
 							</div>
 						</div>
 					</section>

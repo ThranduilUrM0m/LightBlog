@@ -1372,6 +1372,38 @@ body, html {
 			display: flex;
 			flex-wrap: wrap;
 			border: 0.5rem solid $color1;
+			.modal {
+				height: fit-content;
+				width: fit-content;
+				padding-right: 0 !important;
+				top: 50%;
+				transform: translateY(-50%);
+				&-dialog {
+					margin: 0;
+				}
+				&-close {
+					color: #aaa;
+					font-size: 80%;
+					position: absolute;
+					right: 0;
+					top: 0;
+					text-align: center;
+					text-decoration: none;
+				}
+				h5 {
+					margin: 0 0 15px;
+				}
+				div:not(:last-of-type) {
+					margin-bottom: 15px;
+				}
+				small {
+					color: #aaa;
+				}
+				a {
+					text-decoration: underline;
+					cursor: pointer;
+				}
+			}
 			.wrapper_full{
 				position: relative;
 				width: 100%;
@@ -1663,7 +1695,7 @@ body, html {
 					margin: 5rem auto;
 					z-index: 500;
 					.modal-inner {
-						box-shadow: -1rem 0rem 2rem -1rem rgba(0, 0, 0, 0.5);
+						box-shadow: -1rem 0rem 2rem -1rem rgba(0, 0, 0, 0.2);
 						display: flex;
 						.modal-content {
 							position: relative;
@@ -1713,19 +1745,22 @@ body, html {
 					display: flex;
 					flex-direction: column;
 					height: 100%;
-					z-index: -1;
+					z-index: 0;
 					background: lighten($color: $liteBg_gray, $amount: 10);
 					justify-content: flex-end;
-					.instagram::before{
+					margin-bottom: 1px;
+					.icons_gatherer {
+						display: flex;
+						flex-direction: column;
+					}
+					.icons_gatherer::before{
 						position: absolute;
 						content: "";
 						width: 0.1rem;
 						height: 10rem;
 						background: #000;
-						transform-origin: top center;
-						top: -100%;
 						left: 50%;
-						transform: translate(-50%, -100%);
+    					transform: translate(-50%, -120%);
 						cursor: default;
 					}
 					.icon-button {
@@ -1804,7 +1839,7 @@ body, html {
 									transition: all 0.3s;
 							width: 0;
 						}
-						&:hover span {
+						&:hover span:not(.scroll-icon):not(.scroll-icon__wheel-outer):not(.scroll-icon__wheel-inner) {
 							width: 2.6rem;
 							height: 2.6rem;
 							border-radius: 2.6rem;
@@ -2048,19 +2083,22 @@ body, html {
 					display: flex;
 					flex-direction: column;
 					height: 100%;
-					z-index: -1;
+					z-index: 0;
 					background: lighten($color: $liteBg_gray, $amount: 10);
 					justify-content: flex-end;
-					.instagram::before{
+					margin-bottom: 1px;
+					.icons_gatherer {
+						display: flex;
+						flex-direction: column;
+					}
+					.icons_gatherer::before{
 						position: absolute;
 						content: "";
 						width: 0.1rem;
 						height: 10rem;
 						background: #000;
-						transform-origin: top center;
-						top: -100%;
 						left: 50%;
-						transform: translate(-50%, -100%);
+    					transform: translate(-50%, -120%);
 						cursor: default;
 					}
 					.icon-button {
@@ -2139,7 +2177,7 @@ body, html {
 									transition: all 0.3s;
 							width: 0;
 						}
-						&:hover span {
+						&:hover span:not(.scroll-icon):not(.scroll-icon__wheel-outer):not(.scroll-icon__wheel-inner) {
 							width: 2.6rem;
 							height: 2.6rem;
 							border-radius: 2.6rem;
@@ -2550,19 +2588,22 @@ body, html {
 						display: flex;
 						flex-direction: column;
 						height: 100%;
-						z-index: -1;
+						z-index: 0;
 						background: lighten($color: $liteBg_gray, $amount: 10);
 						justify-content: flex-end;
-						.instagram::before{
+						margin-bottom: 1px;
+						.icons_gatherer {
+							display: flex;
+							flex-direction: column;
+						}
+						.icons_gatherer::before{
 							position: absolute;
 							content: "";
 							width: 0.1rem;
 							height: 10rem;
 							background: #000;
-							transform-origin: top center;
-							top: -100%;
 							left: 50%;
-							transform: translate(-50%, -100%);
+    						transform: translate(-50%, -120%);
 							cursor: default;
 						}
 						.icon-button {
@@ -2614,7 +2655,7 @@ body, html {
 										transition: all 0.3s;
 								width: 0;
 							}
-							&:hover span {
+							&:hover span:not(.scroll-icon):not(.scroll-icon__wheel-outer):not(.scroll-icon__wheel-inner) {
 								width: 2.6rem;
 								height: 2.6rem;
 								border-radius: 2.6rem;

@@ -40,7 +40,6 @@ class Post extends React.Component {
             tag: [],
             tagInput: '',
 			comment: [],
-			comment_author: '',
 			comment_body: '',
 			comment_changed: false,
 			upvotes: 0,
@@ -75,7 +74,7 @@ class Post extends React.Component {
 				}));
 			});
 		document.getElementById('articles_post').parentElement.style.height = 'initial';
-        this._handleMouseMove();
+		this._handleMouseMove();
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -133,27 +132,38 @@ class Post extends React.Component {
 	}
 	
 	handleSubmitComment() {
-        const { comment_author, comment_body } = this.state;
-		this.setState(state => ({
-			comment: [...state.comment, {author: comment_author, body: comment_body, date: moment().format()}],
-			comment_author: '',
-			comment_body: '',
-			comment_changed: true,
-		}));
+        if( localStorage.getItem('email') ){
+			const { comment_body } = this.state;
+			this.setState(state => ({
+				comment: [...state.comment, {author: localStorage.getItem('email'), body: comment_body, date: moment().format()}],
+				comment_body: '',
+				comment_changed: true,
+			}));
+		} else {
+			$('#exampleModal').modal('toggle');
+		}
 	}
 
 	handleSubmitupvotes() {
-		this.setState(state => ({
-			upvotes: state.upvotes+1,
-			upvotes_changed: true,
-		}));
+		if( localStorage.getItem('email') ){
+			this.setState(state => ({
+				upvotes: state.upvotes+1,
+				upvotes_changed: true,
+			}));
+		} else {
+			$('#exampleModal').modal('toggle');
+		}
 	}
 
 	handleSubmitdownvotes() {
-		this.setState(state => ({
-			downvotes: state.downvotes+1,
-			downvotes_changed: true,
-		}));
+		if( localStorage.getItem('email') ){
+			this.setState(state => ({
+				downvotes: state.downvotes+1,
+				downvotes_changed: true,
+			}));
+		} else {
+			$('#exampleModal').modal('toggle');
+		}
 	}
 
 	handleChangeField(key, event) {	
@@ -212,6 +222,21 @@ class Post extends React.Component {
             <FullPage scrollMode={'normal'}>
 				<Slide>
 					<section id='articles_post' className="active first_section_post">
+						
+						<div className="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+							<div className="modal-dialog" role="document">
+								<div className="modal-content">
+									<div className="modal-body">
+										<a title="Close" className="modal-close" data-dismiss="modal">Close</a>
+										<h5 className="modal-title" id="exampleModalLabel">Voilà!</h5>
+										<div>How about you joins us, not only you can give a feedback to the post you're reading, but you can discover much more about out community.</div>
+										<div><small>Here</small></div>
+										<a className="togglebtn">👉 Sign In If you don't have an Account</a>
+									</div>
+								</div>
+							</div>
+						</div>
+
 						<div className="wrapper_full">
 							<div className="shadow_title">{_.head(_.words(_.get(_.find(articles, {'_id': match.params.postId}), 'title')))}.</div>
 							<div className="shadow_letter">{this._FormatNumberLength(_.indexOf(_.orderBy(articles, ['createdAt'], ['asc']), _.find(articles, {'_id': match.params.postId}))+1, 2)}.</div>
@@ -246,20 +271,6 @@ class Post extends React.Component {
 											<div className="form-group-line textarea_line"></div>
 										</fieldset>
 										
-										<fieldset className="input-field form-group">
-											<input 
-												onChange={(ev) => this.handleChangeField('comment_author', ev)}
-												value={comment_author}
-												className="validate form-group-input comment_author" 
-												id="comment_author" 
-												type="text" 
-												name="comment_author"
-												required="required"
-											/>
-											<label htmlFor='comment_author'>@username</label>
-											<div className="form-group-line"></div>
-										</fieldset>
-
 										<button onClick={this.handleSubmitComment} className="btn btn-primary pull-right" type="submit">Leave a Comment</button>
 									
 									</div>
@@ -275,15 +286,17 @@ class Post extends React.Component {
 								</div>
 							</div>
 							<div id="social_media">
-								<a href="#" className="icon-button instagram"><i className="fab fa-instagram"></i><span></span></a>
-								<a href="#" className="icon-button facebook"><i className="icon-facebook"></i><span></span></a>
-								<a href="#" className="icon-button scroll">
-									<span className="scroll-icon">
-										<span className="scroll-icon__wheel-outer">
-											<span className="scroll-icon__wheel-inner"></span>
+								<div className="icons_gatherer">
+									<a href="#" className="icon-button instagram"><i className="fab fa-instagram"></i><span></span></a>
+									<a href="#" className="icon-button facebook"><i className="icon-facebook"></i><span></span></a>
+									<a href="#" className="icon-button scroll">
+										<span className="scroll-icon">
+											<span className="scroll-icon__wheel-outer">
+												<span className="scroll-icon__wheel-inner"></span>
+											</span>
 										</span>
-									</span>
-								</a>
+									</a>
+								</div>
 							</div>
 						</div>
 					</section>

@@ -42,7 +42,7 @@ class AccountForm extends React.Component {
     }
     _handleClickEvents() {
         /* login */
-        $(".accountFormHolder .togglebtn").click(function(){
+        $(".togglebtn").click(function(){
             $(".login").toggle(400);
             $('.overlay_menu').toggleClass('overlay_menu--is-closed');
         });
