@@ -50,6 +50,7 @@ class ArticleCard extends React.Component {
 						<br/>
 						<div className="comments_up_down">
 							<p className="text-muted comments"><b>{_.size(this.props.single_article.comment)}</b> <i className="fas fa-comment-alt"></i></p>
+							<p className="text-muted views"><b>{this.props.single_article.views}</b><i className="fas fa-eye"></i></p>
 							<p className="text-muted upvotes"><b>{this.props.single_article.upvotes}</b> <i className="fas fa-thumbs-up"></i></p>
 							<p className="text-muted downvotes"><b>{this.props.single_article.downvotes}</b> <i className="fas fa-thumbs-down"></i></p>
 						</div>
@@ -173,20 +174,20 @@ class Blog extends React.Component {
 					<section className="active first_section_blog">
 						<div className="wrapper_full">
 							<div id="box">
-								<h2>{_.get(_.head(_.orderBy(articles, ['createdAt'], ['asc'])), 'title')}</h2>
-								<p className="text-muted author">by <b>{_.get(_.head(_.orderBy(articles, ['createdAt'], ['asc'])), 'author')}</b>, {moment(new Date(_.get(_.head(_.orderBy(articles, ['createdAt'], ['desc'])), 'createdAt'))).fromNow()}</p>
+								<h2>{_.get(_.head(_.orderBy(articles, ['upvotes'], ['desc'])), 'title')}</h2>
+								<p className="text-muted author">by <b>{_.get(_.head(_.orderBy(articles, ['upvotes'], ['desc'])), 'author')}</b>, {moment(new Date(_.get(_.head(_.orderBy(articles, ['createdAt'], ['desc'])), 'createdAt'))).fromNow()}</p>
 								<h6 className="text-muted body body_article">
 									{
-										this.handleJSONTOHTML((_.get(_.head(_.orderBy(articles, ['createdAt'], ['asc'])), 'body')))
+										this.handleJSONTOHTML((_.get(_.head(_.orderBy(articles, ['upvotes'], ['desc'])), 'body')))
 									}
 								</h6>
 								<div className="comments_up_down">
-									<p className="text-muted comments"><b>{_.size(_.get(_.head(_.orderBy(articles, ['createdAt'], ['asc'])), 'comment'))}</b><i className="fas fa-comment-alt"></i></p>
-									<p className="text-muted upvotes"><b>{_.get(_.head(_.orderBy(articles, ['createdAt'], ['asc'])), 'upvotes')}</b><i className="fas fa-thumbs-up"></i></p>
-									<p className="text-muted downvotes"><b>{_.get(_.head(_.orderBy(articles, ['createdAt'], ['asc'])), 'downvotes')}</b><i className="fas fa-thumbs-down"></i></p>
+									<p className="text-muted comments"><b>{_.size(_.get(_.head(_.orderBy(articles, ['upvotes'], ['desc'])), 'comment'))}</b><i className="fas fa-comment-alt"></i></p>
+									<p className="text-muted views"><b>{_.size(_.get(_.head(_.orderBy(articles, ['upvotes'], ['desc'])), 'views'))}</b><i className="fas fa-eye"></i></p>
+									<p className="text-muted upvotes"><b>{_.get(_.head(_.orderBy(articles, ['upvotes'], ['desc'])), 'upvotes')}</b><i className="fas fa-thumbs-up"></i></p>
+									<p className="text-muted downvotes"><b>{_.get(_.head(_.orderBy(articles, ['upvotes'], ['desc'])), 'downvotes')}</b><i className="fas fa-thumbs-down"></i></p>
 								</div>
-
-								<Link to={`${match.url}/${_.get(_.head(_.orderBy(articles, ['createdAt'], ['asc'])), '_id')}`}>
+								<Link to={`${match.url}/${_.get(_.head(_.orderBy(articles, ['upvotes'], ['desc'])), '_id')}`}>
 									<div className="readmore">
 										<button data-am-linearrow="tooltip tooltip-bottom" display-name="Read More">
 											<div className="line line-1"></div>
@@ -194,7 +195,6 @@ class Blog extends React.Component {
 										</button>
 									</div>
 								</Link>
-
 							</div>
 							<div id="social_media">
 								<a href="#" className="icon-button instagram"><i className="fab fa-instagram"></i><span></span></a>

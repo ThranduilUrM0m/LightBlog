@@ -16,6 +16,7 @@ const ArticlesSchema = new Schema({
   }],
   upvotes: Number,
   downvotes: Number,
+  views: Number,
 }, { timestamps: true });
 
 ArticlesSchema.methods.toJSON = function() {
@@ -28,6 +29,7 @@ ArticlesSchema.methods.toJSON = function() {
     comment: this.comment,
     upvotes: this.upvotes,
     downvotes: this.downvotes,
+    views: this.views,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
   };

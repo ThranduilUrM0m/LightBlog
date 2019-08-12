@@ -15,6 +15,7 @@ class Form extends React.Component {
             comment: [],
             upvotes: 0,
             downvotes: 0,
+            views: 0,
         }
 
         this.handleChangeField = this.handleChangeField.bind(this) 
@@ -73,12 +74,13 @@ class Form extends React.Component {
                 comment: nextProps.articleToEdit.comment,
                 upvotes: nextProps.articleToEdit.upvotes,
                 downvotes: nextProps.articleToEdit.downvotes,
+                views: nextProps.articleToEdit.views,
             });
         }
     }
     handleSubmit(){
         const { onSubmit, articleToEdit, onEdit } = this.props;
-        const { title, body, author, tag, tagInput, comment, upvotes, downvotes } = this.state;
+        const { title, body, author, tag, tagInput, comment, upvotes, downvotes, views } = this.state;
         const self = this;
         if(!articleToEdit) {
             return axios.post('http://localhost:8000/api/articles', {
@@ -89,6 +91,7 @@ class Form extends React.Component {
                 comment,
                 upvotes,
                 downvotes,
+                views
             })
                 .then((res) => onSubmit(res.data))
                 .then(function() {
@@ -103,6 +106,7 @@ class Form extends React.Component {
                         comment: [],
                         upvotes: 0,
                         downvotes: 0,
+                        views: 0,
                     })
                 });
         } else {
@@ -114,6 +118,7 @@ class Form extends React.Component {
                 comment,
                 upvotes,
                 downvotes,
+                views,
             })
                 .then((res) => onEdit(res.data))
                 .then(function() {
@@ -128,6 +133,7 @@ class Form extends React.Component {
                         comment: [],
                         upvotes: 0,
                         downvotes: 0,
+                        views: 0,
                     })
                 });
         }

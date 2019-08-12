@@ -1,20 +1,26 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import logo from '../../../resources/media/logo.svg';
+import API from '../../utils/API';
 const _ = require('lodash');
 
-import { Link } from 'react-router-dom';
-
-class Header extends React.Component {
+class AccountForm extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            login_email : "",
+            login_password: "",
+            signup_email: "",
+            signup_password: "",
+            confirm_signup_password: ""
+        }
         this._handleClickEvents = this._handleClickEvents.bind(this);
-        this._handleTap = this._handleTap.bind(this);
-        this._handleScroll = this._handleScroll.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.send_login = this.send_login.bind(this);
+        this.send_signup = this.send_signup.bind(this);
     }
     componentDidMount() {
         this._handleClickEvents();
-        this._handleTap();
-        this._handleScroll();
         $(".login").hide();
         const loginBtn =  document.querySelector('#login_toggle');
         const signupBtn = document.querySelector('#signup_toggle');
@@ -35,6 +41,252 @@ class Header extends React.Component {
         signupBtn.addEventListener('click', slideUp);
     }
     _handleClickEvents() {
+        /* login */
+        $(".accountFormHolder .togglebtn").click(function(){
+            $(".login").toggle(400);
+            $('.overlay_menu').toggleClass('overlay_menu--is-closed');
+        });
+    }
+    send_login(event) {
+        if(this.state.email.length === 0){
+            return;
+        }
+        if(this.state.password.length === 0){
+            return;
+        }
+        API.login(this.state.email, this.state.password).then(function(data){
+            localStorage.setItem('token', data.data.token);
+            localStorage.setItem('email', data.data.email);
+        },function(error){
+            console.log(error);
+            return;
+        })
+    }
+    send_signup(event) {
+        if(this.state.signup_email.length === 0){
+            return;
+        }
+        if(this.state.signup_password.length === 0 || this.state.signup_password !== this.state.confirm_signup_password){
+            return;
+        }
+        var _send = {
+            signup_email: this.state.signup_email,
+            signup_password: this.state.signup_password
+        }
+        API.signup(_send).then(function(data){
+            localStorage.setItem('token', data.data.token);
+            localStorage.setItem('email', data.data.email);
+        },function(error){
+            console.log(error);
+            return;
+        })
+    }
+    handleChange(event) {
+        this.setState({
+            [event.target.id]: event.target.value
+        });
+    }
+    render() {
+        return (
+            <div href="#" className="icon-button accountFormHolder">
+                <i className="far fa-user togglebtn"></i>
+                <span className="hover_effect"></span>
+                <div className="login form-structor">
+                    <div className="signup_form slide-up">
+
+                        <div className="form-title" id="signup_toggle">
+                            <a className="question_signup" href="#" title="">Don't have an account yet?</a>
+                            <a className="title_signup" href="#" title="">Sign Up</a>
+                        </div>
+
+                        <div className="form-holder">
+
+                            <div className='row'>
+                                <div className='input-field col s12'>
+                                    <input 
+                                    className='validate form-group-input' 
+                                    type='email' 
+                                    name='email' 
+                                    id='signup_email' 
+                                    required="required"
+                                    value={this.state.email_signup} 
+                                    onChange={this.handleChange}
+                                    />
+                                    <label htmlFor='signup_email'>@email</label>
+                                    <div className="form-group-line"></div>
+                                </div>
+                            </div>
+                            
+                            <div className='row'>
+                                <div className='input-field col s12'>
+                                    <input 
+                                    className='validate form-group-input' 
+                                    type='password' 
+                                    name='password' 
+                                    id='signup_password' 
+                                    required="required" 
+                                    value={this.state.password_signup} 
+                                    onChange={this.handleChange}
+                                    />
+                                    <label htmlFor='signup_password'>Password</label>
+                                    <div className="form-group-line"></div>
+                                </div>
+                            </div>
+
+                            <div className='row'>
+                                <div className='input-field col s12'>
+                                    <input 
+                                    className='validate form-group-input' 
+                                    type='password' 
+                                    name='confirm_password' 
+                                    id='confirm_signup_password' 
+                                    required="required" 
+                                    value={this.state.confirm_password_signup} 
+                                    onChange={this.handleChange}
+                                    />
+                                    <label htmlFor='confirm_signup_password'>Confirm Password</label>
+                                    <div className="form-group-line"></div>
+                                </div>
+                            </div>
+
+                            <section className="center">
+                                <div className='row'>
+                                    <button 
+                                    type='submit' 
+                                    name='btn_login' 
+                                    className='col s12 btn btn-large waves-effect login'
+                                    onClick={this.send_signup}
+                                    >
+                                        Signup
+                                    </button>
+                                </div>
+                            </section>
+
+                        </div>
+                    </div>
+                    <div className="login_form">
+                        <div className="form-title" id="login_toggle">
+                            <a className="title_login" href="#" title="">Log in</a>
+                            <a className="question_login" href="#" title="">Already have an account?</a>
+                        </div>
+                        <div className="form-holder">
+                            
+                            <div className='row'>
+                                <div className='input-field col s12'>
+                                    <input 
+                                    className='validate form-group-input' 
+                                    type='email' 
+                                    name='email' 
+                                    id='login_email' 
+                                    required="required"
+                                    value={this.state.email} 
+                                    onChange={this.handleChange}
+                                    />
+                                    <label htmlFor='login_email'>@email</label>
+                                    <div className="form-group-line"></div>
+                                </div>
+                            </div>
+
+                            <div className='row'>
+                                <div className='input-field col s12'>
+                                    <input 
+                                    className='validate form-group-input' 
+                                    type='password' 
+                                    name='password' 
+                                    id='login_password' 
+                                    required="required" 
+                                    value={this.state.password} 
+                                    onChange={this.handleChange}
+                                    />
+                                    <label htmlFor='login_password'>Password</label>
+                                    <div className="form-group-line"></div>
+                                </div>
+                            </div>
+
+                            <label>
+                                <input type="checkbox"/>Remember me
+                            </label>
+
+                            <section className="center">
+                                <div className='row'>
+                                    <button 
+                                    type='submit' 
+                                    name='btn_login' 
+                                    className='col s12 btn btn-large waves-effect login'
+                                    onClick={this.send_login}
+                                    >
+                                        Login
+                                    </button>
+                                </div>
+                            </section>
+
+                            <a href="#" title="">Forgot your password?</a>
+                        
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+}
+class AccountProfil extends React.Component {
+    constructor(props) {
+        super(props);
+        this.disconnect = this.disconnect.bind(this);
+    }
+    componentDidMount() {
+        var menuButton = document.querySelector(".menu_button");
+
+        menuButton.addEventListener("click", function(event) {
+            event.preventDefault();
+            var parent = document.querySelector(".accountProfilHolder");
+            if (parent.classList.contains("open")) {
+                parent.classList.remove("open");
+            } else {
+                parent.classList.add("open");
+            }
+        });
+    }
+    disconnect() {
+        API.logout();
+    }
+    render() {
+        return (
+            <div href="#" className="icon-button accountProfilHolder">
+                <div className='menu_button'>
+                    <span className="hover_effect"></span>
+                    <i className="far fa-user togglebtn"></i>
+                    <span className="title">Henry Smith</span>
+                </div>
+                <div className="menu-dropdown">
+                    <div className="content">
+                        <ul>
+                            <li>{ localStorage.getItem('email') }</li>
+                            <li><a href=""><i className="far fa-envelope"></i>Messages</a></li>
+                            <li><a href=""><i className="far fa-user"></i>Account</a></li>
+                            <li><a href=""><i className="fas fa-cog"></i>Settings</a></li>
+                            <li><a href="" onClick={this.disconnect}><i className="fas fa-sign-out-alt"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+}
+
+class Header extends React.Component {
+    constructor(props) {
+        super(props);
+        this._handleClickEvents = this._handleClickEvents.bind(this);
+        this._handleTap = this._handleTap.bind(this);
+        this._handleScroll = this._handleScroll.bind(this);
+    }
+    componentDidMount() {
+        this._handleClickEvents();
+        this._handleTap();
+        this._handleScroll();
+    }
+    _handleClickEvents() {
         /* menu */
         $('.navToggle').click(function(event) {
             $('.navToggle').toggleClass('active');
@@ -49,12 +301,6 @@ class Header extends React.Component {
             $('.overlay_menu').toggleClass('overlay_menu--is-closed');
             $(this).addClass('active');
             $('.nav-link').not(this).removeClass('active');
-        });
-
-        /* login */
-        $(".togglebtn").click(function(){
-            $(".login").toggle(400);
-            $('.overlay_menu').toggleClass('overlay_menu--is-closed');
         });
 
         /* outside the login or menu */
@@ -154,89 +400,9 @@ class Header extends React.Component {
                                     <div className='search'></div>
                                 </div>
                             </form>
-                            <div href="#" className="icon-button accountHolder">
-                                <i className="far fa-user togglebtn"></i>
-                                <span className="hover_effect"></span>
-                                <div className="login form-structor">
-                                    <div className="signup_form slide-up">
-        
-                                        <div className="form-title" id="signup_toggle">
-                                            <a className="question_signup" href="#" title="">Don't have an account yet?</a>
-                                            <a className="title_signup" href="#" title="">Sign Up</a>
-                                        </div>
-        
-                                        <form className="form-holder">
-        
-                                            <div className='row'>
-                                                <div className='input-field col s12'>
-                                                    <input className='validate form-group-input' type='text' name='name' id='signup_name' required="required"/>
-                                                    <label htmlFor='signup_name'>Joe Doe</label>
-                                                    <div className="form-group-line"></div>
-                                                </div>
-                                            </div>
-        
-                                            <div className='row'>
-                                                <div className='input-field col s12'>
-                                                    <input className='validate form-group-input' type='email' name='email' id='signup_email' required="required"/>
-                                                    <label htmlFor='signup_email'>@email</label>
-                                                    <div className="form-group-line"></div>
-                                                </div>
-                                            </div>
-                                            
-                                            <div className='row'>
-                                                <div className='input-field col s12'>
-                                                    <input className='validate form-group-input' type='password' name='password' id='signup_password' required="required" />
-                                                    <label htmlFor='signup_password'>Password</label>
-                                                    <div className="form-group-line"></div>
-                                                </div>
-                                            </div>
-        
-                                            <section className="center">
-                                                <div className='row'>
-                                                    <button type='submit' name='btn_login' className='col s12 btn btn-large waves-effect login'>Signup</button>
-                                                </div>
-                                            </section>
-        
-                                        </form>
-                                    </div>
-                                    <div className="login_form">
-                                        <div className="form-title" id="login_toggle">
-                                            <a className="title_login" href="#" title="">Log in</a>
-                                            <a className="question_login" href="#" title="">Already have an account?</a>
-                                        </div>
-                                        <form className="form-holder">
-                                            
-                                            <div className='row'>
-                                                <div className='input-field col s12'>
-                                                    <input className='validate form-group-input' type='email' name='email' id='login_email' required="required" />
-                                                    <label htmlFor='login_email'>@email</label>
-                                                    <div className="form-group-line"></div>
-                                                </div>
-                                            </div>
-        
-                                            <div className='row'>
-                                                <div className='input-field col s12'>
-                                                    <input className='validate form-group-input' type='password' name='password' id='login_password' required="required" />
-                                                    <label htmlFor='login_password'>Password</label>
-                                                    <div className="form-group-line"></div>
-                                                </div>
-                                            </div>
-        
-                                            <label>
-                                                <input type="checkbox"/>Remember me
-                                            </label>
-        
-                                            <section className="center">
-                                                <div className='row'>
-                                                    <button type='submit' name='btn_login' className='col s12 btn btn-large waves-effect login'>Login</button>
-                                                </div>
-                                            </section>
-        
-                                            <a href="#" title="">Forgot your password?</a>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
+                            {
+                                localStorage.getItem('token') ? <AccountProfil/> : <AccountForm/>
+                            }
                         </header>
                     </div>
                 </div>
