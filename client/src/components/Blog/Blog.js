@@ -39,7 +39,7 @@ class ArticleCard extends React.Component {
 	}
 	render() {
 		return (
-			<li className="article_card row">
+			<li className="article_card article_anchor row" data-name={ moment(this.props.single_article.createdAt).format("YYYY Do MM") }>
 				<div className={"col card card_" + this.props.single_article.index} data-title={_.snakeCase(this.props.single_article.title)} data-index={_.add(this.props.single_article.index,1)}>
 					<div className="shadow_title">{_.head(_.words(this.props.single_article.title))}</div>
 					<div className="shadow_letter">{_.head(_.head(_.words(this.props.single_article.title)))}</div>
@@ -58,7 +58,7 @@ class ArticleCard extends React.Component {
 							{
 								this.props.single_article.tag.map((t, i) => {
 									return (
-										<li class="tag_item">{t}</li>
+										<li className="tag_item">{t}</li>
 									)
 								})
 							}
@@ -90,7 +90,7 @@ class ArticleCards extends React.Component {
 	render () {
 		return (
 			<div className="data-container">
-				<ul>
+				<ul className="articles_list">
 					{
 						_.orderBy(this.props.articles_props, ['createdAt'], ['desc']).map((article, index) => {
 							return (
@@ -110,6 +110,7 @@ class Blog extends React.Component {
 		this.handleDelete = this.handleDelete.bind(this);
 		this.handleEdit = this.handleEdit.bind(this);
 		this.handleJSONTOHTML = this.handleJSONTOHTML.bind(this);
+		this._handleTimeLine = this._handleTimeLine.bind(this);
 	}
 	componentDidMount() {
         const {onLoad} = this.props;
@@ -132,6 +133,8 @@ class Blog extends React.Component {
 				});
 			});
 		document.getElementById('articles_blog').parentElement.style.height = 'initial';
+
+		this._handleTimeLine();
 	}
 	handleDelete(id) {
 		const { onDelete } = this.props;
@@ -163,6 +166,125 @@ class Blog extends React.Component {
 					"top": randomIntFromInterval(-50, 50)+"%"
 				});;
 			});
+		});
+	}
+	_handleTimeLine() {
+		function sticky_relocate_left() {
+			var window_top = $(window).scrollTop();
+			var div_top = $('#articles_blog').offset().top;
+			if (window_top > div_top) {
+				$('#pagination-demo1').addClass('mobile-sticky');
+			} else {
+				$('#pagination-demo1').removeClass('mobile-sticky');
+			}
+		}
+
+		function sumSection(){
+			return $(".timeline").height();
+		}
+
+		function setDimensionBar(){
+			let _height = ($('.timeline').height() * $('.article_anchor').height()) / $('.articles_list').height();
+			$(".bar").css({
+			  "height": _height + "px"
+			})
+		}
+		
+		function addBehaviours(){
+			let sections = $(".article_anchor");
+			$.each($(".node"), function(i, element){
+				$(element).on("click", function(e){
+					e.preventDefault();
+					let scroll = $(sections[i]).offsetRelative(".articles_list").top;
+					$('html, body').animate({
+						scrollTop: scroll
+					}, 500);
+				})
+			})
+		}
+		
+		(function($){
+			$.fn.offsetRelative = function(top){
+				var $this = $(this);
+				var $parent = $this.offsetParent();
+				var offset = $this.position();
+				if(!top) return offset; // Didn't pass a 'top' element 
+				else if($parent.get(0).tagName == "BODY") return offset; // Reached top of document
+				else if($(top,$parent).length) return offset; // Parent element contains the 'top' element we want the offset to be relative to 
+				else if($parent[0] == $(top)[0]) return offset; // Reached the 'top' element we want the offset to be relative to 
+				else { // Get parent's relative offset
+					var parent_offset = $parent.offsetRelative(top);
+					offset.top += parent_offset.top;
+					offset.left += parent_offset.left;
+					return offset;
+				}
+			};
+			$.fn.positionRelative = function(top){
+				return $(this).offsetRelative(top);
+			};
+		}(jQuery));
+
+		function arrangeNodes(){
+			//$(".node").remove();
+			$.each($(".article_anchor"), function(i, element){
+				let name = $(element).data("name");
+				let node = $("<li class='node'><span>"+name+"</span></li>");
+				$(".timeline").append(node);
+				let _top = ($(".timeline").height()/$(".articles_list").height()) * $(element).offsetRelative(".articles_list").top;
+				$(node).css({
+					"top": _top
+				})
+			})
+			addBehaviours();
+		}
+		
+		function runAfterElementExists(jquery_selector, callback){
+			var checker = window.setInterval(function() {
+			if (jquery_selector) {
+				clearInterval(checker);
+				callback();
+			}}, 200);
+		}
+
+		runAfterElementExists('.article_anchor', function() {
+			console.log('Running 1');
+			$(window).on("scroll", function(){
+				var window_top = $(window).scrollTop();
+				var div_top = $('#articles_blog').offset().top;
+				
+				if (window_top > div_top) {
+
+					let _top = window.scrollY - $('.first_section_blog').parent().height();
+					let _top_given = ($('.timeline').height() * _top) / $('.second_section_blog').height();
+
+					let _where_it_is = ($('#pagination-demo1').offset().top - $('.first_section_blog').parent().height());
+					let _where_to_stop = $('.second_section_blog').height() - $('.timeline').height();
+
+					if(_where_it_is < _where_to_stop) {
+						$(".timeline").css({
+							"top": ($('#pagination-demo1').offset().top - $('.first_section_blog').parent().height()) + "px"
+						});
+						$(".bar").css({
+							"top": _top_given + "px"
+						});
+					}
+
+				}
+			});
+			console.log('Running 2');
+			$(window).on("resize", function(){
+				arrangeNodes()
+				setDimensionBar()
+			});
+			console.log('Running 3');
+			$(window).scroll(sticky_relocate_left);
+			console.log('Running 4');
+			arrangeNodes();
+			console.log('Running 5');
+			setDimensionBar();
+			console.log('Running 6');
+			sticky_relocate_left();
+			console.log('Running 7');
 		});
 	}
 	render() {
@@ -214,6 +336,9 @@ class Blog extends React.Component {
 				</Slide>
 				<Slide>
 					<section id='articles_blog' className="second_section_blog">
+						<ul className="timeline">
+							<li className="bar"></li>
+						</ul>
         				<ArticleCards url={match.url} articles_props={articles}/>
 						<div id="pagination-demo1"></div>
 					</section>

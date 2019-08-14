@@ -2726,10 +2726,79 @@ body, html {
 			&::-webkit-scrollbar-thumb {
 				background: $color1Faded;
 			}
+			.mobile-sticky {
+				position: fixed !important;
+				top: 6.5rem !important;
+			}
+			.timeline {
+				margin: 0;
+				padding: 0;
+				list-style: none;
+				position: absolute;
+				top: 6rem;
+				left: 2.6rem;
+				width: 0.15rem;
+				height: 20%;
+				background: #d1f0ff;
+				z-index: 19;
+				.bar {
+					position: absolute;
+					width: 0.5rem;
+					background-color: #d1f0ff;
+					top: 0;
+					transform: translateX(-50%);
+					left: 50%;
+					z-index: 0;
+				}
+				.node {
+					position: absolute;
+					width: 0.5rem;
+					height: 0.75rem;
+					background: #d1f0ff;
+					z-index: 1;
+					cursor: pointer;
+					transform: translateX(-50%);
+					left: 50%;
+					transition: all .4s ease-out;
+					&:hover{
+						background: darken($color: #d1f0ff, $amount: 10);
+						span{
+							opacity: 1;
+						}
+					}
+					&:before{
+						content: "";
+						position: absolute;
+						width: 0.5rem;
+						height: 0.75rem;
+						transform: translateX(-50%) scale(1.5);
+						left: 50%;
+					}
+					span {
+						transition: all .4s ease-out;
+						text-transform: uppercase;
+						left: 50%;
+						top: 50%;
+						transform: translateY(-50%);
+						color: black;
+						background-color: white;
+						filter: drop-shadow(2px 2px 10px rgba(0, 0, 0, 0.2));
+    					-webkit-filter: drop-shadow(2px 2px 10px rgba(0, 0, 0, 0.2));
+						position: absolute;
+						padding: 0.5rem;
+						white-space: nowrap;
+						font-size: x-small;
+						font-weight: 200;
+						opacity: 0;
+						z-index: 20;
+					}
+				}
+			}
 			.data-container {
 				width: 100%;
 				ul {
-					margin-top: 1rem;
+					display: flex;
+					flex-direction: column;
 					.article_card{
 						position: relative;
 						display: flex;
@@ -2793,6 +2862,7 @@ body, html {
 								.tags {
 									margin-bottom: 0 !important;
 									display: flex;
+									flex-direction: inherit;
 									align-items: center;
 									margin-top: 0.5rem;
 									li {
@@ -3016,8 +3086,7 @@ body, html {
 				position: absolute;
 				width: 2.6rem;
 				right: calc(0.5rem + 5px);
-				top: 0;
-				transform: translate(0, 50%);
+				top: 6rem;
 				ul {
 					display: flex;
 					flex-direction: column;
