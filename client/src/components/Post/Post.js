@@ -6,6 +6,7 @@ import { FullPage, Slide } from 'react-full-page';
 import { Link } from 'react-router-dom';
 import 'whatwg-fetch';
 import { pagination } from 'paginationjs';
+import Fingerprint from 'fingerprintjs';
 import Footer from '../Footer/Footer';
 
 var _ = require('lodash');
@@ -42,10 +43,12 @@ class Post extends React.Component {
 			comment: [],
 			comment_body: '',
 			comment_changed: false,
-			upvotes: 0,
+			upvotes: [],
 			upvotes_changed: false,
-			downvotes: 0,
+			downvotes: [],
 			downvotes_changed: false,
+			view: [],
+			view_changed: false,
 		}
 		
 		this.handleDelete = this.handleDelete.bind(this);
@@ -55,6 +58,7 @@ class Post extends React.Component {
 		this.handleSubmitComment = this.handleSubmitComment.bind(this);
 		this.handleSubmitupvotes = this.handleSubmitupvotes.bind(this);
 		this.handleSubmitdownvotes = this.handleSubmitdownvotes.bind(this);
+		this.handleSubmitviews = this.handleSubmitviews.bind(this);
 		
 		this.handleJSONTOHTML = this.handleJSONTOHTML.bind(this);
 		this._FormatNumberLength = this._FormatNumberLength.bind(this);
@@ -64,11 +68,12 @@ class Post extends React.Component {
 	componentDidMount() {
         const { onLoad } = this.props;
 		const { match } = this.props;
-		
+
 		axios('http://localhost:8000/api/articles')
 			.then((res) => onLoad(res.data))
 			.then((res) => {
 				this.handleEdit(_.find(res.data.articles, {'_id': match.params.postId}));
+				this.handleSubmitviews();
 				this.setState(state => ({
 					_id: match.params.postId
 				}));
@@ -86,10 +91,10 @@ class Post extends React.Component {
                 tag: nextProps.articleToEdit.tag,
                 tagInput: nextProps.articleToEdit.tagInput,
 				comment: nextProps.articleToEdit.comment,
-				comment_author: nextProps.articleToEdit.comment_author,
 				comment_body: nextProps.articleToEdit.comment_body,
                 upvotes: nextProps.articleToEdit.upvotes,
                 downvotes: nextProps.articleToEdit.downvotes,
+				view: nextProps.articleToEdit.view,
             });
         }
 	}
@@ -107,27 +112,31 @@ class Post extends React.Component {
 	
 	componentDidUpdate () {
 		const { onEdit } = this.props;
-		const { _id, title, body, author, tag, comment, upvotes, downvotes } = this.state;
+		const { _id, title, body, author, tag, comment, upvotes, downvotes, view } = this.state;
 		const self = this;
 		
-		if(this.state.comment_changed || this.state.upvotes_changed || this.state.downvotes_changed){
-			return axios.patch(`http://localhost:8000/api/articles/${_id}`, {
-				title,
-				body,
-				author,
-				tag,
-				comment,
-				upvotes,
-				downvotes,
-			})
-				.then((res) => onEdit(res.data))
-				.then(function() {
-                    self.setState({ 
-						comment_changed: false,
-						upvotes_changed: false,
-						downvotes_changed: false,
-                    })
-                });
+		if(_id) {
+			if(this.state.comment_changed || this.state.upvotes_changed || this.state.downvotes_changed || this.state.view_changed){
+				return axios.patch(`http://localhost:8000/api/articles/${_id}`, {
+					title,
+					body,
+					author,
+					tag,
+					comment,
+					upvotes,
+					downvotes,
+					view,
+				})
+					.then((res) => onEdit(res.data))
+					.then(function() {
+						self.setState({ 
+							comment_changed: false,
+							upvotes_changed: false,
+							downvotes_changed: false,
+							view_changed: false,
+						})
+					});
+			}
 		}
 	}
 	
@@ -146,10 +155,34 @@ class Post extends React.Component {
 
 	handleSubmitupvotes() {
 		if( localStorage.getItem('email') ){
-			this.setState(state => ({
-				upvotes: state.upvotes+1,
-				upvotes_changed: true,
-			}));
+			if( _.isUndefined(_.find(this.state.upvotes, {'upvoter': localStorage.getItem('email')})) ) {
+				
+				this.setState(state => ({
+					upvotes: [...state.upvotes, {upvoter: localStorage.getItem('email')}],
+					upvotes_changed: true,
+				}));
+
+				if( !_.isUndefined(_.find(this.state.downvotes, {'downvoter': localStorage.getItem('email')})) ) {
+					let _new_downvote = _.takeWhile(this.state.downvotes, function(o) { return o.downvoter != localStorage.getItem('email'); });
+					this.setState(state => ({
+						downvotes: _new_downvote,
+						downvotes_changed: true,
+					}));
+					$('p.downvotes').removeClass('active');
+				}
+
+				$('p.upvotes').addClass('active');
+
+			} else {
+
+				let _new_upvote = _.takeWhile(this.state.upvotes, function(o) { return o.upvoter != localStorage.getItem('email'); });
+				this.setState(state => ({
+					upvotes: _new_upvote,
+					upvotes_changed: true,
+				}));
+				$('p.upvotes').removeClass('active');
+
+			}
 		} else {
 			$('#exampleModal').modal('toggle');
 		}
@@ -157,12 +190,57 @@ class Post extends React.Component {
 
 	handleSubmitdownvotes() {
 		if( localStorage.getItem('email') ){
-			this.setState(state => ({
-				downvotes: state.downvotes+1,
-				downvotes_changed: true,
-			}));
+			if( _.isUndefined(_.find(this.state.downvotes, {'downvoter': localStorage.getItem('email')})) ) {
+				
+				this.setState(state => ({
+					downvotes: [...state.downvotes, {downvoter: localStorage.getItem('email')}],
+					downvotes_changed: true,
+				}));
+
+				if( !_.isUndefined(_.find(this.state.upvotes, {'upvoter': localStorage.getItem('email')})) ) {
+					let _new_upvote = _.takeWhile(this.state.upvotes, function(o) { return o.upvoter != localStorage.getItem('email'); });
+					this.setState(state => ({
+						upvotes: _new_upvote,
+						upvotes_changed: true,
+					}));
+					$('p.upvotes').removeClass('active');
+				}
+
+				$('p.downvotes').addClass('active');
+
+			} else {
+
+				let _new_downvote = _.takeWhile(this.state.downvotes, function(o) { return o.downvoter != localStorage.getItem('email'); });
+				this.setState(state => ({
+					downvotes: _new_downvote,
+					downvotes_changed: true,
+				}));
+				$('p.downvotes').removeClass('active');
+
+			}
+
 		} else {
 			$('#exampleModal').modal('toggle');
+		}
+	}
+
+	handleSubmitviews() {
+		var fingerprint = new Fingerprint().get();
+		if(_.isUndefined(_.find(this.state.view, {'viewer': fingerprint.toString()}))) {
+			this.setState(state => ({
+				view: [...state.view, {viewer: fingerprint, _yes_or_no: true}],
+				view_changed: true,
+			}));
+		}
+
+		//look for downvotes nd upvotes
+		if( localStorage.getItem('email') ) {
+			if( !_.isUndefined(_.find(this.state.upvotes, {'upvoter': localStorage.getItem('email')})) ) {
+				$('p.upvotes').addClass('active');
+			}
+			if( !_.isUndefined(_.find(this.state.downvotes, {'downvoter': localStorage.getItem('email')})) ) {
+				$('p.downvotes').addClass('active');
+			}
 		}
 	}
 
@@ -216,14 +294,14 @@ class Post extends React.Component {
     render() {
 		const { articles, articleToEdit } = this.props;
         const { match } = this.props;
-		const { title, body, author, tag, comment, comment_author, comment_body, upvotes, downvotes } = this.state;
+		const { title, body, author, tag, comment, comment_author, comment_body, upvotes, downvotes, view } = this.state;
 		
 		return (
             <FullPage scrollMode={'normal'}>
 				<Slide>
 					<section id='articles_post' className="active first_section_post">
 						
-						<div className="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+						<div className="modal fade" id="exampleModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 							<div className="modal-dialog" role="document">
 								<div className="modal-content">
 									<div className="modal-body">
@@ -249,9 +327,10 @@ class Post extends React.Component {
 									}
 								</h6>
 								<div className="comments_up_down">
+									<p className="text-muted views"><b>{_.size(_.get(_.find(articles, {'_id': match.params.postId}), 'view'))}</b><i className="fas fa-eye"></i></p>
 									<p className="text-muted comments"><b>{_.size(_.get(_.find(articles, {'_id': match.params.postId}), 'comment'))}</b> <a href="#comments-modal"><i className="fas fa-comment-alt"></i></a> </p>
-									<p className="text-muted upvotes"><b>{_.get(_.find(articles, {'_id': match.params.postId}), 'upvotes')}</b> <button onClick={this.handleSubmitupvotes}><i className="fas fa-thumbs-up"></i></button> </p>
-									<p className="text-muted downvotes"><b>{_.get(_.find(articles, {'_id': match.params.postId}), 'downvotes')}</b> <button onClick={this.handleSubmitdownvotes}><i className="fas fa-thumbs-down"></i></button> </p>
+									<p className="text-muted upvotes"><b>{_.size(_.get(_.find(articles, {'_id': match.params.postId}), 'upvotes'))}</b> <button onClick={this.handleSubmitupvotes}><i className="fas fa-thumbs-up"></i></button> </p>
+									<p className="text-muted downvotes"><b>{_.size(_.get(_.find(articles, {'_id': match.params.postId}), 'downvotes'))}</b> <button onClick={this.handleSubmitdownvotes}><i className="fas fa-thumbs-down"></i></button> </p>
 								</div>
 							</div>
 							<div className="comment-modal">
@@ -299,6 +378,7 @@ class Post extends React.Component {
 								</div>
 							</div>
 						</div>
+					
 					</section>
 				</Slide>
 				<Slide>
@@ -308,7 +388,6 @@ class Post extends React.Component {
         )
     }
 }
-
 
 const mapStateToProps = state => ({
 	articles: state.home.articles,

@@ -49,10 +49,10 @@ class ArticleCard extends React.Component {
 						<ReadMoreLink readmore_link={`${this.props.url}/${this.props.single_article._id}`}/>
 						<br/>
 						<div className="comments_up_down">
+							<p className="text-muted views"><b>{_.size(this.props.single_article.view)}</b><i className="fas fa-eye"></i></p>
 							<p className="text-muted comments"><b>{_.size(this.props.single_article.comment)}</b> <i className="fas fa-comment-alt"></i></p>
-							<p className="text-muted views"><b>{this.props.single_article.views}</b><i className="fas fa-eye"></i></p>
-							<p className="text-muted upvotes"><b>{this.props.single_article.upvotes}</b> <i className="fas fa-thumbs-up"></i></p>
-							<p className="text-muted downvotes"><b>{this.props.single_article.downvotes}</b> <i className="fas fa-thumbs-down"></i></p>
+							<p className="text-muted upvotes"><b>{_.size(this.props.single_article.upvotes)}</b> <i className="fas fa-thumbs-up"></i></p>
+							<p className="text-muted downvotes"><b>{_.size(this.props.single_article.downvotes)}</b> <i className="fas fa-thumbs-down"></i></p>
 						</div>
 						<ul className="text-muted tags">
 							{
@@ -247,7 +247,6 @@ class Blog extends React.Component {
 		}
 
 		runAfterElementExists('.article_anchor', function() {
-			console.log('Running 1');
 			$(window).on("scroll", function(){
 				var window_top = $(window).scrollTop();
 				var div_top = $('#articles_blog').offset().top;
@@ -271,20 +270,14 @@ class Blog extends React.Component {
 
 				}
 			});
-			console.log('Running 2');
 			$(window).on("resize", function(){
 				arrangeNodes()
 				setDimensionBar()
 			});
-			console.log('Running 3');
 			$(window).scroll(sticky_relocate_left);
-			console.log('Running 4');
 			arrangeNodes();
-			console.log('Running 5');
 			setDimensionBar();
-			console.log('Running 6');
 			sticky_relocate_left();
-			console.log('Running 7');
 		});
 	}
 	render() {
@@ -304,10 +297,10 @@ class Blog extends React.Component {
 									}
 								</h6>
 								<div className="comments_up_down">
+									<p className="text-muted views"><b>{_.size(_.get(_.head(_.orderBy(articles, ['upvotes'], ['desc'])), 'view'))}</b><i className="fas fa-eye"></i></p>
 									<p className="text-muted comments"><b>{_.size(_.get(_.head(_.orderBy(articles, ['upvotes'], ['desc'])), 'comment'))}</b><i className="fas fa-comment-alt"></i></p>
-									<p className="text-muted views"><b>{_.size(_.get(_.head(_.orderBy(articles, ['upvotes'], ['desc'])), 'views'))}</b><i className="fas fa-eye"></i></p>
-									<p className="text-muted upvotes"><b>{_.get(_.head(_.orderBy(articles, ['upvotes'], ['desc'])), 'upvotes')}</b><i className="fas fa-thumbs-up"></i></p>
-									<p className="text-muted downvotes"><b>{_.get(_.head(_.orderBy(articles, ['upvotes'], ['desc'])), 'downvotes')}</b><i className="fas fa-thumbs-down"></i></p>
+									<p className="text-muted upvotes"><b>{_.size(_.get(_.head(_.orderBy(articles, ['upvotes'], ['desc'])), 'upvotes'))}</b><i className="fas fa-thumbs-up"></i></p>
+									<p className="text-muted downvotes"><b>{_.size(_.get(_.head(_.orderBy(articles, ['upvotes'], ['desc'])), 'downvotes'))}</b><i className="fas fa-thumbs-down"></i></p>
 								</div>
 								<Link to={`${match.url}/${_.get(_.head(_.orderBy(articles, ['upvotes'], ['desc'])), '_id')}`}>
 									<div className="readmore">

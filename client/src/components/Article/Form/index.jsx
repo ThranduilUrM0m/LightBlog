@@ -15,7 +15,7 @@ class Form extends React.Component {
             comment: [],
             upvotes: 0,
             downvotes: 0,
-            views: 0,
+            view: [],
         }
 
         this.handleChangeField = this.handleChangeField.bind(this) 
@@ -74,13 +74,13 @@ class Form extends React.Component {
                 comment: nextProps.articleToEdit.comment,
                 upvotes: nextProps.articleToEdit.upvotes,
                 downvotes: nextProps.articleToEdit.downvotes,
-                views: nextProps.articleToEdit.views,
+                view: nextProps.articleToEdit.view,
             });
         }
     }
     handleSubmit(){
         const { onSubmit, articleToEdit, onEdit } = this.props;
-        const { title, body, author, tag, tagInput, comment, upvotes, downvotes, views } = this.state;
+        const { title, body, author, tag, tagInput, comment, upvotes, downvotes, view } = this.state;
         const self = this;
         if(!articleToEdit) {
             return axios.post('http://localhost:8000/api/articles', {
@@ -91,7 +91,7 @@ class Form extends React.Component {
                 comment,
                 upvotes,
                 downvotes,
-                views
+                view,
             })
                 .then((res) => onSubmit(res.data))
                 .then(function() {
@@ -106,7 +106,7 @@ class Form extends React.Component {
                         comment: [],
                         upvotes: 0,
                         downvotes: 0,
-                        views: 0,
+                        view: [],
                     })
                 });
         } else {
@@ -118,7 +118,7 @@ class Form extends React.Component {
                 comment,
                 upvotes,
                 downvotes,
-                views,
+                view,
             })
                 .then((res) => onEdit(res.data))
                 .then(function() {
@@ -133,7 +133,7 @@ class Form extends React.Component {
                         comment: [],
                         upvotes: 0,
                         downvotes: 0,
-                        views: 0,
+                        view: [],
                     })
                 });
         }

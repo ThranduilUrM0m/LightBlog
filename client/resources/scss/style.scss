@@ -1448,12 +1448,15 @@ body, html {
 					}
 					.comments_up_down {
 						display: inline-flex;
-						.comments {
+						.views {
 							text-align: -webkit-left;
 							font-size: small;
 							flex: 1;
+							i {
+								color: #20232a;
+							}
 						}
-						.upvotes, .downvotes, .views {
+						.upvotes, .downvotes, .comments {
 							margin-left: 1rem;
 							text-align: -webkit-right;
 							font-size: small;
@@ -1466,6 +1469,11 @@ body, html {
 							}
 							i{
 								padding-left: 0.25rem;
+							}
+							&.active {
+								button {
+									color: $softLightGradient;
+								}
 							}
 						}
 						i {

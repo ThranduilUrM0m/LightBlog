@@ -1,101 +1,79 @@
 const User = require('../../models/Users.js');
 const passwordHash = require("password-hash");
 
-function signup(req, res) {
-    if (!req.body.signup_email || !req.body.signup_password) {
+async function signup(req, res) {
+    const { signup_password, signup_email } = req.body;
+    if (!signup_email || !signup_password) {
         //Le cas où l'email ou bien le password ne serait pas soumit ou nul
-        res.status(400).json({
-            "text": "Requête invalide"
-        })
-    } else {
-        var user = {
-            email: req.body.signup_email,
-            password: passwordHash.generate(req.body.signup_password)
+        return res.status(400).json({
+            text: "Requête invalide"
+        });
+    }
+    // Création d'un objet user, dans lequel on hash le mot de passe
+    const user = {
+        email: signup_email,
+        password: passwordHash.generate(signup_password)
+    };
+    // On check en base si l'utilisateur existe déjà
+    try {
+        const findUser = await User.findOne({
+            email: user.email
+        });
+        if (findUser) {
+            return res.status(400).json({
+                text: "L'utilisateur existe déjà"
+            });
         }
+    } catch (error) {
+        return res.status(500).json({ error });
+    }
 
-        var findUser = new Promise(function (resolve, reject) {
-            User.findOne({
-                email: user.email
-            }, function (err, result) {
-                if (err) {
-                    reject(500);
-                } else {
-                    if (result) {
-                        reject(204)
-                    } else {
-                        resolve(true)
-                    }
-                }
-            })
-        })
-
-        findUser.then(function () {
-            var _u = new User(user);
-            _u.save(function (err, user) {
-                if (err) {
-                    res.status(500).json({
-                        "text": "Erreur interne"
-                    })
-                } else {
-                    res.status(200).json({
-                        "text": "Succès",
-                        "email": user.email,
-                        "token": user.getToken()
-                    })
-                }
-            })
-        }, function (error) {
-            switch (error) {
-                case 500:
-                    res.status(500).json({
-                        "text": "Erreur interne"
-                    })
-                    break;
-                case 204:
-                    res.status(204).json({
-                        "text": "L'adresse email existe déjà"
-                    })
-                    break;
-                default:
-                    res.status(500).json({
-                        "text": "Erreur interne"
-                    })
-            }
-        })
+    try {
+        // Sauvegarde de l'utilisateur en base
+        const userData = new User(user);
+        const userObject = await userData.save();
+        return res.status(200).json({
+            text: "Succès",
+            email: user.email,
+            token: userObject.getToken()
+        });
+    } catch (error) {
+        return res.status(500).json({ error });
     }
 }
 
-function login(req, res) {
-    if (!req.body.login_email || !req.body.login_password) {
+async function login(req, res) {
+    console.log(req.body);
+    const { password, email } = req.body;
+    if (!email || !password) {
         //Le cas où l'email ou bien le password ne serait pas soumit ou nul
-        res.status(400).json({
-            "text": "Requête invalide"
-        })
-    } else {
-        User.findOne({
-            email: req.body.login_email
-        }, function (err, user) {
-            if (err) {
-                res.status(500).json({
-                    "text": "Erreur interne"
-                })
-            } else if (!user) {
-                res.status(401).json({
-                    "text": "L'utilisateur n'existe pas"
-                })
-            } else {
-                if (user.authenticate(req.body.login_password)) {
-                    res.status(200).json({
-                        "token": user.getToken(),
-                        "text": "Authentification réussi"
-                    })
-                } else {
-                    res.status(401).json({
-                        "text": "Mot de passe incorrect"
-                    })
-                }
-            }
-        })
+        return res.status(400).json({
+            text: "Requête invalide"
+        });
+    }
+    try {
+        // On check si l'utilisateur existe en base
+        const findUser = await User.findOne({ 
+            email 
+        });
+        if (!findUser)
+            return res.status(401).json({
+                text: "L'utilisateur n'existe pas"
+            });
+        if (!findUser.authenticate(password))
+            return res.status(401).json({
+                text: "Mot de passe incorrect"
+            });
+        return res.status(200).json({
+            token: findUser.getToken(),
+            email: findUser.email,
+            text: "Authentification réussi"
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            error
+        });
     }
 }
 

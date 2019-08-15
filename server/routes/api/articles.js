@@ -29,14 +29,6 @@ router.post('/', (req, res, next) => {
     });
   }
 
-  if(!body.tag) {
-    return res.status(422).json({
-      errors: {
-        tag: 'is required',
-      },
-    });
-  }
-
   const finalArticle = new Articles(body);
   return finalArticle.save()
     .then(() => res.json({ article: finalArticle.toJSON() }))
@@ -98,6 +90,9 @@ router.patch('/:id', (req, res, next) => {
     req.article.downvotes = body.downvotes;
   }
 
+  if(typeof body.view !== 'undefined') {
+    req.article.view = body.view;
+  }
   return req.article.save()
     .then(() => res.json({ article: req.article.toJSON() }))
     .catch(next);

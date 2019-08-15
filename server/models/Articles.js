@@ -11,12 +11,23 @@ const ArticlesSchema = new Schema({
     author: String,
     body: String,
     date: Date,
-    upvotes: Number,
-    downvotes: Number,
+    upvotes: [{
+      upvoter: String,
+    }],
+    downvotes: [{
+      downvoter: String,
+    }],
   }],
-  upvotes: Number,
-  downvotes: Number,
-  views: Number,
+  upvotes: [{
+    upvoter: String,
+  }],
+  downvotes: [{
+    downvoter: String,
+  }],
+  view: [{
+    viewer: String,
+    _yes_or_no: Boolean,
+  }],
 }, { timestamps: true });
 
 ArticlesSchema.methods.toJSON = function() {
@@ -29,7 +40,7 @@ ArticlesSchema.methods.toJSON = function() {
     comment: this.comment,
     upvotes: this.upvotes,
     downvotes: this.downvotes,
-    views: this.views,
+    view: this.view,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
   };

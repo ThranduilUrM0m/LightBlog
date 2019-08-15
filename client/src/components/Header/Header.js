@@ -47,39 +47,31 @@ class AccountForm extends React.Component {
             $('.overlay_menu').toggleClass('overlay_menu--is-closed');
         });
     }
-    send_login(event) {
-        if(this.state.email.length === 0){
-            return;
+    async send_login() {
+        const { login_email, login_password } = this.state;
+        if (!login_email || login_email.length === 0) return;
+        if (!login_password || login_password.length === 0) return;
+        try {
+            const { data } = await API.login(login_email, login_password);
+            localStorage.setItem("token", data.token);
+            localStorage.setItem('email', data.email);
+            location.reload();
+        } catch (error) {
+            console.error(error);
         }
-        if(this.state.password.length === 0){
-            return;
-        }
-        API.login(this.state.email, this.state.password).then(function(data){
-            localStorage.setItem('token', data.data.token);
-            localStorage.setItem('email', data.data.email);
-        },function(error){
-            console.log(error);
-            return;
-        })
     }
-    send_signup(event) {
-        if(this.state.signup_email.length === 0){
-            return;
+    async send_signup() {
+        const { signup_email, signup_password, confirm_signup_password } = this.state;
+        if (!signup_email || signup_email.length === 0) return;
+        if (!signup_password || signup_password.length === 0 || signup_password !== confirm_signup_password) return;
+        try {
+            const { data } = await API.signup({ signup_email, signup_password });
+            localStorage.setItem("token", data.token);
+            localStorage.setItem('email', data.email);
+            location.reload();
+        } catch (error) {
+            console.error(error);
         }
-        if(this.state.signup_password.length === 0 || this.state.signup_password !== this.state.confirm_signup_password){
-            return;
-        }
-        var _send = {
-            signup_email: this.state.signup_email,
-            signup_password: this.state.signup_password
-        }
-        API.signup(_send).then(function(data){
-            localStorage.setItem('token', data.data.token);
-            localStorage.setItem('email', data.data.email);
-        },function(error){
-            console.log(error);
-            return;
-        })
     }
     handleChange(event) {
         this.setState({
@@ -93,12 +85,10 @@ class AccountForm extends React.Component {
                 <span className="hover_effect"></span>
                 <div className="login form-structor">
                     <div className="signup_form slide-up">
-
                         <div className="form-title" id="signup_toggle">
                             <a className="question_signup" href="#" title="">Don't have an account yet?</a>
                             <a className="title_signup" href="#" title="">Sign Up</a>
                         </div>
-
                         <div className="form-holder">
 
                             <div className='row'>
@@ -106,10 +96,10 @@ class AccountForm extends React.Component {
                                     <input 
                                     className='validate form-group-input' 
                                     type='email' 
-                                    name='email' 
+                                    name='signup_email' 
                                     id='signup_email' 
                                     required="required"
-                                    value={this.state.email_signup} 
+                                    value={this.state.signup_email} 
                                     onChange={this.handleChange}
                                     />
                                     <label htmlFor='signup_email'>@email</label>
@@ -122,10 +112,10 @@ class AccountForm extends React.Component {
                                     <input 
                                     className='validate form-group-input' 
                                     type='password' 
-                                    name='password' 
+                                    name='signup_password' 
                                     id='signup_password' 
                                     required="required" 
-                                    value={this.state.password_signup} 
+                                    value={this.state.signup_password} 
                                     onChange={this.handleChange}
                                     />
                                     <label htmlFor='signup_password'>Password</label>
@@ -138,10 +128,10 @@ class AccountForm extends React.Component {
                                     <input 
                                     className='validate form-group-input' 
                                     type='password' 
-                                    name='confirm_password' 
+                                    name='confirm_signup_password' 
                                     id='confirm_signup_password' 
                                     required="required" 
-                                    value={this.state.confirm_password_signup} 
+                                    value={this.state.confirm_signup_password} 
                                     onChange={this.handleChange}
                                     />
                                     <label htmlFor='confirm_signup_password'>Confirm Password</label>
@@ -176,10 +166,10 @@ class AccountForm extends React.Component {
                                     <input 
                                     className='validate form-group-input' 
                                     type='email' 
-                                    name='email' 
+                                    name='login_email' 
                                     id='login_email' 
                                     required="required"
-                                    value={this.state.email} 
+                                    value={this.state.login_email} 
                                     onChange={this.handleChange}
                                     />
                                     <label htmlFor='login_email'>@email</label>
@@ -192,10 +182,10 @@ class AccountForm extends React.Component {
                                     <input 
                                     className='validate form-group-input' 
                                     type='password' 
-                                    name='password' 
+                                    name='login_password' 
                                     id='login_password' 
                                     required="required" 
-                                    value={this.state.password} 
+                                    value={this.state.login_password} 
                                     onChange={this.handleChange}
                                     />
                                     <label htmlFor='login_password'>Password</label>
