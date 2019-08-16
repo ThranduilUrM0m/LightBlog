@@ -32,6 +32,7 @@ mongoose.set('debug', true);
 
 // Add models
 require('./models/Articles');
+require('./models/Letters');
 // Add routes
 const router = express.Router();
 app.use("/user", router);

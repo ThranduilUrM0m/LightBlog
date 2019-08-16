@@ -15,6 +15,7 @@ import NotFound from './components/App/NotFound';
 import Home from './components/Home/Home';
 import Blog from './components/Blog/Blog';
 import Post from './components/Post/Post';
+import Letters from './components/Letters/Letters';
 import Dashboard from './components/Dashboard/Dashboard';
 import PrivateRoute from './components/PrivateRoute';
 
@@ -28,6 +29,7 @@ ReactDOM.render(
           <Route exact path="/" component={Home}/>
           <Route exact path="/blog" component={Blog}/>
 				  <Route path={`/blog/:postId`} component={Post}/>
+          <Route exact path='/letters' component={Letters} />
           <PrivateRoute path='/dashboard' component={Dashboard} />
           <Route component={NotFound}/>
         </Switch>

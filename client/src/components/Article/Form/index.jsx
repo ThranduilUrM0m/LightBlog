@@ -4,8 +4,7 @@ import { connect } from 'react-redux'
 
 class Form extends React.Component {
     constructor(props) {
-        super(props) 
-
+        super(props);
         this.state = {
             title: '',
             body: '',
@@ -16,36 +15,26 @@ class Form extends React.Component {
             upvotes: 0,
             downvotes: 0,
             view: [],
-        }
-
-        this.handleChangeField = this.handleChangeField.bind(this) 
-        this.handleSubmit = this.handleSubmit.bind(this) 
-        this.handleInputKeyDown = this.handleInputKeyDown.bind(this) 
+        };
+        this.handleChangeField = this.handleChangeField.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleInputKeyDown = this.handleInputKeyDown.bind(this);
     }
     componentDidMount() {
         var self = this 
-
         var toolbarOptions = [
             [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
             [{ 'font': [] }],
-
             ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-
             [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-
             [{ 'align': [] }],
-
             ['blockquote', 'code-block'],
-            
             ['link', 'image'],                                        // image and link
-            
             [{ 'list': 'ordered'}, { 'list': 'bullet' }],
             [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
             [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
             [{ 'direction': 'rtl' }],                         // text direction
-          
         ];
-        
         var quill = new Quill('#editor', {
             debug: 'info',
             placeholder: 'Compose an epic...',
@@ -57,7 +46,6 @@ class Form extends React.Component {
             },
             theme: 'snow'
         });
-
         // OnChange of editor
         quill.on('text-change', function(delta, oldDelta, source) {
             self.handleChangeField('body', JSON.stringify(quill.root.innerHTML));

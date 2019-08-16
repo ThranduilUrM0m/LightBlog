@@ -8,11 +8,12 @@ class AccountForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            login_email : "",
-            login_password: "",
-            signup_email: "",
-            signup_password: "",
-            confirm_signup_password: ""
+            login_email : '',
+            login_password: '',
+            signup_username: '',
+            signup_email: '',
+            signup_password: '',
+            confirm_signup_password: ''
         }
         this._handleClickEvents = this._handleClickEvents.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -54,6 +55,7 @@ class AccountForm extends React.Component {
         try {
             const { data } = await API.login(login_email, login_password);
             localStorage.setItem("token", data.token);
+            localStorage.setItem('username', data.username);
             localStorage.setItem('email', data.email);
             location.reload();
         } catch (error) {
@@ -61,13 +63,15 @@ class AccountForm extends React.Component {
         }
     }
     async send_signup() {
-        const { signup_email, signup_password, confirm_signup_password } = this.state;
+        const { signup_username, signup_email, signup_password, confirm_signup_password } = this.state;
+        if (!signup_username || signup_username.length === 0) return;
         if (!signup_email || signup_email.length === 0) return;
         if (!signup_password || signup_password.length === 0 || signup_password !== confirm_signup_password) return;
         try {
-            const { data } = await API.signup({ signup_email, signup_password });
+            const { data } = await API.signup({ signup_username, signup_email, signup_password });
             localStorage.setItem("token", data.token);
             localStorage.setItem('email', data.email);
+            localStorage.setItem('username', data.username);
             location.reload();
         } catch (error) {
             console.error(error);
@@ -90,6 +94,22 @@ class AccountForm extends React.Component {
                             <a className="title_signup" href="#" title="">Sign Up</a>
                         </div>
                         <div className="form-holder">
+
+                            <div className='row'>
+                                <div className='input-field col s12'>
+                                    <input 
+                                    className='validate form-group-input' 
+                                    type='text' 
+                                    name='signup_username' 
+                                    id='signup_username' 
+                                    required="required"
+                                    value={this.state.signup_username} 
+                                    onChange={this.handleChange}
+                                    />
+                                    <label htmlFor='signup_username'>@username</label>
+                                    <div className="form-group-line"></div>
+                                </div>
+                            </div>
 
                             <div className='row'>
                                 <div className='input-field col s12'>
@@ -226,7 +246,6 @@ class AccountProfil extends React.Component {
     }
     componentDidMount() {
         var menuButton = document.querySelector(".menu_button");
-
         menuButton.addEventListener("click", function(event) {
             event.preventDefault();
             var parent = document.querySelector(".accountProfilHolder");
@@ -246,7 +265,7 @@ class AccountProfil extends React.Component {
                 <div className='menu_button'>
                     <span className="hover_effect"></span>
                     <i className="far fa-user togglebtn"></i>
-                    <span className="title">Henry Smith</span>
+                    <span className="title">{localStorage.getItem('username')}</span>
                 </div>
                 <div className="menu-dropdown">
                     <div className="content">

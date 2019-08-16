@@ -2,8 +2,8 @@ const User = require('../../models/Users.js');
 const passwordHash = require("password-hash");
 
 async function signup(req, res) {
-    const { signup_password, signup_email } = req.body;
-    if (!signup_email || !signup_password) {
+    const { signup_username, signup_password, signup_email } = req.body;
+    if (!signup_username || !signup_email || !signup_password) {
         //Le cas où l'email ou bien le password ne serait pas soumit ou nul
         return res.status(400).json({
             text: "Requête invalide"
@@ -12,14 +12,18 @@ async function signup(req, res) {
     // Création d'un objet user, dans lequel on hash le mot de passe
     const user = {
         email: signup_email,
+        username: signup_username,
         password: passwordHash.generate(signup_password)
     };
     // On check en base si l'utilisateur existe déjà
     try {
-        const findUser = await User.findOne({
+        const findUserByEmail = await User.findOne({
             email: user.email
         });
-        if (findUser) {
+        const findUserByUsername = await User.findOne({
+            username: user.username
+        });
+        if (findUserByEmail || findUserByUsername) {
             return res.status(400).json({
                 text: "L'utilisateur existe déjà"
             });
@@ -31,10 +35,12 @@ async function signup(req, res) {
     try {
         // Sauvegarde de l'utilisateur en base
         const userData = new User(user);
+        console.log(userData);
         const userObject = await userData.save();
         return res.status(200).json({
             text: "Succès",
             email: user.email,
+            username: user.username,
             token: userObject.getToken()
         });
     } catch (error) {
@@ -43,7 +49,6 @@ async function signup(req, res) {
 }
 
 async function login(req, res) {
-    console.log(req.body);
     const { password, email } = req.body;
     if (!email || !password) {
         //Le cas où l'email ou bien le password ne serait pas soumit ou nul
@@ -64,9 +69,11 @@ async function login(req, res) {
             return res.status(401).json({
                 text: "Mot de passe incorrect"
             });
+        console.log(findUser);
         return res.status(200).json({
             token: findUser.getToken(),
             email: findUser.email,
+            username: findUser.username,
             text: "Authentification réussi"
         });
     } catch (error) {

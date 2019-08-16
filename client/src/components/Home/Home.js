@@ -269,7 +269,7 @@ class Home extends React.Component {
                         <div className="wrapper right_part">
                             <div id="slider">
                                 {
-                                    _.orderBy(articles, ['createdAt'], ['desc']).map((article, index) => {
+                                    _.orderBy(articles, ['view'], ['desc']).map((article, index) => {
                                         return (
                                             <div className={"card card_" + index} data-title={article.title} data-index={index+1}>
                                                 <div className="shadow_title">{_.head(_.words(article.title))}</div>
@@ -325,7 +325,7 @@ class Home extends React.Component {
                             <div className="text-container">
                                 <div className="header-dash"></div>
                                 <h1>Reach. Inspire.</h1>
-                                <button className="cta-btn">Learn How +</button>
+                                <Link to='/letters' className="cta-btn"> Learn How + </Link>
                             </div>
                             <div className="bg-pattern"></div>
                         </div>

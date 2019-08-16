@@ -12,6 +12,9 @@ import Footer from '../Footer/Footer';
 var _ = require('lodash');
 
 class Comments extends React.Component {
+	constructor(props) {
+		super(props);
+	}
 	render() {
 		return(
 			this.props.comment.map((comment, index) => {

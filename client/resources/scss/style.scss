@@ -970,6 +970,7 @@ body, html {
 						&.open {
 							overflow: initial;
 							max-width: 20%;
+							min-width: 15%;
 							padding-left: 1rem;
 							padding-right: 1rem;
 							> .menu-dropdown {
@@ -1524,104 +1525,6 @@ body, html {
 										position: relative;
 										z-index: 10;
 									}
-									button{
-										-webkit-appearance: none;
-										border: none;
-										background: none;
-										color:black;
-										width: 15rem;
-										height: 3rem;
-										font-size: 1.2rem;
-										margin-bottom: 1rem;
-										padding: 0;
-										outline: none;
-										position: relative;
-										z-index: 10;
-										span{
-											display: block;
-											position: relative;
-											line-height: 50px;
-											height: 100%;
-											cursor: pointer;
-										}
-										& > span {
-											& > span {
-												& > span{
-													transition: color 0.15s ease-out 0.3s;
-													color: transparent;
-													&::after{
-														position: absolute;
-														top:0;left:0;right:0;bottom:0;
-														color:$liteBg_gray;
-														content: attr(data-attr-span);
-														width: 0%;
-														height: 100%;
-														background: $color1;
-														white-space: nowrap;
-														text-align: center;
-														margin: auto;
-														overflow: hidden;
-														display: flex;
-														justify-content: center;
-														transition: width 0.2s;
-													}
-												}
-												&::before{
-													content:'';
-													position: absolute;
-													bottom:0;
-													right: 0%;
-													width: 1px;
-													height: 1px;
-													opacity: 0;
-												}
-												&::after{
-													content:'';
-													position: absolute;
-													bottom:0;
-													left: 0%;
-													width: 1px;
-													height: 1px;
-													opacity: 0;
-												}
-											}
-											&::before {
-												content:'';
-												position: absolute;
-												top:0;
-												right: 50%;
-												width: 20px;
-												height: 0;
-												border: 1px solid $color1;
-												border-right: none;
-												border-bottom: none;
-												transition: height 0.15s ease-out, width 0.15s ease-out 0.15s;
-											}
-											&::after {
-												content:'';
-												position: absolute;
-												top:0;
-												left: 50%;
-												width: 20px;
-												height: 0;
-												border: 1px solid $color1;
-												border-left: none;
-												border-bottom: none;
-												transition: height 0.15s ease-out, width 0.15s ease-out 0.15s;
-											}
-										}
-										&:hover{
-											& > span {
-												& > span {
-													& > span {
-														&::after {
-															width: 100%;
-														}
-													}
-												}
-											}
-										}
-									}
 									&::after{
 										position: absolute;
 										top:0;
@@ -1680,6 +1583,33 @@ body, html {
 													}
 												}
 											}
+										}
+									}
+									.comments_up_down {
+										display: inline-flex;
+										.upvotes, .downvotes, .replies {
+											margin-left: 1rem;
+											text-align: -webkit-right;
+											font-size: small;
+											button {
+												background: none;
+												color: #20232a;
+												border: none; 
+												padding: 0 !important;
+												font: inherit;
+											}
+											i{
+												padding-left: 0.25rem;
+											}
+											&.active {
+												button {
+													color: $softLightGradient;
+												}
+											}
+										}
+										i {
+											margin-left: 0.5rem;
+											margin-bottom: 0;
 										}
 									}
 								}
@@ -3199,11 +3129,10 @@ body, html {
 						.header-dash {
 							position: absolute;
 							z-index: 0;
-							width: 330px;
-							height: 3px;
+							width: 100%;
+							height: 0.25rem;
 							background: #555;
-							transform: translateX(-240px);
-							margin-top: calc(7em/4 - 1px);
+							transform: translateX(-50%);
 						}
 						h1 {
 							font-weight: 400;
