@@ -1364,10 +1364,247 @@ body, html {
 				margin-bottom: 0.5rem !important;
 			}
 		}
+		.first_section_letters {
+			position: relative;
+			width: 100%;
+			height: fit-content;
+			min-height: 100%;
+			padding: 0;
+			margin: 0 auto;
+			display: flex;
+			flex-wrap: wrap;
+			.wrapper_full {
+				position: relative;
+				width: 100%;
+				overflow-x: hidden;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				#slider{
+					margin:0 auto;
+					position:relative;
+					overflow:hidden;
+					width: 100%;
+					height: -webkit-fill-available;
+					.shadow_title{
+						opacity: 0.1;
+						font-size: 5rem;
+						position: absolute;
+						left: -2rem;
+					}
+					.index_card{
+						opacity: 0.1;
+						position: absolute;
+						left: 50%;
+						bottom: 10%;
+						font-size: 8rem;
+						transform: translate(10%, -10%);
+						cursor: default;
+					}
+					.img-wrap{
+						position: absolute;
+						text-align: center;
+						width: 100%;
+						height: 100%;
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						.card{
+							width: fit-content;
+							min-width: 50vw;
+							height: fit-content;
+							min-height: 50vh;
+							padding: 2.6rem;
+							border: 0;
+							-webkit-transition: all 0.3s;
+							-moz-transition: all 0.3s;
+							-o-transition: all 0.3s;
+							transition: all 0.3s;
+							box-shadow: none;
+							border: 0.5rem solid #292929;
+							.card-body {
+								position: relative;
+								._from {
+									width: 50%;
+									margin-left: auto;
+									margin-bottom: 1rem;
+									transition: all 0.15s ease 0s; 
+									p{
+										margin: 0;
+									}
+								}
+								._to {
+									width: 50%;
+									margin-bottom: 1rem;
+									transition: all 0.15s ease 0s; 
+									p{
+										margin: 0;
+									}
+								}
+								._body {
+									margin-bottom: 1rem;
+									p{
+										margin: 0;
+									}
+								}
+								._signature {
+									width: 50%;
+									margin-left: auto;
+									margin-bottom: 1rem;
+									transition: all 0.15s ease 0s; 
+									p{
+										font-size: x-small;
+										margin: 0;
+									}
+								}
+								p{
+									transition: all 0.15s ease 0s; 
+									position: relative;
+									z-index: 10;
+									text-align: left;
+								}
+								&::after{
+									position: absolute;
+									top:0;
+									left: 0;
+									right:0;
+									bottom: 0;
+									/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#a29ca9+0,95909b+99 */
+									background: #a29ca9; /* Old browsers */
+									background: -moz-linear-gradient(-45deg, #a29ca9 0%, #95909b 99%); /* FF3.6-15 */
+									background: -webkit-linear-gradient(-45deg, #a29ca9 0%,#95909b 99%); /* Chrome10-25,Safari5.1-6 */
+									background: linear-gradient(135deg, #a29ca9 0%,#95909b 99%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+									filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a29ca9', endColorstr='#95909b',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+									content: '';
+									opacity: 0;
+									transition: opacity 0.9s ease 0s; 
+								}
+								&:hover {
+									&::after{
+										opacity: 0.4;
+									}
+								}
+							}
+							h1, h2, h3, h4, h5, h6{
+								text-align: -webkit-left;
+							}
+							&::after{
+								position: absolute;
+								content: "";
+								width: 30vw;
+								height: 30vw;
+								left: 50%;
+								top: 50%;
+								opacity: 0.05;
+								transform: translate(0, -50%);
+								background:url("data:image/svg+xml,%3Csvg width='64' height='64' viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 16c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zm33.414-6l5.95-5.95L45.95.636 40 6.586 34.05.636 32.636 2.05 38.586 8l-5.95 5.95 1.414 1.414L40 9.414l5.95 5.95 1.414-1.414L41.414 8zM40 48c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zM9.414 40l5.95-5.95-1.414-1.414L8 38.586l-5.95-5.95L.636 34.05 6.586 40l-5.95 5.95 1.414 1.414L8 41.414l5.95 5.95 1.414-1.414L9.414 40z' fill='%23000000' fill-rule='evenodd'/%3E%3C/svg%3E") repeat;
+							}
+							&:hover {
+								.card-body {
+									
+									._from, ._to {
+										transform: translateY(-10px);
+									}
+									._signature {
+										transform: translateY(10px);
+									}
+									&::after{
+										opacity: 0.4;
+									}
+								}
+							}
+							.author{
+								text-align: -webkit-right;
+								font-size: xx-small;
+							}
+							.body{
+								border-left: 0.05rem solid black;
+								padding-left: 1rem;
+							}
+						}
+					}
+					#controls{
+						position: absolute;
+						bottom: 10rem;
+						left: -7rem;
+						transform: rotate(-90deg);
+						#prev, #next{
+						z-index: 9999;
+						transition:.25s ease-in-out;
+						&:hover{
+							text-shadow: 0px 0px 1px rgba(0,0,0,1);
+							animation: bounce .6s;
+							-webkit-animation: bounce .6s;
+							-moz-animation: bounce .6s;         
+						}
+						}
+						#prev{
+							margin-right: 6rem;
+							#prev_{
+								position: absolute;
+								display: inline-block;
+								content: "";
+								background: black;
+								width: 5rem;
+								height: 0.1rem;
+								top: 50%;
+								left: 55%;
+								margin-left: -6rem; 
+							}
+						}
+						#next{
+							margin-left: 6rem;
+							#next_{
+								position: absolute;
+								display: inline-block;
+								content: "";
+								background: black;
+								width: 5rem;
+								height: 0.1rem;
+								top: 50%;
+								right: 55%;
+								margin-right: -6rem;
+							}
+						}
+					}
+				}
+				.carousel-indicators {
+					bottom: 4rem;
+					li{
+						border-top: none;
+						border-bottom: none;
+						opacity: 1;
+						background-color:  black;
+						margin-left: -0.2rem;
+						margin-right: -0.2rem;
+						height: 0.2rem;
+						&:after {
+							content: "";
+							display: block;
+							width: 100%;
+							height: 100%;
+							-webkit-transform: scale(0);
+									transform: scale(0);
+							transition: -webkit-transform 0.3s ease;
+							transition: transform 0.3s ease;
+							transition: transform 0.3s ease, -webkit-transform 0.3s ease;
+						}
+						transition-property: all;
+						transition-duration: 0.2s;
+						cursor: default;
+					}
+					li.current{
+						height: 0.4rem;
+						transform: translateY(-50%);
+					}
+				}
+			}
+		}
 		.first_section_post{
 			position: relative;
 			width: 100%;
 			height: fit-content;
+			min-height: 100%;
 			padding: 0;
 			margin: 0 auto;
 			display: flex;

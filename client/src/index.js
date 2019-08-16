@@ -16,6 +16,7 @@ import Home from './components/Home/Home';
 import Blog from './components/Blog/Blog';
 import Post from './components/Post/Post';
 import Letters from './components/Letters/Letters';
+import Projects from './components/Projects/Projects';
 import Dashboard from './components/Dashboard/Dashboard';
 import PrivateRoute from './components/PrivateRoute';
 
@@ -30,6 +31,7 @@ ReactDOM.render(
           <Route exact path="/blog" component={Blog}/>
 				  <Route path={`/blog/:postId`} component={Post}/>
           <Route exact path='/letters' component={Letters} />
+          <Route exact path='/projects' component={Projects} />
           <PrivateRoute path='/dashboard' component={Dashboard} />
           <Route component={NotFound}/>
         </Switch>
