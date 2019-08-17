@@ -1152,8 +1152,8 @@ body, html {
 		}
 		.overlay_menu{
 			position: fixed;
-			height: 100%;
-			width: 100%;
+			height: 100vh;
+			width: 100vw;
 			background: white;
 			transition: opacity 0.3s ease 0s;
 			opacity: 0.9;
@@ -1659,7 +1659,8 @@ body, html {
 					opacity: 0.1;
 					font-size: 20rem;
 					position: absolute;
-					transform: translateX(-50%);
+					right: 0;
+					top: 0;
 				}
 				#box {
 					width: 80vw;
@@ -2118,12 +2119,15 @@ body, html {
 					.comments_up_down {
 						display: inline-flex;
 						width: 50%;
-						.comments{
+						.views{
 							text-align: -webkit-left;
 							font-size: small;
 							flex: 1;
+							i{
+								padding-left: 0.25rem;
+							}
 						}
-						.upvotes, .downvotes, .views {
+						.upvotes, .downvotes, .comments {
 							margin-left: 1rem;
 							text-align: -webkit-right;
 							font-size: small;
@@ -3020,12 +3024,15 @@ body, html {
 								.comments_up_down {
 									display: inline-flex;
 									width: 100%;
-									.comments{
+									.views{
 										text-align: -webkit-left;
 										font-size: xx-small;
 										flex: 1;
+										i{
+											padding-left: 0.25rem;
+										}
 									}
-									.upvotes, .downvotes, .views {
+									.upvotes, .downvotes, .comments {
 										margin-left: 1rem;
 										text-align: -webkit-right;
 										font-size: x-small;

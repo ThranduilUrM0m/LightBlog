@@ -71,7 +71,6 @@ class Post extends React.Component {
 	componentDidMount() {
         const { onLoad } = this.props;
 		const { match } = this.props;
-
 		axios('http://localhost:8000/api/articles')
 			.then((res) => onLoad(res.data))
 			.then((res) => {
@@ -268,11 +267,6 @@ class Post extends React.Component {
 		runAfterElementExists(inputDelta, function() {
 			const html = JSON.parse(inputDelta);
 			$('h6.body_article').html(html);
-			$('.shadow_letter').map(function() {
-				$(this).css({
-					"left": randomIntFromInterval(0, 100)+"%"
-				});;
-			});
 		});
 	}
 
@@ -289,8 +283,10 @@ class Post extends React.Component {
             var width = $(this).width() / 2;
             var height = $(this).height() / 2;
             var amountMovedX = ((width - e.pageX) * 1 / 16);
+            var amountMovedY = ((height - e.pageY) * 1 / 16);
             
             $('.first_section_post .shadow_letter').css('right', amountMovedX);
+            $('.first_section_post .shadow_letter').css('top', amountMovedY);
         });
 	}
 	

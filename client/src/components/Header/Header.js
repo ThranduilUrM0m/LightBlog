@@ -294,6 +294,57 @@ class Header extends React.Component {
         this._handleClickEvents();
         this._handleTap();
         this._handleScroll();
+        let _links = $('.menu .nav-link');
+        let _url = window.location.pathname;
+        _links.map((_link, index) => {
+            switch (index.id) {
+                case "_home_link":
+                    if(_url === '/'){
+                        $('#'+index.id).addClass('active');
+                        $('.nav-link').not('#'+index.id).removeClass('active');
+                    }
+                    break;
+                case "_blog_link":
+                    var regex = RegExp('/blog*');
+                    if(regex.test(_url)){
+                        $('#'+index.id).addClass('active');
+                        $('.nav-link').not('#'+index.id).removeClass('active');
+                    }
+                    break;
+                case "_letters_link":
+                    if(_url === '/letters'){
+                        $('#'+index.id).addClass('active');
+                        $('.nav-link').not('#'+index.id).removeClass('active');
+                    }
+                    break;
+                case "_projects_link":
+                    if(_url === '/projects'){
+                        $('#'+index.id).addClass('active');
+                        $('.nav-link').not('#'+index.id).removeClass('active');
+                    }
+                    break;
+                case "_coffee_link":
+                    if(_url === '/coffee'){
+                        $('#'+index.id).addClass('active');
+                        $('.nav-link').not('#'+index.id).removeClass('active');
+                    }
+                    break;
+                case "_pencil_link":
+                    if(_url === '/pencil'){
+                        $('#'+index.id).addClass('active');
+                        $('.nav-link').not('#'+index.id).removeClass('active');
+                    }
+                    break;
+                case "_faq_link":
+                    if(_url === '/faq'){
+                        $('#'+index.id).addClass('active');
+                        $('.nav-link').not('#'+index.id).removeClass('active');
+                    }
+                    break;
+                default:
+                    console.log("Désolé, nous n'avons plus.");
+            }
+        });
     }
     _handleClickEvents() {
         /* menu */
@@ -314,14 +365,14 @@ class Header extends React.Component {
 
         /* outside the login or menu */
         $('.overlay_menu').click(function(){
-            if($(".login").css('display') == 'none'){
+            if($(".login").css('display') != 'none'){
+                $(".login").toggle(400);
+            }
+            if(!$('.menu').hasClass('menu--is-closed')) {
                 $('.menu').toggleClass('menu--is-closed');
                 $('.navToggle').toggleClass('active');
-                $('.overlay_menu').toggleClass('overlay_menu--is-closed');
-            }else{
-                $(".login").toggle(400);
-                $('.overlay_menu').toggleClass('overlay_menu--is-closed');
             }
+            $('.overlay_menu').toggleClass('overlay_menu--is-closed');
         });
 
         document.querySelectorAll(".js-fr").forEach(trigger => {
@@ -417,13 +468,13 @@ class Header extends React.Component {
                 </div>
                 <ul className="menu menu--is-closed">
                     <li><span className="item item-0"></span></li>
-                    <li><span className="item item-1"><Link to='/' className="nav-link active"> Home </Link></span></li>
-                    <li><span className="item item-2"><Link to='/blog' className="nav-link"> Blog </Link></span></li>
-                    <li><span className="item item-3"><Link to='/letters' className="nav-link"> Letters </Link></span></li>
-                    <li><span className="item item-3"><Link to='/projects' className="nav-link"> Projects </Link></span></li>
-                    <li><span className="item item-4"><Link to='/coffee' className="nav-link"> Coffee </Link></span></li>
-                    <li><span className="item item-5"><Link to='/pencil' className="nav-link"> Education </Link></span></li>
-                    <li><span className="item item-6"><Link to='/faq' className="nav-link"> Ask Us </Link></span></li>
+                    <li><span className="item item-1"><Link to='/' className="nav-link" id="_home_link"> Home </Link></span></li>
+                    <li><span className="item item-2"><Link to='/blog' className="nav-link" id="_blog_link"> Blog </Link></span></li>
+                    <li><span className="item item-3"><Link to='/letters' className="nav-link" id="_letters_link"> Letters </Link></span></li>
+                    <li><span className="item item-3"><Link to='/projects' className="nav-link" id="_projects_link"> Projects </Link></span></li>
+                    <li><span className="item item-4"><Link to='/coffee' className="nav-link" id="_coffee_link"> Coffee </Link></span></li>
+                    <li><span className="item item-5"><Link to='/pencil' className="nav-link" id="_pencil_link"> Education </Link></span></li>
+                    <li><span className="item item-6"><Link to='/faq' className="nav-link" id="_faq_link"> Ask Us </Link></span></li>
                 </ul>
             </>
         );
