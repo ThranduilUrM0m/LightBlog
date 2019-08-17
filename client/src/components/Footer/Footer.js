@@ -53,7 +53,7 @@ class Footer extends React.Component {
                             <h6>Latest Articles!</h6>
                             <ul>
                                 {
-                                    _.orderBy(articles, ['createdAt'], ['desc']).map((article, index) => {
+                                    (_.orderBy(articles, ['createdAt'], ['desc']).slice(0, 3)).map((article, index) => {
                                         return (
                                             <li>
                                                 <Link to={`/blog/${article._id}`}>

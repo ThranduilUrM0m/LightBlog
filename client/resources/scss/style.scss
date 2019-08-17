@@ -1227,6 +1227,15 @@ body, html {
 								transform: translateX(0px);
 							}
 						}
+						&::before{
+							content: '';
+							position: absolute;
+							width: 100%;
+							height: 100%;
+							background: rgba(black, 0.05);
+							clip-path: circle(10% at 150% 50%);
+							transition: clip-path .5s ease-in-out;
+						}
 						&::after{
 							content: '';
 							width: 10rem;
@@ -1245,9 +1254,11 @@ body, html {
 					}
 					&:hover{
 						.nav-link:not(.active){
-							background: rgba(black, 0.05);
 							color: black;
 							box-shadow: 0 0 2px rgba(white, 0.1);
+							&::before {
+								clip-path: circle(100%);
+							}
 							&::after{
 								opacity: 0.8;
 								bottom: 0.25rem;
@@ -2372,6 +2383,7 @@ body, html {
 			display: flex;
 			flex-wrap: wrap;
 			border: 0.5rem solid $color1;
+			border-bottom: none;
 			.modal {
 				height: fit-content;
 				width: fit-content;
@@ -2427,7 +2439,7 @@ body, html {
 				#box {
 					width: 80vw;
 					border: 0.5rem solid lighten($color: $liteBg_gray, $amount: 1);
-					margin: 25% auto 0 auto;
+					margin: 25% auto 5% auto;
 					padding: 2.5rem;
 					display: flex;
 					flex-direction: column;
@@ -2480,199 +2492,6 @@ body, html {
 						i {
 							margin-left: 0.5rem;
 							margin-bottom: 0;
-						}
-					}
-				}
-				.comments-modal {
-					width: 80%;
-					margin: 2rem auto;
-					z-index: 500;
-					.modal-inner {
-						display: flex;
-						.modal-content {
-							position: relative;
-							background: white;
-							border-radius: 0;
-							border: 0;
-							padding: 0.5rem;
-							overflow: hidden;
-							.shadow_title{
-								opacity: 0.1;
-								font-size: 5rem;
-								position: absolute;
-								left: -2rem;
-							}
-							.card{
-								width: 35vw;
-								height: fit-content;
-								border: 0;
-								-webkit-transition: all 0.3s;
-								-moz-transition: all 0.3s;
-									-o-transition: all 0.3s;
-									transition: all 0.3s;
-								box-shadow: none;
-								.card-body {
-									position: relative;
-									h2{
-										color:$color1;
-										letter-spacing: 2px;
-										transition: all 0.15s ease 0s; 
-										position: relative;
-										z-index: 10;
-									}
-									p{
-										transition: all 0.15s ease 0s; 
-										position: relative;
-										z-index: 10;
-									}
-									&::after{
-										position: absolute;
-										top:0;
-										left: 0;
-										right:0;
-										bottom: 0;
-										/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#a29ca9+0,95909b+99 */
-										background: #a29ca9; /* Old browsers */
-										background: -moz-linear-gradient(-45deg, #a29ca9 0%, #95909b 99%); /* FF3.6-15 */
-										background: -webkit-linear-gradient(-45deg, #a29ca9 0%,#95909b 99%); /* Chrome10-25,Safari5.1-6 */
-										background: linear-gradient(135deg, #a29ca9 0%,#95909b 99%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-										filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a29ca9', endColorstr='#95909b',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
-										content: '';
-										opacity: 0;
-										transition: opacity 0.9s ease 0s; 
-									}
-									&:hover {
-										h2 {
-											transform: translateY(-10px);
-										}
-										p{
-											transform: translateY(10px);
-										}
-										&::after{
-											opacity: 0.4;
-										}
-										button {
-											& > span {
-												&::after {
-													width: 50%;
-													height: 100%;
-													transition: width 0.15s ease-out, height 0.15s ease-out 0.15s;
-												}
-												&::before {
-													width: 50%;
-													height: 100%;
-													transition: width 0.15s ease-out, height 0.15s ease-out 0.15s;
-												}
-												& > span {
-													&::after {
-														opacity: 1;
-														border-bottom: 1px solid $color1;
-														width: calc(50%);
-														height: 1px;
-														transition: opacity 0s ease-out 0.29s, width 0.15s ease-out 0.3s;
-													}
-													&::before {
-														opacity: 1;
-														border-bottom: 1px solid $color1;
-														width: calc(50%);
-														height: 1px;
-														transition: opacity 0s ease-out 0.29s, width 0.15s ease-out 0.3s;
-													}
-													& > span {
-														color:$color1;
-													}
-												}
-											}
-										}
-									}
-									.comments_up_down {
-										display: inline-flex;
-										.upvotes, .downvotes, .replies {
-											margin-left: 1rem;
-											text-align: -webkit-right;
-											font-size: small;
-											button {
-												background: none;
-												color: #20232a;
-												border: none; 
-												padding: 0 !important;
-												font: inherit;
-											}
-											i{
-												padding-left: 0.25rem;
-											}
-											&.active {
-												button {
-													color: $softLightGradient;
-												}
-											}
-										}
-										i {
-											margin-left: 0.5rem;
-											margin-bottom: 0;
-										}
-									}
-								}
-								h1, h2, h3, h4, h5, h6{
-									text-align: -webkit-left;
-								}
-								.author{
-									text-align: -webkit-right;
-									font-size: xx-small;
-								}
-								.body{
-									border-left: 0.05rem solid black;
-									padding-left: 1rem;
-								}
-							}
-						}
-					}
-				}
-				.comment-modal {
-					width: 80%;
-					margin: 5rem auto;
-					z-index: 500;
-					.modal-inner {
-						box-shadow: -1rem 0rem 2rem -1rem rgba(0, 0, 0, 0.2);
-						display: flex;
-						.modal-content {
-							position: relative;
-							background: white;
-							border-radius: 0;
-							border: 0;
-							padding: 2rem;
-							overflow: hidden;
-							transition: 600ms ease;
-							.form-group {
-								margin-bottom: 0;
-								textarea.materialize-textarea {
-									color: $color1;
-									padding: 0;
-									margin: 0 0 0.5rem 0;
-									min-height: 2rem;
-								}
-								.textarea_line {
-									bottom: 0.8rem;
-								}
-							}
-							.register-link {
-								position: relative;
-								left: 1rem; 
-								top: 1px;
-							}
-							.input-field {
-								margin: 0 0 1rem 0;
-								label {
-									left: 0;
-									&.active{
-										-webkit-transform: translateY(-50%);
-										transform: translateY(-80%);
-									}
-								}
-								.form-group-line{
-									left: 0rem;
-								}
-							}
 						}
 					}
 				}
@@ -3641,6 +3460,426 @@ body, html {
 						}
 						.facebook span {
 							background-color: #3B5998;
+						}
+					}
+				}
+			}
+		}
+		.second_section_post{
+			position: relative;
+			width: 100%;
+			height: -webkit-fill-available;
+			padding: 0;
+			margin: 0 auto;
+			display: flex;
+			flex-wrap: wrap;
+			overflow: hidden;
+			.wrapper_full{
+				overflow: hidden;
+				position: relative;
+				width: 100%;
+				height: -webkit-fill-available;
+				.other_posts {
+					width: 80%;
+					margin: 2rem auto;
+					display: flex;
+					.card{
+						width: 35vw;
+						height: fit-content;
+						border: 0;
+						margin: 0 1rem;
+						-webkit-transition: all 0.3s;
+						-moz-transition: all 0.3s;
+							-o-transition: all 0.3s;
+							transition: all 0.3s;
+						box-shadow: none;
+						background: rgba(#a29ca9, 0.3);
+						clip-path: circle(15% at 100% 0%);
+						transition: clip-path .5s ease-in-out;
+						&:hover {
+							clip-path: circle(100%);
+						}
+						.index_article {
+							position: absolute;
+							font-size: 1.5rem;
+							right: 0;
+						}
+						.card-body {
+							position: relative;
+							h2{
+								color:$color1;
+								letter-spacing: 2px;
+								transition: all 0.15s ease 0s; 
+								position: relative;
+								z-index: 10;
+							}
+							p{
+								transition: all 0.15s ease 0s; 
+								position: relative;
+								z-index: 10;
+							}
+							button{
+								-webkit-appearance: none;
+								border: none;
+								background: none;
+								color:black;
+								width: 15rem;
+								height: 3rem;
+								font-size: 1.2rem;
+								margin-bottom: 1rem;
+								padding: 0;
+								outline: none;
+								position: relative;
+								z-index: 10;
+								span{
+									display: block;
+									position: relative;
+									line-height: 50px;
+									height: 100%;
+									cursor: pointer;
+								}
+								& > span {
+									& > span {
+										& > span{
+											transition: color 0.15s ease-out 0.3s;
+											color: transparent;
+											&::after{
+												position: absolute;
+												top:0;left:0;right:0;bottom:0;
+												color:$liteBg_gray;
+												content: attr(data-attr-span);
+												width: 0%;
+												height: 100%;
+												background: $color1;
+												white-space: nowrap;
+												text-align: center;
+												margin: auto;
+												overflow: hidden;
+												display: flex;
+												justify-content: center;
+												transition: width 0.2s;
+											}
+										}
+										&::before{
+											content:'';
+											position: absolute;
+											bottom:0;
+											right: 0%;
+											width: 1px;
+											height: 1px;
+											opacity: 0;
+										}
+										&::after{
+											content:'';
+											position: absolute;
+											bottom:0;
+											left: 0%;
+											width: 1px;
+											height: 1px;
+											opacity: 0;
+										}
+									}
+									&::before {
+										content:'';
+										position: absolute;
+										top:0;
+										right: 50%;
+										width: 20px;
+										height: 0;
+										border: 1px solid $color1;
+										border-right: none;
+										border-bottom: none;
+										transition: height 0.15s ease-out, width 0.15s ease-out 0.15s;
+									}
+									&::after {
+										content:'';
+										position: absolute;
+										top:0;
+										left: 50%;
+										width: 20px;
+										height: 0;
+										border: 1px solid $color1;
+										border-left: none;
+										border-bottom: none;
+										transition: height 0.15s ease-out, width 0.15s ease-out 0.15s;
+									}
+								}
+								&:hover{
+									& > span {
+										& > span {
+											& > span {
+												&::after {
+													width: 100%;
+												}
+											}
+										}
+									}
+								}
+							}
+							&::after{
+								position: absolute;
+								top:0;
+								left: 0;
+								right:0;
+								bottom: 0;
+								/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#a29ca9+0,95909b+99 */
+								background: #a29ca9; /* Old browsers */
+								background: -moz-linear-gradient(-45deg, #a29ca9 0%, #95909b 99%); /* FF3.6-15 */
+								background: -webkit-linear-gradient(-45deg, #a29ca9 0%,#95909b 99%); /* Chrome10-25,Safari5.1-6 */
+								background: linear-gradient(135deg, #a29ca9 0%,#95909b 99%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+								filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a29ca9', endColorstr='#95909b',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+								content: '';
+								opacity: 0;
+								transition: opacity 0.9s ease 0s; 
+							}
+							&:hover {
+								h2 {
+									transform: translateY(-10px);
+								}
+								p{
+									transform: translateY(10px);
+								}
+								&::after{
+									opacity: 0.4;
+								}
+								button {
+									& > span {
+										&::after {
+											width: 50%;
+											height: 100%;
+											transition: width 0.15s ease-out, height 0.15s ease-out 0.15s;
+										}
+										&::before {
+											width: 50%;
+											height: 100%;
+											transition: width 0.15s ease-out, height 0.15s ease-out 0.15s;
+										}
+										& > span {
+											&::after {
+												opacity: 1;
+												border-bottom: 1px solid $color1;
+												width: calc(50%);
+												height: 1px;
+												transition: opacity 0s ease-out 0.29s, width 0.15s ease-out 0.3s;
+											}
+											&::before {
+												opacity: 1;
+												border-bottom: 1px solid $color1;
+												width: calc(50%);
+												height: 1px;
+												transition: opacity 0s ease-out 0.29s, width 0.15s ease-out 0.3s;
+											}
+											& > span {
+												color:$color1;
+											}
+										}
+									}
+								}
+							}
+						}
+						h1, h2, h3, h4, h5, h6{
+							text-align: -webkit-left;
+						}
+						.author{
+							text-align: -webkit-right;
+							font-size: xx-small;
+						}
+						.body{
+							border-left: 0.05rem solid black;
+							padding-left: 1rem;
+						}
+					}
+				}
+				.comments-modal {
+					width: 80%;
+					margin: 2rem auto;
+					z-index: 500;
+					.modal-inner {
+						display: flex;
+						.modal-content {
+							position: relative;
+							background: white;
+							border-radius: 0;
+							border: 0;
+							padding: 0.5rem;
+							overflow: hidden;
+							.shadow_title{
+								opacity: 0.1;
+								font-size: 5rem;
+								position: absolute;
+								left: -2rem;
+							}
+							.card{
+								width: 35vw;
+								height: fit-content;
+								border: 0;
+								-webkit-transition: all 0.3s;
+								-moz-transition: all 0.3s;
+									-o-transition: all 0.3s;
+									transition: all 0.3s;
+								box-shadow: none;
+								.card-body {
+									position: relative;
+									h2{
+										color:$color1;
+										letter-spacing: 2px;
+										transition: all 0.15s ease 0s; 
+										position: relative;
+										z-index: 10;
+									}
+									p{
+										transition: all 0.15s ease 0s; 
+										position: relative;
+										z-index: 10;
+									}
+									&::after{
+										position: absolute;
+										top:0;
+										left: 0;
+										right:0;
+										bottom: 0;
+										/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#a29ca9+0,95909b+99 */
+										background: #a29ca9; /* Old browsers */
+										background: -moz-linear-gradient(-45deg, #a29ca9 0%, #95909b 99%); /* FF3.6-15 */
+										background: -webkit-linear-gradient(-45deg, #a29ca9 0%,#95909b 99%); /* Chrome10-25,Safari5.1-6 */
+										background: linear-gradient(135deg, #a29ca9 0%,#95909b 99%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+										filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a29ca9', endColorstr='#95909b',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+										content: '';
+										opacity: 0;
+										transition: opacity 0.9s ease 0s; 
+									}
+									&:hover {
+										h2 {
+											transform: translateY(-10px);
+										}
+										p{
+											transform: translateY(10px);
+										}
+										&::after{
+											opacity: 0.4;
+										}
+										button {
+											& > span {
+												&::after {
+													width: 50%;
+													height: 100%;
+													transition: width 0.15s ease-out, height 0.15s ease-out 0.15s;
+												}
+												&::before {
+													width: 50%;
+													height: 100%;
+													transition: width 0.15s ease-out, height 0.15s ease-out 0.15s;
+												}
+												& > span {
+													&::after {
+														opacity: 1;
+														border-bottom: 1px solid $color1;
+														width: calc(50%);
+														height: 1px;
+														transition: opacity 0s ease-out 0.29s, width 0.15s ease-out 0.3s;
+													}
+													&::before {
+														opacity: 1;
+														border-bottom: 1px solid $color1;
+														width: calc(50%);
+														height: 1px;
+														transition: opacity 0s ease-out 0.29s, width 0.15s ease-out 0.3s;
+													}
+													& > span {
+														color:$color1;
+													}
+												}
+											}
+										}
+									}
+									.comments_up_down {
+										display: inline-flex;
+										.upvotes, .downvotes, .replies {
+											margin-left: 1rem;
+											text-align: -webkit-right;
+											font-size: small;
+											button {
+												background: none;
+												color: #20232a;
+												border: none; 
+												padding: 0 !important;
+												font: inherit;
+											}
+											i{
+												padding-left: 0.25rem;
+											}
+											&.active {
+												button {
+													color: $softLightGradient;
+												}
+											}
+										}
+										i {
+											margin-left: 0.5rem;
+											margin-bottom: 0;
+										}
+									}
+								}
+								h1, h2, h3, h4, h5, h6{
+									text-align: -webkit-left;
+								}
+								.author{
+									text-align: -webkit-right;
+									font-size: xx-small;
+								}
+								.body{
+									border-left: 0.05rem solid black;
+									padding-left: 1rem;
+								}
+							}
+						}
+					}
+				}
+				.comment-modal {
+					width: 80%;
+					margin: 5rem auto;
+					z-index: 500;
+					.modal-inner {
+						box-shadow: -1rem 0rem 2rem -1rem rgba(0, 0, 0, 0.2);
+						display: flex;
+						.modal-content {
+							position: relative;
+							background: white;
+							border-radius: 0;
+							border: 0;
+							padding: 2rem;
+							overflow: hidden;
+							transition: 600ms ease;
+							.form-group {
+								margin-bottom: 0;
+								textarea.materialize-textarea {
+									color: $color1;
+									padding: 0;
+									margin: 0 0 0.5rem 0;
+									min-height: 2rem;
+								}
+								.textarea_line {
+									bottom: 0.8rem;
+								}
+							}
+							.register-link {
+								position: relative;
+								left: 1rem; 
+								top: 1px;
+							}
+							.input-field {
+								margin: 0 0 1rem 0;
+								label {
+									left: 0;
+									&.active{
+										-webkit-transform: translateY(-50%);
+										transform: translateY(-80%);
+									}
+								}
+								.form-group-line{
+									left: 0rem;
+								}
+							}
 						}
 					}
 				}

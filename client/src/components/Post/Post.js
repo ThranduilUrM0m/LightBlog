@@ -81,6 +81,7 @@ class Post extends React.Component {
 				}));
 			});
 		document.getElementById('articles_post').parentElement.style.height = 'initial';
+		document.getElementById('comments_post').parentElement.style.height = 'initial';
 		this._handleMouseMove();
 	}
 
@@ -289,7 +290,7 @@ class Post extends React.Component {
             $('.first_section_post .shadow_letter').css('top', amountMovedY);
         });
 	}
-	
+
     render() {
 		const { articles, articleToEdit } = this.props;
         const { match } = this.props;
@@ -299,7 +300,6 @@ class Post extends React.Component {
             <FullPage scrollMode={'normal'}>
 				<Slide>
 					<section id='articles_post' className="active first_section_post">
-						
 						<div className="modal fade" id="exampleModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 							<div className="modal-dialog" role="document">
 								<div className="modal-content">
@@ -313,7 +313,6 @@ class Post extends React.Component {
 								</div>
 							</div>
 						</div>
-
 						<div className="wrapper_full">
 							<div className="shadow_title">{_.head(_.words(_.get(_.find(articles, {'_id': match.params.postId}), 'title')))}.</div>
 							<div className="shadow_letter">{this._FormatNumberLength(_.indexOf(_.orderBy(articles, ['createdAt'], ['asc']), _.find(articles, {'_id': match.params.postId}))+1, 2)}.</div>
@@ -331,6 +330,51 @@ class Post extends React.Component {
 									<p className="text-muted upvotes"><b>{_.size(_.get(_.find(articles, {'_id': match.params.postId}), 'upvotes'))}</b> <button onClick={this.handleSubmitupvotes}><i className="fas fa-thumbs-up"></i></button> </p>
 									<p className="text-muted downvotes"><b>{_.size(_.get(_.find(articles, {'_id': match.params.postId}), 'downvotes'))}</b> <button onClick={this.handleSubmitdownvotes}><i className="fas fa-thumbs-down"></i></button> </p>
 								</div>
+							</div>
+							<div id="social_media">
+								<div className="icons_gatherer">
+									<a href="#" className="icon-button instagram"><i className="fab fa-instagram"></i><span></span></a>
+									<a href="#" className="icon-button facebook"><i className="icon-facebook"></i><span></span></a>
+									<a href="#" className="icon-button scroll">
+										<span className="scroll-icon">
+											<span className="scroll-icon__wheel-outer">
+												<span className="scroll-icon__wheel-inner"></span>
+											</span>
+										</span>
+									</a>
+								</div>
+							</div>
+						</div>
+					</section>
+				</Slide>
+				<Slide>
+					<section id='comments_post' className="second_section_post">
+						<div className="wrapper_full">
+							<div className="other_posts">
+							{
+								(_.orderBy(articles, ['createdAt'], ['desc']).slice(0, 4)).map((article, index) => {
+									return (
+										<div className={"card card_" + index} data-title={article.title} data-index={index+1}>
+											<span className="index_article">{this._FormatNumberLength(index+1, 2)}.</span>
+											<div className="card-body">
+												<h3>{article.title}</h3>
+												<Link to={`/blog/${article._id}`}>
+													<button>
+														<span>
+															<span>
+																<span data-attr-span="Read More About it">
+																	Read More About it
+																</span>
+															</span>
+														</span>
+													</button>
+												</Link>
+												<p className="text-muted author">by <b>{article.author}</b>, {moment(new Date(article.createdAt)).fromNow()}</p>
+											</div>
+										</div>
+									)
+								})
+							}
 							</div>
 							<div className="comment-modal">
 								<div className="modal-inner">
@@ -363,21 +407,7 @@ class Post extends React.Component {
 									</div>
 								</div>
 							</div>
-							<div id="social_media">
-								<div className="icons_gatherer">
-									<a href="#" className="icon-button instagram"><i className="fab fa-instagram"></i><span></span></a>
-									<a href="#" className="icon-button facebook"><i className="icon-facebook"></i><span></span></a>
-									<a href="#" className="icon-button scroll">
-										<span className="scroll-icon">
-											<span className="scroll-icon__wheel-outer">
-												<span className="scroll-icon__wheel-inner"></span>
-											</span>
-										</span>
-									</a>
-								</div>
-							</div>
 						</div>
-					
 					</section>
 				</Slide>
 				<Slide>

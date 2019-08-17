@@ -269,7 +269,7 @@ class Home extends React.Component {
                         <div className="wrapper right_part">
                             <div id="slider">
                                 {
-                                    _.orderBy(articles, ['view'], ['desc']).map((article, index) => {
+                                    (_.orderBy(articles, ['view'], ['desc']).slice(0, 10)).map((article, index) => {
                                         return (
                                             <div className={"card card_" + index} data-title={article.title} data-index={index+1}>
                                                 <div className="shadow_title">{_.head(_.words(article.title))}</div>
@@ -431,7 +431,7 @@ class Home extends React.Component {
                                             <h6>Great Speakers This Week!</h6>
                                             <ul>
                                                 {
-                                                    articles.map((article, index) => {
+                                                    (_.orderBy(articles, ['createdAt'], ['desc']).slice(0, 4)).map((article, index) => {
                                                         return (
                                                             <li>
                                                                 <span>{article.title}</span>
