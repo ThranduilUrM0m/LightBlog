@@ -9,7 +9,7 @@ import { pagination } from 'paginationjs';
 import Fingerprint from 'fingerprintjs';
 import Footer from '../Footer/Footer';
 
-class Projects extends React.Component {
+class Education extends React.Component {
     constructor(props){
         super(props);
     }
@@ -17,9 +17,9 @@ class Projects extends React.Component {
         return(
             <FullPage scrollMode={'normal'}>
 				<Slide>
-					<section className="first_section_projects">
+					<section className="first_section_education">
                         <div className="wrapper_full">
-                            <h2>SMALL GESTURES</h2>
+                            <h2>EDUCATION</h2>
 							<div id="social_media">
 								<div className="icons_gatherer">
 									<a href="#" className="icon-button instagram"><i className="fab fa-instagram"></i><span></span></a>
@@ -44,4 +44,4 @@ class Projects extends React.Component {
     }
 }
   
-export default Projects
+export default Education

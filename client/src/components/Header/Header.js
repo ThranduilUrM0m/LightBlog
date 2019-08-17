@@ -352,6 +352,15 @@ class Header extends React.Component {
             $('.navToggle').toggleClass('active');
             $('.menu').toggleClass('menu--is-closed');
             $('.overlay_menu').toggleClass('overlay_menu--is-closed');
+
+            if($(".login").css('display') != 'none'){
+                $(".login").toggle(400);
+            }
+
+            let _profil_dropdown = document.querySelector(".accountProfilHolder");
+            if (_profil_dropdown && _profil_dropdown.classList.contains("open")) {
+                _profil_dropdown.classList.remove("open");
+            }
         });
         
         /* menu active */
@@ -368,6 +377,12 @@ class Header extends React.Component {
             if($(".login").css('display') != 'none'){
                 $(".login").toggle(400);
             }
+            
+            let _profil_dropdown = document.querySelector(".accountProfilHolder");
+            if (_profil_dropdown && _profil_dropdown.classList.contains("open")) {
+                _profil_dropdown.classList.remove("open");
+            }
+
             if(!$('.menu').hasClass('menu--is-closed')) {
                 $('.menu').toggleClass('menu--is-closed');
                 $('.navToggle').toggleClass('active');
@@ -473,7 +488,7 @@ class Header extends React.Component {
                     <li><span className="item item-3"><Link to='/letters' className="nav-link" id="_letters_link"> Letters </Link></span></li>
                     <li><span className="item item-3"><Link to='/projects' className="nav-link" id="_projects_link"> Projects </Link></span></li>
                     <li><span className="item item-4"><Link to='/coffee' className="nav-link" id="_coffee_link"> Coffee </Link></span></li>
-                    <li><span className="item item-5"><Link to='/pencil' className="nav-link" id="_pencil_link"> Education </Link></span></li>
+                    <li><span className="item item-5"><Link to='/education' className="nav-link" id="_pencil_link"> Education </Link></span></li>
                     <li><span className="item item-6"><Link to='/faq' className="nav-link" id="_faq_link"> Ask Us </Link></span></li>
                 </ul>
             </>
