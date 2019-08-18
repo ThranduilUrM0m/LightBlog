@@ -13,7 +13,9 @@ class AccountForm extends React.Component {
             signup_username: '',
             signup_email: '',
             signup_password: '',
-            confirm_signup_password: ''
+            confirm_signup_password: '',
+            activated: false,
+            messages: [],
         }
         this._handleClickEvents = this._handleClickEvents.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -63,16 +65,19 @@ class AccountForm extends React.Component {
         }
     }
     async send_signup() {
-        const { signup_username, signup_email, signup_password, confirm_signup_password } = this.state;
+        const { signup_username, signup_email, signup_password, confirm_signup_password, activated, messages } = this.state;
         if (!signup_username || signup_username.length === 0) return;
         if (!signup_email || signup_email.length === 0) return;
         if (!signup_password || signup_password.length === 0 || signup_password !== confirm_signup_password) return;
         try {
-            const { data } = await API.signup({ signup_username, signup_email, signup_password });
+            const { data } = await API.signup({ signup_username, signup_email, signup_password, activated, messages });
             localStorage.setItem("token", data.token);
             localStorage.setItem('email', data.email);
             localStorage.setItem('username', data.username);
-            location.reload();
+            //take off the things
+            $(".login").toggle(400);
+            $('.overlay_menu').toggleClass('overlay_menu--is-closed');
+            $('#signup_modal').modal('toggle');
         } catch (error) {
             console.error(error);
         }
@@ -271,8 +276,8 @@ class AccountProfil extends React.Component {
                     <div className="content">
                         <ul>
                             <li>{ localStorage.getItem('email') }</li>
+                            <li><Link to='/dashboard' id="_profil_link"><i className="far fa-user"></i> Dashboard </Link></li>
                             <li><a href=""><i className="far fa-envelope"></i>Messages</a></li>
-                            <li><a href=""><i className="far fa-user"></i>Account</a></li>
                             <li><a href=""><i className="fas fa-cog"></i>Settings</a></li>
                             <li><a href="" onClick={this.disconnect}><i className="fas fa-sign-out-alt"></i>Logout</a></li>
                         </ul>
@@ -372,11 +377,19 @@ class Header extends React.Component {
             $('.nav-link').not(this).removeClass('active');
         });
 
+        $('#_profil_link').click(() => {
+            let _profil_dropdown = document.querySelector(".accountProfilHolder");
+            if (_profil_dropdown && _profil_dropdown.classList.contains("open")) {
+                _profil_dropdown.classList.remove("open");
+            }
+        })
+
         /* outside the login or menu */
         $('.overlay_menu').click(function(){
             if($(".login").css('display') != 'none'){
                 $(".login").toggle(400);
             }
+            $('.overlay_menu').toggleClass('overlay_menu--is-closed');
             
             let _profil_dropdown = document.querySelector(".accountProfilHolder");
             if (_profil_dropdown && _profil_dropdown.classList.contains("open")) {
@@ -389,6 +402,10 @@ class Header extends React.Component {
             }
             $('.overlay_menu').toggleClass('overlay_menu--is-closed');
         });
+
+        $('#signup_modal').on('hidden.bs.modal', function (e) {
+            location.reload;
+        })
 
         document.querySelectorAll(".js-fr").forEach(trigger => {
             // pull trigger
@@ -461,7 +478,7 @@ class Header extends React.Component {
                                     </g>
                                 </svg>
                             </span>
-                            <a className="logoHolder" href="#">
+                            <a className="logoHolder" href="/">
                                 <img className="logo img-fluid" src={logo} alt="Risala"/>
                             </a>
                             <div className="js-lang u-mb-15">
@@ -491,6 +508,18 @@ class Header extends React.Component {
                     <li><span className="item item-5"><Link to='/education' className="nav-link" id="_pencil_link"> Education </Link></span></li>
                     <li><span className="item item-6"><Link to='/faq' className="nav-link" id="_faq_link"> Ask Us </Link></span></li>
                 </ul>
+                <div className="modal fade" id="signup_modal" tabIndex="-1" role="dialog" aria-labelledby="signup_modalLabel" aria-hidden="true">
+                    <div className="modal-dialog" role="document">
+                        <div className="modal-content">
+                            <div className="modal-body">
+                                <a title="Close" className="modal-close" data-dismiss="modal">Close</a>
+                                <h5 className="modal-title" id="signup_modalLabel">Welcome!</h5>
+                                <div>We have sent you a verification email, all you have to do is just click it and boom you are one of us now.</div>
+                                <div><small>Welcome {localStorage.getItem('username')}</small></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </>
         );
     }

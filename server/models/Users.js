@@ -22,7 +22,13 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: true
-    }
+    },
+    activated: Boolean,
+    messages: [{
+        author: String,
+        body: String,
+        date: Date,
+    }],
 }, { timestamps: true });
   
 userSchema.methods = {

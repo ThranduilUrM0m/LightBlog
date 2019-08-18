@@ -229,12 +229,6 @@ class Post extends React.Component {
 
 	handleSubmitviews() {
 		var fingerprint = new Fingerprint().get();
-		if(_.isUndefined(_.find(this.state.view, {'viewer': fingerprint.toString()}))) {
-			this.setState(state => ({
-				view: [...state.view, {viewer: fingerprint, _yes_or_no: true}],
-				view_changed: true,
-			}));
-		}
 
 		//look for downvotes nd upvotes
 		if( localStorage.getItem('email') ) {
@@ -243,6 +237,19 @@ class Post extends React.Component {
 			}
 			if( !_.isUndefined(_.find(this.state.downvotes, {'downvoter': localStorage.getItem('email')})) ) {
 				$('p.downvotes').addClass('active');
+			}
+			if(_.isUndefined(_.find(this.state.view, {'viewer': localStorage.getItem('email')}))) {
+				this.setState(state => ({
+					view: [...state.view, {viewer: localStorage.getItem('email'), _yes_or_no: true}],
+					view_changed: true,
+				}));
+			}
+		} else {
+			if(_.isUndefined(_.find(this.state.view, {'viewer': fingerprint.toString()}))) {
+				this.setState(state => ({
+					view: [...state.view, {viewer: fingerprint, _yes_or_no: true}],
+					view_changed: true,
+				}));
 			}
 		}
 	}
@@ -357,7 +364,7 @@ class Post extends React.Component {
 										<div className={"card card_" + index} data-title={article.title} data-index={index+1}>
 											<span className="index_article">{this._FormatNumberLength(index+1, 2)}.</span>
 											<div className="card-body">
-												<h3>{article.title}</h3>
+												<h4>{article.title}</h4>
 												<Link to={`/blog/${article._id}`}>
 													<button>
 														<span>
