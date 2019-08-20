@@ -356,6 +356,7 @@ body, html {
 						height: 2.5rem;
 						z-index: 10000;
 						margin-left: 2.5rem;
+						transform: scale(0.8);
 						img {
 							height: 100%;
 						}
@@ -366,7 +367,7 @@ body, html {
 						font-weight: bold;
 						position: absolute;
 						left: 50%;
-						transform: translate(-50%);
+						transform: translate(-50%) scale(0.8);
 						.js-fr{
 							margin-right: 1rem;
 						}
@@ -398,6 +399,7 @@ body, html {
 					form{
 						margin-left: auto;
 						position: relative;
+						transform: scale(0.8);
 						&::before{
 							width: calc(25rem - 2.5rem);
 							position: absolute;
@@ -557,6 +559,7 @@ body, html {
 					}
 					.account {
 						color: black;
+						transform: scale(0.8);
 					}
 					.accountFormHolder{
 						font-family: $mainFont;
@@ -577,6 +580,7 @@ body, html {
 							-ms-user-select: none;
 								user-select: none;
 						width: 2.6rem;
+						transform: scale(0.8);
 						i {
 							background: none;
 							color: black;
@@ -962,6 +966,7 @@ body, html {
 						background: none;
 						-webkit-appearance: none;
 						-webkit-tap-highlight-color: transparent;
+						transform: scale(0.8);
 						cursor: pointer;
 						&:hover {
 							max-width: 20%;
@@ -1424,133 +1429,52 @@ body, html {
 			margin: 0 auto;
 			display: flex;
 			flex-wrap: wrap;
-			border: 0.5rem solid $color1;
+			background: #f0f0f0;
 			.wrapper_full {
 				position: relative;
 				width: 100%;
-				overflow-x: hidden;
 				display: flex;
-				justify-content: center;
-				align-items: center;
-				#social_media{
-					position: absolute;
-					bottom: 0;
-					right: 0;
-					display: flex;
-					flex-direction: column;
+				.dashboard_menu {
+					width: 25vw;
 					height: 100%;
-					z-index: 0;
-					background: lighten($color: $liteBg_gray, $amount: 10);
-					justify-content: flex-end;
-					margin-bottom: 1px;
-					.icons_gatherer {
+					background-color: white;
+					box-shadow: 0 20px 40px -14px rgba(0,0,0,0.25);
+				}
+				.cards {
+					display: flex;
+					flex-wrap: wrap;
+					list-style: none;
+					margin: 5rem auto 0 auto;
+					padding: 0;
+					width: 75vw;
+					&__item {
+						display: flex;
+						padding: 1rem;
+						width: 50%;
+					}
+					.card {
+						background-color: white;
+						border-radius: 0.25rem;
+						box-shadow: 0 20px 40px -14px rgba(0,0,0,0.25);
 						display: flex;
 						flex-direction: column;
-					}
-					.icons_gatherer::before{
-						position: absolute;
-						content: "";
-						width: 0.1rem;
-						height: 10rem;
-						background: #000;
-						left: 50%;
-    					transform: translate(-50%, -120%);
-						cursor: default;
-					}
-					.icon-button {
-						font-family: FontAwesome;
-						font-weight: normal;
-						font-style: normal;
-						text-decoration: inherit;
-						-webkit-font-smoothing: antialiased;
-						border-radius: 2.6rem;
-						cursor: pointer;
-						display: inline-block;
-						font-size: 1.3rem;
-						height: 2.6rem;
-						line-height: 2.6rem;
-						margin: 0 5px;
-						position: relative;
-						text-align: center;
-						-webkit-user-select: none;
-						-moz-user-select: none;
-							-ms-user-select: none;
-								user-select: none;
-						width: 2.6rem;
-						i {
-							background: none;
-							color: black;
-							height: 2.6rem;
-							left: 0;
-							line-height: 2.6rem;
-							position: absolute;
-							top: 0;
-							-webkit-transition: all 0.3s;
-								-moz-transition: all 0.3s;
-								-o-transition: all 0.3s;
-									transition: all 0.3s;
-							width: 2.6rem;
-							z-index: 10;
+						overflow: hidden;
+						margin: 0;
+						width: 100%;
+						height: 100%;
+						&__content {
+							display: flex;
+							flex: 1 1 auto;
+							flex-direction: column;
+							padding: 1rem;
 						}
-						.scroll-icon {
-							height: 2rem;
-							width: 1.2rem;
-							border: .25rem solid black;
-							border-radius: 1rem;
-							transform: translate(-50%, -50%);
-							.scroll-icon__wheel-outer {
-								position: absolute;
-								left: 50%;
-								top: .1rem;
-								transform: translate(-50%, .1rem);
-								height: .8rem;
-								width: .4em;
-								border-radius: .4rem;
-								overflow: hidden;
-								.scroll-icon__wheel-inner {
-									display: block;
-									height: $dot-diameter;
-									width: $dot-diameter;
-									border-radius: inherit;
-									background: black;
-									animation: dot--a $duration infinite;
-									left: 50%;
-									transform: translateX(-50%);
-								}
-							}
+						&__title {
+							color: #696969;
+							font-size: 1.25rem;
+							font-weight: 300;
+							letter-spacing: 2px;
+							text-transform: uppercase;
 						}
-						span {
-							border-radius: 0;
-							display: block;
-							height: 0;
-							left: 50%;
-							margin: 0;
-							position: absolute;
-							top: 50%;
-							-webkit-transition: all 0.3s;
-								-moz-transition: all 0.3s;
-								-o-transition: all 0.3s;
-									transition: all 0.3s;
-							width: 0;
-						}
-						&:hover span:not(.scroll-icon):not(.scroll-icon__wheel-outer):not(.scroll-icon__wheel-inner) {
-							width: 2.6rem;
-							height: 2.6rem;
-							border-radius: 2.6rem;
-							margin: -1.3rem;
-						}
-						&:hover .icon-facebook{
-							color: $liteBg;
-						}
-						&:hover .fa-instagram{
-							color: $liteBg;
-						}
-					}
-					.instagram span {
-						background-color: #e4405f;
-					}
-					.facebook span {
-						background-color: #3B5998;
 					}
 				}
 			}

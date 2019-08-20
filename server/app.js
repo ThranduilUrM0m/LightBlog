@@ -33,6 +33,14 @@ mongoose.set('debug', true);
 // Add models
 require('./models/Articles');
 require('./models/Letters');
+require('./models/Students');
+require('./models/Reports');
+require('./models/Homeworks');
+require('./models/Exams');
+require('./models/Courses');
+require('./models/Subjects');
+require('./models/Classrooms');
+
 // Add routes
 const router = express.Router();
 app.use("/user", router);

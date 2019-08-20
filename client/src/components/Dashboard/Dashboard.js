@@ -22,19 +22,42 @@ class Dashboard extends React.Component {
 				<Slide>
 					<section className="first_section_dashboard">
                         <div className="wrapper_full">
-							<div id="social_media">
-								<div className="icons_gatherer">
-									<a href="#" className="icon-button instagram"><i className="fab fa-instagram"></i><span></span></a>
-									<a href="#" className="icon-button facebook"><i className="icon-facebook"></i><span></span></a>
-									<a href="#" className="icon-button scroll">
-										<span className="scroll-icon">
-											<span className="scroll-icon__wheel-outer">
-												<span className="scroll-icon__wheel-inner"></span>
-											</span>
-										</span>
-									</a>
-								</div>
-							</div>
+
+                            <div className="dashboard_menu">
+
+                            </div>
+
+                            <ul className="cards">
+                                <li className="cards__item">
+                                    <div className="card">
+                                        <div className="card__content">
+                                            <div className="card__title">Students</div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li className="cards__item">
+                                    <div className="card">
+                                        <div className="card__content">
+                                            <div className="card__title">SECOND</div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li className="cards__item">
+                                    <div className="card">
+                                        <div className="card__content">
+                                            <div className="card__title">THIRD</div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li className="cards__item">
+                                    <div className="card">
+                                        <div className="card__content">
+                                            <div className="card__title">FOURTH</div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+
                         </div>
                     </section>
 				</Slide>

@@ -382,6 +382,11 @@ class Header extends React.Component {
             if (_profil_dropdown && _profil_dropdown.classList.contains("open")) {
                 _profil_dropdown.classList.remove("open");
             }
+
+            if(!$('.menu').hasClass('menu--is-closed')) {
+                $('.menu').toggleClass('menu--is-closed');
+                $('.navToggle').toggleClass('active');
+            }
         })
 
         /* outside the login or menu */
