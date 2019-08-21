@@ -10,651 +10,94 @@ import { pagination } from 'paginationjs';
 import Fingerprint from 'fingerprintjs';
 import Calendar from 'rc-calendar';
 import API from '../../utils/API';
+const passwordHash = require('password-hash');
 var _ = require('lodash');
 
 class Settings extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            _user: {}
+            _user: {},
+            _new_password: '',
+            _old_email: '',
         };
-        this.handleSubmitArticle = this.handleSubmitArticle.bind(this);
-        this.handleSubmitClassroom = this.handleSubmitArticle.bind(this);
-        this.handleSubmitCourse = this.handleSubmitArticle.bind(this);
-        this.handleSubmitExam = this.handleSubmitArticle.bind(this);
-        this.handleSubmitHomework = this.handleSubmitArticle.bind(this);
-        this.handleSubmitLetter = this.handleSubmitArticle.bind(this);
-        this.handleSubmitReport = this.handleSubmitArticle.bind(this);
-        this.handleSubmitSchool = this.handleSubmitArticle.bind(this);
-        this.handleSubmitStudent = this.handleSubmitArticle.bind(this);
-        this.handleSubmitSubject = this.handleSubmitArticle.bind(this);
         this.handleChangeField = this.handleChangeField.bind(this);
+
         this.get_user = this.get_user.bind(this);
+        this.send_user = this.send_user.bind(this);
+
+        this._handleTap = this._handleTap.bind(this);
+        this._progress = this._progress.bind(this);
     }
     componentDidMount() {
         this.get_user();
+
         this._handleTap();
+        document.getElementById('settings_blog').parentElement.style.height = 'initial';
         $('.nav_link').click((event) => {
             let _li_parent = $(event.target).parent().parent();
+            let _li_target = $($(event.target).attr('href'));
+
             $(_li_parent).addClass('active');
+            $(_li_target).addClass('active');
+            $(_li_target).addClass('show');
             $("._content li").not(_li_parent).removeClass('active');
+            $('.tab-pane').not(_li_target).removeClass('active');
+            $('.tab-pane').not(_li_target).removeClass('show');
         });
     }
+    
     async get_user() {
         const self = this;
         try {
             const { data } = await API.get_user(localStorage.getItem('email'));
             self.setState({
-                _user: data.user
+                _user: data.user,
+                _old_email: data.user.email
             });
         } catch (error) {
             console.error(error);
         }
     }
-
-    handleSubmitArticle(){
-        const { onSubmit, classroomToEdit, onEdit } = this.props;
-        const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state;
+    async send_user() {
+        const { onEdit } = this.props;
+        const { _user, _new_password, _old_email } = this.state;
         const self = this;
-        if(!classroomToEdit) {
-            return axios.post('http://localhost:8000/api/classrooms', {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onSubmit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        } else {
-            return axios.patch(`http://localhost:8000/api/classrooms/${classroomToEdit._id}`, {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onEdit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        }
-    }
-    handleSubmitClassroom(){
-        const { onSubmit, classroomToEdit, onEdit } = this.props;
-        const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state;
-        const self = this;
-        if(!classroomToEdit) {
-            return axios.post('http://localhost:8000/api/classrooms', {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onSubmit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        } else {
-            return axios.patch(`http://localhost:8000/api/classrooms/${classroomToEdit._id}`, {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onEdit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        }
-    }
-    handleSubmitCourse(){
-        const { onSubmit, classroomToEdit, onEdit } = this.props;
-        const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state;
-        const self = this;
-        if(!classroomToEdit) {
-            return axios.post('http://localhost:8000/api/classrooms', {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onSubmit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        } else {
-            return axios.patch(`http://localhost:8000/api/classrooms/${classroomToEdit._id}`, {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onEdit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        }
-    }
-    handleSubmitExam(){
-        const { onSubmit, classroomToEdit, onEdit } = this.props;
-        const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state;
-        const self = this;
-        if(!classroomToEdit) {
-            return axios.post('http://localhost:8000/api/classrooms', {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onSubmit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        } else {
-            return axios.patch(`http://localhost:8000/api/classrooms/${classroomToEdit._id}`, {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onEdit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        }
-    }
-    handleSubmitHomework(){
-        const { onSubmit, classroomToEdit, onEdit } = this.props;
-        const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state;
-        const self = this;
-        if(!classroomToEdit) {
-            return axios.post('http://localhost:8000/api/classrooms', {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onSubmit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        } else {
-            return axios.patch(`http://localhost:8000/api/classrooms/${classroomToEdit._id}`, {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onEdit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        }
-    }
-    handleSubmitLetter(){
-        const { onSubmit, classroomToEdit, onEdit } = this.props;
-        const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state;
-        const self = this;
-        if(!classroomToEdit) {
-            return axios.post('http://localhost:8000/api/classrooms', {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onSubmit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        } else {
-            return axios.patch(`http://localhost:8000/api/classrooms/${classroomToEdit._id}`, {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onEdit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        }
-    }
-    handleSubmitReport(){
-        const { onSubmit, classroomToEdit, onEdit } = this.props;
-        const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state;
-        const self = this;
-        if(!classroomToEdit) {
-            return axios.post('http://localhost:8000/api/classrooms', {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onSubmit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        } else {
-            return axios.patch(`http://localhost:8000/api/classrooms/${classroomToEdit._id}`, {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onEdit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        }
-    }
-    handleSubmitSchool(){
-        const { onSubmit, classroomToEdit, onEdit } = this.props;
-        const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state;
-        const self = this;
-        if(!classroomToEdit) {
-            return axios.post('http://localhost:8000/api/classrooms', {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onSubmit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        } else {
-            return axios.patch(`http://localhost:8000/api/classrooms/${classroomToEdit._id}`, {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onEdit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        }
-    }
-    handleSubmitStudent(){
-        const { onSubmit, classroomToEdit, onEdit } = this.props;
-        const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state;
-        const self = this;
-        if(!classroomToEdit) {
-            return axios.post('http://localhost:8000/api/classrooms', {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onSubmit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        } else {
-            return axios.patch(`http://localhost:8000/api/classrooms/${classroomToEdit._id}`, {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onEdit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        }
-    }
-    handleSubmitSubject(){
-        const { onSubmit, classroomToEdit, onEdit } = this.props;
-        const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state;
-        const self = this;
-        if(!classroomToEdit) {
-            return axios.post('http://localhost:8000/api/classrooms', {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onSubmit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        } else {
-            return axios.patch(`http://localhost:8000/api/classrooms/${classroomToEdit._id}`, {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onEdit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        }
-    }
-    handleSubmitUser(){
-        const { onSubmit, classroomToEdit, onEdit } = this.props;
-        const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state;
-        const self = this;
-        if(!classroomToEdit) {
-            return axios.post('http://localhost:8000/api/classrooms', {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onSubmit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        } else {
-            return axios.patch(`http://localhost:8000/api/classrooms/${classroomToEdit._id}`, {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onEdit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
+        if (!_user.username || _user.username.length === 0) return;
+        if (!_user.email || _user.email.length === 0) return;
+        if (!_user.password || _user.password.length === 0) return;
+        try {
+            const { data } = await API.update({ _user, _new_password, _old_email });
+            location.reload();
+        } catch (error) {
+            console.error(error);
         }
     }
 
     handleChangeField(key, event) {
         const _val = event.target.value;
-        if(key === "username" || key === "firstname" || key === "lastname"){
+        if(key === "email" || key === "username" || key === "_new_password" || key === "firstname" || key === "lastname" || key === "whoami"){
+            if(key === "email") {
+                this.setState(prevState => ({
+                    _user: {                   // object that we want to update
+                        ...prevState._user,    // keep all other key-value pairs
+                        email: _val       // update the value of specific key
+                    }
+                }));
+            }
             if(key === "username") {
                 this.setState(prevState => ({
                     _user: {                   // object that we want to update
                         ...prevState._user,    // keep all other key-value pairs
                         username: _val       // update the value of specific key
+                    }
+                }));
+            }
+            if(key === "_new_password") {
+                this.setState(prevState => ({
+                    _user: {                   // object that we want to update
+                        ...prevState._user,    // keep all other key-value pairs
+                        password: _val       // update the value of specific key
                     }
                 }));
             }
@@ -671,6 +114,14 @@ class Settings extends React.Component {
                     _user: {                   // object that we want to update
                         ...prevState._user,    // keep all other key-value pairs
                         lastname: _val       // update the value of specific key
+                    }
+                }));
+            }
+            if(key === "whoami") {
+                this.setState(prevState => ({
+                    _user: {                   // object that we want to update
+                        ...prevState._user,    // keep all other key-value pairs
+                        whoami: _val       // update the value of specific key
                     }
                 }));
             }
@@ -699,40 +150,67 @@ class Settings extends React.Component {
             }
         });
     }
+    _progress(user) {
+        function percentage(partialValue, totalValue) {
+            return (100 * partialValue) / totalValue;
+        }
+
+        var count = 0;
+        let total = 0;
+        Object.keys(user).forEach(function(key,index) {
+            if(key !== '_id' && key !== 'activated' && key !== 'messages' && key !== 'createdAt' && key !== 'updatedAt' && key !== '__v'){
+                total += 1;
+                count += (!user[key] ? 0 : 1);
+            }
+        });
+
+        $('.bar').width(_.ceil(percentage(count, total), 0)+'%');
+        return _.ceil(percentage(count, total), 0);
+    }
+    _progress_total(user) {
+        var count = 0;
+        Object.keys(user).forEach(function(key,index) {
+            if(key !== '_id' && key !== 'activated' && key !== 'messages' && key !== 'createdAt' && key !== 'updatedAt' && key !== '__v')
+                count += 1;
+        });
+        return _.ceil(count, 0);
+    }
     render() {
         const { articles, classrooms, courses, exams, homeworks, letters, reports, schools, students, subjects, user } = this.props;
-        const { _user } = this.state;
+        const { _user, _new_password } = this.state;
         return(
             <FullPage scrollMode={'normal'}>
 				<Slide>
-					<section className="first_section_settings">
+					<section id='settings_blog' className="first_section_settings">
                         <div className="wrapper_full">
                             <div className="bs-example bs-example-modal" data-example-id="static-modal">
                                 <div className="modal" role="dialog" tabIndex="-1">
                                     <div className="modal-dialog" role="document">
                                         <div className="modal-content">
                                             <div className="modal-body">
-                                                <a title="Close" className="modal-close" data-dismiss="modal">Close</a>
-                                                
+                                                <div className="_header">
+                                                    <nav aria-label="breadcrumb">
+                                                        <ol className="breadcrumb">
+                                                            <li className="breadcrumb-item"><a href="/dashboard">Profil</a></li>
+                                                            <li className="breadcrumb-item active" aria-current="page">{!_user.firstname ? _user.username : _user.firstname+' '+_user.lastname}</li>
+                                                        </ol>
+                                                    </nav>
+                                                    <span>Edit your name, username, email, ...</span>
+                                                </div>
                                                 <div className="_content">
                                                     <ul className="nav nav-tabs flex-column">
                                                         <li className="active">
                                                             <i className="fas fa-user-cog"></i>
-                                                            <span className="item"><a href="#1a" className="nav_link" data-toggle="tab">  Personal Data </a></span>
+                                                            <span className="item"><a href="#1a" className="nav_link" data-toggle="tab">  Personal Information </a></span>
                                                         </li>
                                                         <li>
-                                                            <i className="fas fa-at"></i>
-                                                            <span className="item"><a href="#2a" className="nav_link" data-toggle="tab">  Change Email Address </a></span>
-                                                        </li>
-                                                        <li>
-                                                            <i className="fas fa-key"></i>
-                                                            <span className="item"><a href="#3a" className="nav_link" data-toggle="tab">  Change Password </a></span>
+                                                            <i className="fas fa-users-cog"></i>
+                                                            <span className="item"><a href="#2a" className="nav_link" data-toggle="tab">  {_user.whoami != "teacher" || _user.whoami != "principal" ? 'Are you Staff' : 'Change status'} </a></span>
                                                         </li>
                                                     </ul>
-
                                                     <div className="tab-content clearfix">
                                                         <div className="personalData_pane tab-pane active" id="1a">
-                                                            Personal Data
+                                                            <span>Personal Information : </span>
                                                             <div className="modal-content_user">
 
                                                                 <fieldset className="input-field form-group">
@@ -740,7 +218,6 @@ class Settings extends React.Component {
                                                                     onChange={(ev) => this.handleChangeField('username', ev)}
                                                                     value={_user.username}
                                                                     className="validate form-group-input username" 
-                                                                    id="username"
                                                                     type="text" 
                                                                     name="username" 
                                                                     required="required"
@@ -777,11 +254,8 @@ class Settings extends React.Component {
                                                                     <div className="form-group-line"></div>
                                                                 </fieldset>
 
-                                                                <button onClick={this.handleSubmitUser} className="btn btn-primary float-right">Submit</button>
                                                             </div>
-                                                        </div>
-                                                        <div className="changeEmailAddress_pane tab-pane" id="2a">
-                                                            Change Email Address
+                                                            <span>Contact Information : </span>
                                                             <div className="modal-content_user">
 
                                                                 <fieldset className="input-field form-group">
@@ -790,7 +264,7 @@ class Settings extends React.Component {
                                                                     value={_user.email}
                                                                     className="validate form-group-input email" 
                                                                     id="email"
-                                                                    type="text" 
+                                                                    type="email" 
                                                                     name="email" 
                                                                     required="required"
                                                                     />
@@ -798,33 +272,65 @@ class Settings extends React.Component {
                                                                     <div className="form-group-line"></div>
                                                                 </fieldset>
 
-                                                                <button onClick={this.handleSubmitUser} className="btn btn-primary float-right">Submit</button>
                                                             </div>
-                                                        </div>
-                                                        <div className="changePassword_pane tab-pane" id="3a">
-                                                            Change Password
+                                                            <span>Password Management : </span>
                                                             <div className="modal-content_user">
 
                                                                 <fieldset className="input-field form-group">
                                                                     <input
-                                                                    onChange={(ev) => this.handleChangeField('password', ev)}
-                                                                    value={_user.password}
-                                                                    className="validate form-group-input password" 
-                                                                    id="password"
-                                                                    type="text" 
-                                                                    name="password" 
+                                                                    onChange={(ev) => this.handleChangeField('_new_password', ev)}
+                                                                    value={_new_password}
+                                                                    className="validate form-group-input _new_password" 
+                                                                    id="_new_password"
+                                                                    type="password" 
+                                                                    name="_new_password" 
                                                                     required="required"
                                                                     />
-                                                                    <label htmlFor='empasswordail'>password</label>
+                                                                    <label htmlFor='_new_password'>new password</label>
                                                                     <div className="form-group-line"></div>
                                                                 </fieldset>
 
-                                                                <button onClick={this.handleSubmitUser} className="btn btn-primary float-right">Submit</button>
+                                                            </div>
+                                                            <button onClick={this.send_user} className="btn btn-primary float-right">Submit</button>
+                                                        </div>
+                                                        <div className="changeStaff_pane tab-pane" id="2a">
+                                                            Are you a staff member
+                                                            <div className="modal-content_user">
+
+                                                                <fieldset className="input-field form-group">
+                                                                    <input
+                                                                    onChange={(ev) => this.handleChangeField('whoami', ev)}
+                                                                    value={_user.whoami}
+                                                                    className="validate form-group-input whoami" 
+                                                                    id="whoami"
+                                                                    type="text" 
+                                                                    name="whoami" 
+                                                                    required="required"
+                                                                    />
+                                                                    <label htmlFor='whoami'>whoami</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
+
+                                                            </div>
+                                                            <button onClick={this.handleSubmitUser} className="btn btn-primary float-right">Submit</button>
+                                                        </div>
+                                                    </div>
+                                                    <div className="side_face">
+                                                        <span className="_title">Progress : </span>
+                                                        <div className="_progress">
+                                                            <i className="fas fa-info"></i>
+                                                            <span className="_percentage">
+                                                                <span className="_percentage_number">{this._progress(_user)}</span>
+                                                                <span className="_percentage_icon">%</span>
+                                                                <span>|</span>
+                                                                <span>{this._progress_total(_user)} field</span>
+                                                            </span>
+                                                            <div className="_progress_bar">
+                                                                <div className="bar"></div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-
                                             </div>
                                         </div>
                                     </div>

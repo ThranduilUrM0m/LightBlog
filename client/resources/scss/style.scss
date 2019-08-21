@@ -14,7 +14,7 @@ $warmWhite: #e9eced;
 $color1: rgba(41, 41, 41, 1);
 $color1Faded: rgba(41, 41, 41, 0.2);
 $green: #4CAF50;
-$mainFont: 'Poppins', sans-serif;
+$mainFont: 'Roboto', sans-serif;
 $mainColor: #333;
 $liteBg_gray: #E1DFE0;
 $Gradient: #453178;
@@ -1438,10 +1438,12 @@ body, html {
 					width: 100%;
 					height: 100%;
 					padding-top: 5rem;
+					margin-bottom: 0.5rem;
 					.modal {
 						position: relative;
 						display: block;
 						height: fit-content;
+						max-height: 100%;
 						width: fit-content;
 						padding-right: 0 !important;
 						top: 50%;
@@ -1461,6 +1463,33 @@ body, html {
 						}
 						h5 {
 							margin: 0 0 15px;
+						}
+						._header {
+							nav{
+								background: none;
+								box-shadow: none;
+								height: fit-content;
+    							line-height: unset;
+								.breadcrumb {
+									background: none;
+									padding: 0;
+									margin: 0;
+									&-item{
+										font-size: small;
+										a{
+											color: $mainColor;
+										}
+									}
+									.breadcrumb-item + .breadcrumb-item::before {
+										content: ">";
+									}
+								}
+							}
+							span {
+								font-size: x-small;
+								color: #6c757d;
+								margin-bottom: 1rem;
+							}
 						}
 						._content {
 							display: flex;
@@ -1543,12 +1572,14 @@ body, html {
 									height: 100%;
 									.modal-content_user{
 										padding: 1rem 0;
+										margin: 0;
 										input {
-											border: 0.01rem solid rgba(#000,0.3);
+											border: 0.01rem solid rgba(#000,0.1);
 											padding: 0.2rem;
 											padding-left: 1rem;
 											margin: 0;
 											width: unset;
+											min-width: 25rem;
 										}
 										label {
 											left: 0.2rem;
@@ -1565,12 +1596,83 @@ body, html {
 										}
 									}
 									&.personalData_pane {
+										span {
+											color: #6c757d;
+										}
 									}
 									&.changeEmailAddress_pane {
 										
 									}
 									&.changePassword_pane {
 										
+									}
+								}
+							}
+							.side_face {
+								padding-left: 2.5rem;
+								._title {
+									color: #6c757d;
+								}
+								._progress {
+									width: 20rem;
+									margin: 0;
+									background: rgba(0, 0, 0, 0.05);
+									padding: 0.5rem;
+									i {
+										position: absolute;
+										right: 1.5rem;
+										color: #6c757d;
+									}
+									._percentage {
+										* {
+											color: #6c757d;
+											margin-right: 0.5rem;
+										}
+										&_number {
+											color: #0e90d2;
+											font-size: xx-large;
+										}
+									}
+									&_bar {
+										overflow: hidden;
+										height: 0.8rem;
+										background-color: white;
+
+										border: 1px solid rgba(#0e90d2, 0.5);
+										-webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+										-moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+										box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+										
+										-webkit-border-radius: 0px;
+										-moz-border-radius: 0px;
+										border-radius: 0px;
+										.bar {
+											width: 0;
+											height: 0.8rem;
+											background-color: #0e90d2;
+											background-image: -moz-linear-gradient(top, #149bdf, #0480be);
+											background-image: -ms-linear-gradient(top, #149bdf, #0480be);
+											background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#149bdf), to(#0480be));
+											background-image: -webkit-linear-gradient(top, #149bdf, #0480be);
+											background-image: -o-linear-gradient(top, #149bdf, #0480be);
+											background-image: linear-gradient(top, #149bdf, #0480be);
+											background-repeat: repeat-x;
+											filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#149bdf', endColorstr='#0480be', GradientType=0);
+											
+											-webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+											-moz-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+											box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+											
+											-webkit-box-sizing: border-box;
+											-moz-box-sizing: border-box;
+											box-sizing: border-box;
+											
+											-webkit-transition: width 0.6s ease;
+											-moz-transition: width 0.6s ease;
+											-ms-transition: width 0.6s ease;
+											-o-transition: width 0.6s ease;
+											transition: width 0.6s ease;
+										}
 									}
 								}
 							}

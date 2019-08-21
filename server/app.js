@@ -7,6 +7,7 @@ const errorHandler = require('errorhandler');
 const mongoose = require('mongoose');
 
 mongoose.promise = global.Promise;
+mongoose.set('useFindAndModify', false);
 
 const isProduction = process.env.NODE_ENV === 'production';
 

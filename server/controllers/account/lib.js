@@ -84,6 +84,52 @@ async function signup(req, res) {
         return res.status(500).json({ error });
     }
 }
+async function update(req, res) {
+    const { _user, _new_password, _old_email } = req.body;
+    if (!_user.username || !_user.email || !_user.password) {
+        //Le cas où l'email ou bien le password ne serait pas soumit ou nul
+        return res.status(400).json({
+            text: "Requête invalide"
+        });
+    }
+    // Création d'un objet user, dans lequel on hash le mot de passe
+    const user = {
+        email: _user.email,
+        username: _user.username,
+        password: passwordHash.generate(_new_password),
+        firstname: _user.firstname,
+        lastname: _user.lastname,
+        activated: _user.activated,
+        messages: _user.messages,
+        whoami: _user.whoami,
+    };
+    try {
+        // Sauvegarde de l'utilisateur en base
+        const findUser = await User.findOneAndUpdate(
+            { email : _old_email },
+            {
+                $set : {
+                    email : user.email, 
+                    username : user.username,
+                    password : user.password,
+                    firstname : user.firstname,
+                    lastname : user.lastname,
+                    activated : user.activated,
+                    messages : user.messages,
+                    whoami : user.whoami,
+                }
+            },
+            { upsert: true }
+        );
+        main(user.email).catch(console.error);
+        return res.status(200).json({
+            text: "Succès",
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ error });
+    }
+}
 async function login(req, res) {
     const { password, email } = req.body;
     if (!email || !password) {
@@ -148,3 +194,4 @@ async function get_user(req, res) {
 exports.get_user = get_user;
 exports.login = login;
 exports.signup = signup;
+exports.update = update;

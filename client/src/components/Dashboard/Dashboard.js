@@ -36,8 +36,14 @@ class Dashboard extends React.Component {
         this._handleTap();
         $('.nav_link').click((event) => {
             let _li_parent = $(event.target).parent().parent();
+            let _li_target = $($(event.target).attr('href'));
+
             $(_li_parent).addClass('active');
-            $(".dashboard_menu li").not(_li_parent).removeClass('active');
+            $(_li_target).addClass('active');
+            $(_li_target).addClass('show');
+            $("._content li").not(_li_parent).removeClass('active');
+            $('.tab-pane').not(_li_target).removeClass('active');
+            $('.tab-pane').not(_li_target).removeClass('show');
         });
     }
     async get_user() {
