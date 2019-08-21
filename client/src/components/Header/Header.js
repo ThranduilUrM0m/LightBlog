@@ -56,9 +56,12 @@ class AccountForm extends React.Component {
         if (!login_password || login_password.length === 0) return;
         try {
             const { data } = await API.login(login_email, login_password);
+
+            //hna jeb l user nichane bla bsala
             localStorage.setItem("token", data.token);
-            localStorage.setItem('username', data.username);
+            localStorage.setItem('identification', data.identification);
             localStorage.setItem('email', data.email);
+            localStorage.setItem('username', data.username);
             location.reload();
         } catch (error) {
             console.error(error);
@@ -277,7 +280,6 @@ class AccountProfil extends React.Component {
                         <ul>
                             <li>{ localStorage.getItem('email') }</li>
                             <li><Link to='/dashboard' id="_profil_link"><i className="far fa-user"></i> Dashboard </Link></li>
-                            <li><a href=""><i className="far fa-envelope"></i>Messages</a></li>
                             <li><a href=""><i className="fas fa-cog"></i>Settings</a></li>
                             <li><a href="" onClick={this.disconnect}><i className="fas fa-sign-out-alt"></i>Logout</a></li>
                         </ul>
@@ -387,14 +389,15 @@ class Header extends React.Component {
                 $('.menu').toggleClass('menu--is-closed');
                 $('.navToggle').toggleClass('active');
             }
-        })
+        });
 
         /* outside the login or menu */
         $('.overlay_menu').click(function(){
+            $('.overlay_menu').toggleClass('overlay_menu--is-closed');
+
             if($(".login").css('display') != 'none'){
                 $(".login").toggle(400);
             }
-            $('.overlay_menu').toggleClass('overlay_menu--is-closed');
             
             let _profil_dropdown = document.querySelector(".accountProfilHolder");
             if (_profil_dropdown && _profil_dropdown.classList.contains("open")) {
@@ -405,7 +408,6 @@ class Header extends React.Component {
                 $('.menu').toggleClass('menu--is-closed');
                 $('.navToggle').toggleClass('active');
             }
-            $('.overlay_menu').toggleClass('overlay_menu--is-closed');
         });
 
         $('#signup_modal').on('hidden.bs.modal', function (e) {

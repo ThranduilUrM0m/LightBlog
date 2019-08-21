@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 const ClassroomsSchema = new Schema({
     _code: String,
     _name: String,
-    _year: String,
+    _grade: String,
     _section: String,
     _school: {
         _name: String,
@@ -30,7 +30,7 @@ ClassroomsSchema.methods.toJSON = function() {
 
         _code: this._code,
         _name: this._name,
-        _year: this._year,
+        _grade: this._grade,
         _section: this._section,
         _school: this._school,
         _teacher: this._teacher,

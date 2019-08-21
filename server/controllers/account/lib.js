@@ -104,15 +104,14 @@ async function login(req, res) {
             return res.status(401).json({
                 text: "Mot de passe incorrect"
             });
-        console.log(findUser);
         return res.status(200).json({
             token: findUser.getToken(),
+            identification: findUser._id,
             email: findUser.email,
             username: findUser.username,
             text: "Authentification réussi"
         });
     } catch (error) {
-        console.log(error);
         return res.status(500).json({
             error
         });

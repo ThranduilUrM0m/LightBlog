@@ -29,6 +29,11 @@ const userSchema = new Schema({
         body: String,
         date: Date,
     }],
+    _isTeacher: Boolean,
+    _school: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
 }, { timestamps: true });
   
 userSchema.methods = {

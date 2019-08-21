@@ -40,6 +40,7 @@ require('./models/Exams');
 require('./models/Courses');
 require('./models/Subjects');
 require('./models/Classrooms');
+require('./models/Schools');
 
 // Add routes
 const router = express.Router();

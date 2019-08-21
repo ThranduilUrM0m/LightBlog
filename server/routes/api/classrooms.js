@@ -53,22 +53,6 @@ router.post('/', (req, res, next) => {
     });
   }
 
-  if(!body._subjects) {
-    return res.status(422).json({
-      errors: {
-        title: 'is required',
-      },
-    });
-  }
-
-  if(!body._students) {
-    return res.status(422).json({
-      errors: {
-        title: 'is required',
-      },
-    });
-  }
-
   const finalClassroom = new Classrooms(body);
   return finalClassroom.save()
     .then(() => res.json({ classroom: finalClassroom.toJSON() }))
