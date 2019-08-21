@@ -21,6 +21,7 @@ import Coffee from './components/Coffee/Coffee';
 import Education from './components/Education/Education';
 import FAQ from './components/FAQ/FAQ';
 import Dashboard from './components/Dashboard/Dashboard';
+import Settings from './components/Settings/Settings';
 import PrivateRoute from './components/PrivateRoute';
 
 import '../resources/scss/style.scss';
@@ -39,6 +40,7 @@ ReactDOM.render(
           <Route exact path='/education' component={Education} />
           <Route exact path='/faq' component={FAQ} />
           <PrivateRoute path='/dashboard' component={Dashboard} />
+          <PrivateRoute path='/settings' component={Settings} />
           <Route component={NotFound}/>
         </Switch>
       </App>

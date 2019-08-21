@@ -23,17 +23,15 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
+    firstname: String,
+    lastname: String,
     activated: Boolean,
     messages: [{
         author: String,
         body: String,
         date: Date,
     }],
-    _isTeacher: Boolean,
-    _school: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    },
+    whoami: String,
 }, { timestamps: true });
   
 userSchema.methods = {

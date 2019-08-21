@@ -14,8 +14,11 @@ class AccountForm extends React.Component {
             signup_email: '',
             signup_password: '',
             confirm_signup_password: '',
+            firstname: '',
+            lastname: '',
             activated: false,
             messages: [],
+            whoami: ''
         }
         this._handleClickEvents = this._handleClickEvents.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -57,25 +60,22 @@ class AccountForm extends React.Component {
         try {
             const { data } = await API.login(login_email, login_password);
 
-            console.log(data);
-
-            //hna jeb l user nichane bla bsala
             localStorage.setItem("token", data.token);
             localStorage.setItem('email', data.email);
             localStorage.setItem('username', data.username);
 
-            //location.reload();
+            location.reload();
         } catch (error) {
             console.error(error);
         }
     }
     async send_signup() {
-        const { signup_username, signup_email, signup_password, confirm_signup_password, activated, messages } = this.state;
+        const { signup_username, signup_email, signup_password, confirm_signup_password, firstname, lastname, activated, messages, whoami } = this.state;
         if (!signup_username || signup_username.length === 0) return;
         if (!signup_email || signup_email.length === 0) return;
         if (!signup_password || signup_password.length === 0 || signup_password !== confirm_signup_password) return;
         try {
-            const { data } = await API.signup({ signup_username, signup_email, signup_password, activated, messages });
+            const { data } = await API.signup({ signup_username, signup_email, signup_password, firstname, lastname, activated, messages, whoami });
             localStorage.setItem("token", data.token);
             localStorage.setItem('email', data.email);
             localStorage.setItem('username', data.username);
@@ -281,8 +281,8 @@ class AccountProfil extends React.Component {
                     <div className="content">
                         <ul>
                             <li>{ localStorage.getItem('email') }</li>
-                            <li><Link to='/dashboard' id="_profil_link"><i className="far fa-user"></i> Dashboard </Link></li>
-                            <li><a href=""><i className="fas fa-cog"></i>Settings</a></li>
+                            <li><Link to='/dashboard' className="_profil_link"><i className="far fa-user"></i> Dashboard </Link></li>
+                            <li><Link to='/settings' className="_profil_link"><i className="fas fa-cog"></i>Settings</Link></li>
                             <li><a href="" onClick={this.disconnect}><i className="fas fa-sign-out-alt"></i>Logout</a></li>
                         </ul>
                     </div>
@@ -381,7 +381,7 @@ class Header extends React.Component {
             $('.nav-link').not(this).removeClass('active');
         });
 
-        $('#_profil_link').click(() => {
+        $('._profil_link').click(() => {
             let _profil_dropdown = document.querySelector(".accountProfilHolder");
             if (_profil_dropdown && _profil_dropdown.classList.contains("open")) {
                 _profil_dropdown.classList.remove("open");

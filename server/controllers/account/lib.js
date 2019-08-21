@@ -33,7 +33,7 @@ async function main(user_email) {
     // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
 }
 async function signup(req, res) {
-    const { signup_username, signup_password, signup_email, activated, messages } = req.body;
+    const { signup_username, signup_password, signup_email, firstname, lastname, activated, messages, whoami } = req.body;
     if (!signup_username || !signup_email || !signup_password) {
         //Le cas où l'email ou bien le password ne serait pas soumit ou nul
         return res.status(400).json({
@@ -45,8 +45,11 @@ async function signup(req, res) {
         email: signup_email,
         username: signup_username,
         password: passwordHash.generate(signup_password),
+        firstname: firstname,
+        lastname: lastname,
         activated: activated,
         messages: messages,
+        whoami: whoami,
     };
     // On check en base si l'utilisateur existe déjà
     try {
@@ -69,9 +72,8 @@ async function signup(req, res) {
         // Sauvegarde de l'utilisateur en base
         const userData = new User(user);
         const userObject = await userData.save();
-
+        
         main(user.email).catch(console.error);
-
         return res.status(200).json({
             text: "Succès",
             email: user.email,
