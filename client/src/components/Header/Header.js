@@ -57,12 +57,14 @@ class AccountForm extends React.Component {
         try {
             const { data } = await API.login(login_email, login_password);
 
+            console.log(data);
+
             //hna jeb l user nichane bla bsala
             localStorage.setItem("token", data.token);
-            localStorage.setItem('identification', data.identification);
             localStorage.setItem('email', data.email);
             localStorage.setItem('username', data.username);
-            location.reload();
+
+            //location.reload();
         } catch (error) {
             console.error(error);
         }

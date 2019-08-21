@@ -1,20 +1,22 @@
 import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
+import Footer from '../Footer/Footer';
 import { connect } from 'react-redux';
 import { FullPage, Slide } from 'react-full-page';
 import { Link } from 'react-router-dom';
 import 'whatwg-fetch';
 import { pagination } from 'paginationjs';
 import Fingerprint from 'fingerprintjs';
-import Footer from '../Footer/Footer';
 import Calendar from 'rc-calendar';
+import API from '../../utils/API';
+var _ = require('lodash');
 
 class Dashboard extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-
+            _user: {}
         };
         this.handleSubmitArticle = this.handleSubmitArticle.bind(this);
         this.handleSubmitClassroom = this.handleSubmitArticle.bind(this);
@@ -27,25 +29,27 @@ class Dashboard extends React.Component {
         this.handleSubmitStudent = this.handleSubmitArticle.bind(this);
         this.handleSubmitSubject = this.handleSubmitArticle.bind(this);
         this.handleChangeField = this.handleChangeField.bind(this);
+        this.get_user = this.get_user.bind(this);
     }
     componentDidMount() {
-        const {onLoad} = this.props;
-        const self = this;
-        axios('http://localhost:8000/api/students')
-        .then(function (response) {
-            // handle success
-            onLoad(response.data);
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-
+        this.get_user();
         this._handleTap();
         $('.nav_link').click((event) => {
             let _li_parent = $(event.target).parent().parent();
             $(_li_parent).addClass('active');
             $(".dashboard_menu li").not(_li_parent).removeClass('active');
         });
+    }
+    async get_user() {
+        const self = this;
+        try {
+            const { data } = await API.get_user(localStorage.getItem('email'));
+            self.setState({
+                _user: data.user
+            });
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     handleSubmitArticle(){
@@ -614,8 +618,8 @@ class Dashboard extends React.Component {
         });
     }
     render() {
-        const { articles, classrooms, courses, exams, homeworks, letters, reports, schools, students, subjects, users } = this.props;
-        const {  } = this.state;
+        const { articles, classrooms, courses, exams, homeworks, letters, reports, schools, students, subjects, user } = this.props;
+        const { _user } = this.state;
         return(
             <FullPage scrollMode={'normal'}>
 				<Slide>
@@ -677,7 +681,7 @@ class Dashboard extends React.Component {
                                         <li className="cards__item">
                                             <div className="card">
                                                 <div className="card__content">
-                                                    <div className="card__title">Dashboards</div>
+                                                    <div className="card__title"></div>
                                                 </div>
                                             </div>
                                         </li>
@@ -908,11 +912,11 @@ const mapStateToProps = state => ({
     schools: state.home.schools,
     students: state.home.students,
     subjects: state.home.subjects,
-    users: state.home.users,
+    user: state.home.user,
 });
 
 const mapDispatchToProps = dispatch => ({
-    onLoad: data => dispatch({ type: 'DASHBOARD_PAGE_LOADED', data }),
+    onLoad: data => dispatch({ type: 'USER_PAGE_LOADED', data }),
 	onSubmit: data => dispatch({ type: 'SUBMIT_CLASSROOM', data }),
 });
   

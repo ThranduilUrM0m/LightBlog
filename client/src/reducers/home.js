@@ -9,7 +9,7 @@ export default (state={
         schools: [],
         students: [],
         subjects: [],
-        users: [],
+        user: {},
     }, action) => {
     switch(action.type) {
         //ARTICLE
@@ -365,8 +365,7 @@ export default (state={
         //USER
         case 'USER_PAGE_LOADED':
             return {
-                ...state,
-                users: action.data.users,
+                user: action.data.user,
             };
         case 'SUBMIT_USER':
             return {
@@ -411,7 +410,7 @@ export default (state={
                 schools: action.data.schools,
                 students: action.data.students,
                 subjects: action.data.subjects,
-                users: action.data.users,
+                user: action.data.user,
             };
 
         default:

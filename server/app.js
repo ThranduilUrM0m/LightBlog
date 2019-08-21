@@ -46,7 +46,9 @@ require('./models/Schools');
 const router = express.Router();
 app.use("/user", router);
 require('./controllers/userController')(router);
+
 app.use(require('./routes'));
+
 
 app.use((req, res, next) => {
   const err = new Error('Not Found');

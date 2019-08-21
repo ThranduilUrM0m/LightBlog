@@ -82,7 +82,6 @@ async function signup(req, res) {
         return res.status(500).json({ error });
     }
 }
-
 async function login(req, res) {
     const { password, email } = req.body;
     if (!email || !password) {
@@ -106,7 +105,6 @@ async function login(req, res) {
             });
         return res.status(200).json({
             token: findUser.getToken(),
-            identification: findUser._id,
             email: findUser.email,
             username: findUser.username,
             text: "Authentification réussi"
@@ -117,8 +115,34 @@ async function login(req, res) {
         });
     }
 }
+async function get_user(req, res) {
+    const { email } = req.body;
+    if (!email) {
+        //Le cas où l'email ne serait pas soumit ou nul
+        return res.status(400).json({
+            text: "Requête invalide"
+        });
+    }
+    try {
+        // On check si l'utilisateur existe en base
+        const findUser = await User.findOne({ 
+            email 
+        });
+        if (!findUser)
+            return res.status(401).json({
+                text: "L'utilisateur n'existe pas"
+            });
+        return res.status(200).json({
+            user: findUser
+        });
+    } catch (error) {
+        return res.status(500).json({
+            error
+        });
+    }
+}
 
 //On exporte nos deux fonctions
-
+exports.get_user = get_user;
 exports.login = login;
 exports.signup = signup;
