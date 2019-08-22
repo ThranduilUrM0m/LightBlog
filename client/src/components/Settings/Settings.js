@@ -33,6 +33,7 @@ class Settings extends React.Component {
         this.get_user();
         this._handleTap();
         document.getElementById('settings_blog').parentElement.style.height = 'initial';
+        document.getElementById('settings_blog').parentElement.style.minHeight = '100%';
         $('.nav_link').click((event) => {
             let _li_parent = $(event.target).parent().parent();
             let _li_target = $($(event.target).attr('href'));
@@ -44,24 +45,48 @@ class Settings extends React.Component {
             $('.tab-pane').not(_li_target).removeClass('active');
             $('.tab-pane').not(_li_target).removeClass('show');
         });
-
-        /* const {onLoadSchool} = this.props;
-        axios('http://localhost:8000/api/schools')
-        .then(function (response) {
-            // handle success
-            onLoadSchool(response.data);
-        })
-        .catch(function (error) {
-            console.log(error);
-        }); */
+        $(".tab-pane button").on("click", function(e) {
+            var clickY = e.pageY - $(this).offset().top;
+            var clickX = e.pageX - $(this).offset().left;
+            var el = this;
+            var svg = '<svg><circle cx="' + parseInt(clickX) + '" cy="' + parseInt(clickY) + '" r="' + 0 + '"></circle></svg>'
+            $(this).find('svg').remove();
+            $(this).append(svg);
+            var c = $(el).find("circle");
+            c.animate({
+                "r": $(el).width() * 2
+            }, {
+                duration: 600,
+                step: function(val) {
+                    c.attr("r", val);
+                },
+                complete: function() {
+                    c.fadeOut(400);
+                }
+            });
+        });
     }
     async get_user() {
         const self = this;
         try {
             const { data } = await API.get_user(localStorage.getItem('email'));
-            self.setState({
+            self.setState(prevState => ({
                 _user: data.user,
+                _school: data.user.school,
                 _old_email: data.user.email
+            }), () => {
+                const {onLoadSchool} = self.props;
+                axios(`http://localhost:8000/api/schools/${data.user.school}`)
+                .then(function (response) {
+                    // handle success
+                    onLoadSchool(response.data);
+                    self.setState({
+                        _school: response.data.school
+                    })
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
             });
         } catch (error) {
             console.error(error);
@@ -76,17 +101,14 @@ class Settings extends React.Component {
         if (!_user.password || _user.password.length === 0) return;
         try {
             const { data } = await API.update({ _user, _new_password, _old_email });
+            $('#edit_modal').modal('toggle');
         } catch (error) {
             console.error(error);
         }
     }
     handleSubmitSchool() {
-        this.send_user();
         const { onSubmitSchool } = this.props;
         const { _name, _address, _principal_name } = this.state._school;
-        
-        console.log(this.state._school);
-        
         const self = this;
         return axios.post('http://localhost:8000/api/schools', {
             _name,
@@ -94,10 +116,15 @@ class Settings extends React.Component {
             _principal_name,
         })
             .then((res) => onSubmitSchool(res.data))
-            .then(function() {
-                self.setState({ 
-                    _school: {}
-                })
+            .then((res) =>  {
+                self.setState(prevState => ({
+                    _user: {                   // object that we want to update
+                        ...prevState._user,    // keep all other key-value pairs
+                        school: res.data.school._id       // update the value of specific key
+                    },
+                }), () => {
+                    self.send_user();
+                });
             });
     }
     handleChangeField(key, event) {
@@ -273,7 +300,7 @@ class Settings extends React.Component {
                                                                     name="username" 
                                                                     required="required"
                                                                     />
-                                                                    <label htmlFor='username'>@username</label>
+                                                                    <label htmlFor='username' className={_user.username ? 'active' : ''}>@username</label>
                                                                     <div className="form-group-line"></div>
                                                                 </fieldset>
 
@@ -287,7 +314,7 @@ class Settings extends React.Component {
                                                                     name="firstname" 
                                                                     required="required"
                                                                     />
-                                                                    <label htmlFor='firstname'>firstname</label>
+                                                                    <label htmlFor='firstname' className={_user.firstname ? 'active' : ''}>firstname</label>
                                                                     <div className="form-group-line"></div>
                                                                 </fieldset>
 
@@ -301,7 +328,7 @@ class Settings extends React.Component {
                                                                     name="lastname" 
                                                                     required="required"
                                                                     />
-                                                                    <label htmlFor='lastname'>lastname</label>
+                                                                    <label htmlFor='lastname' className={_user.lastname ? 'active' : ''}>lastname</label>
                                                                     <div className="form-group-line"></div>
                                                                 </fieldset>
 
@@ -319,7 +346,7 @@ class Settings extends React.Component {
                                                                     name="email" 
                                                                     required="required"
                                                                     />
-                                                                    <label htmlFor='email'>@email</label>
+                                                                    <label htmlFor='email' className={_user.email ? 'active' : ''}>@email</label>
                                                                     <div className="form-group-line"></div>
                                                                 </fieldset>
 
@@ -337,7 +364,7 @@ class Settings extends React.Component {
                                                                     name="_new_password" 
                                                                     required="required"
                                                                     />
-                                                                    <label htmlFor='_new_password'>new password</label>
+                                                                    <label htmlFor='_new_password' className={_new_password ? 'active' : ''}>new password</label>
                                                                     <div className="form-group-line"></div>
                                                                 </fieldset>
 
@@ -358,7 +385,7 @@ class Settings extends React.Component {
                                                                     name="whoami" 
                                                                     required="required"
                                                                     />
-                                                                    <label htmlFor='whoami'>whoami</label>
+                                                                    <label htmlFor='whoami' className={_user.whoami ? 'active' : ''}>whoami</label>
                                                                     <div className="form-group-line"></div>
                                                                     <span className="astuce">Teacher or Principal, Please make sure you correctly write it.</span>
                                                                 </fieldset>
@@ -376,7 +403,7 @@ class Settings extends React.Component {
                                                                     type="text" 
                                                                     name="_name" 
                                                                     />
-                                                                    <label htmlFor='_name'>School name</label>
+                                                                    <label htmlFor='_name' className={_school._name ? 'active' : ''}>School name</label>
                                                                     <div className="form-group-line"></div>
                                                                 </fieldset>
 
@@ -389,7 +416,7 @@ class Settings extends React.Component {
                                                                     type="text" 
                                                                     name="_address" 
                                                                     />
-                                                                    <label htmlFor='_address'>School address</label>
+                                                                    <label htmlFor='_address' className={_school._address ? 'active' : ''}>School address</label>
                                                                     <div className="form-group-line"></div>
                                                                 </fieldset>
 
@@ -402,7 +429,7 @@ class Settings extends React.Component {
                                                                     type="text" 
                                                                     name="_principal_name" 
                                                                     />
-                                                                    <label htmlFor='_principal_name'>Principal name</label>
+                                                                    <label htmlFor='_principal_name' className={_school._principal_name ? 'active' : ''}>Principal name</label>
                                                                     <div className="form-group-line"></div>
                                                                 </fieldset>
 
@@ -428,6 +455,18 @@ class Settings extends React.Component {
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="modal fade" id="edit_modal" tabIndex="-1" role="dialog" aria-labelledby="edit_modalLabel" aria-hidden="true">
+                            <div className="modal-dialog" role="document">
+                                <div className="modal-content">
+                                    <div className="modal-body">
+                                        <a title="Close" className="modal-close" data-dismiss="modal">Close</a>
+                                        <h5 className="modal-title" id="edit_modalLabel">Hey!</h5>
+                                        <div>Your Informations has been updated, we've sent you details to your email, we love you.</div>
+                                        <div><small>Thanks {localStorage.getItem('username')}</small></div>
                                     </div>
                                 </div>
                             </div>

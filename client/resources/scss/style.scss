@@ -193,6 +193,11 @@ $slack-angle: 15deg;
 		height: 0;
 	}
 }
+@-webkit-keyframes pulse {
+	from {transform: scale(1);}
+	50% {transform: scale(1.2);}
+	to {transform: scale(1);}
+}
 
 @function randomNum($min, $max) {
 	$rand: random();
@@ -1319,6 +1324,38 @@ body, html {
 				cursor: pointer;
 			}
 		}
+		#edit_modal {
+			height: fit-content;
+			width: fit-content;
+			padding-right: 0 !important;
+			top: 50%;
+			transform: translateY(-50%);
+			.modal-dialog {
+				margin: 0;
+			}
+			.modal-close {
+				color: #aaa;
+				font-size: 80%;
+				position: absolute;
+				right: 0;
+				top: 0;
+				text-align: center;
+				text-decoration: none;
+			}
+			h5 {
+				margin: 0 0 15px;
+			}
+			div:not(:last-of-type) {
+				margin-bottom: 15px;
+			}
+			small {
+				color: #aaa;
+			}
+			a {
+				text-decoration: underline;
+				cursor: pointer;
+			}
+		}
 		.wrapper_form {
 			position: absolute;
 			width: 80vw;
@@ -1451,6 +1488,9 @@ body, html {
 						&-dialog {
 							margin: 0;
 							max-width: unset;
+							.modal-content {
+								min-height: -webkit-fill-available;
+							}
 						}
 						&-close {
 							color: #aaa;
@@ -1477,7 +1517,7 @@ body, html {
 									&-item{
 										font-size: small;
 										a{
-											color: $mainColor;
+											color: $itemBg4;
 										}
 									}
 									.breadcrumb-item + .breadcrumb-item::before {
@@ -1614,6 +1654,45 @@ body, html {
 											color: #6c757d;
 										}
 									}
+									button {
+										color: black;
+										background: none;
+										border: solid 0.05rem black;
+										display: inline-block;
+										position: relative;
+										border-radius: 0;
+										position: relative;
+										overflow: hidden;
+										&.focus,
+										&:focus {
+											outline: none;
+											&:before {
+											transition: all 0.7s ease;
+											content: "";
+											position: absolute;
+											background: rgba(255, 255, 255, 0.2);
+											z-index: 99;
+											left: 15%;
+											right: 15%;
+											top: -50%;
+											bottom: -50%;
+											border-radius: 200%;
+											-webkit-animation: pulse ease 1.4s infinite;
+											}
+										}
+										
+										svg {
+											position: absolute;
+											top: 0;
+											left: 0;
+											width: 100%;
+											height: 100%;
+										}
+										
+										circle {
+											fill: rgba(255, 255, 255, 0.2);
+										}
+									}
 								}
 							}
 							.side_face {
@@ -1637,7 +1716,7 @@ body, html {
 											margin-right: 0.5rem;
 										}
 										&_number {
-											color: #0e90d2;
+											color: $itemBg4;
 											font-size: xx-large;
 										}
 									}
@@ -1646,7 +1725,7 @@ body, html {
 										height: 0.8rem;
 										background-color: white;
 
-										border: 1px solid rgba(#0e90d2, 0.5);
+										border: 1px solid rgba($itemBg4, 0.5);
 										-webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
 										-moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
 										box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -1657,15 +1736,15 @@ body, html {
 										.bar {
 											width: 0;
 											height: 0.8rem;
-											background-color: #0e90d2;
-											background-image: -moz-linear-gradient(top, #149bdf, #0480be);
-											background-image: -ms-linear-gradient(top, #149bdf, #0480be);
-											background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#149bdf), to(#0480be));
-											background-image: -webkit-linear-gradient(top, #149bdf, #0480be);
-											background-image: -o-linear-gradient(top, #149bdf, #0480be);
-											background-image: linear-gradient(top, #149bdf, #0480be);
+											background-color: $itemBg4;
+											background-image: -moz-linear-gradient(top, $itemBg4, lighten($itemBg4, 10%));
+											background-image: -ms-linear-gradient(top, $itemBg4, lighten($itemBg4, 10%));
+											background-image: -webkit-gradient(linear, 0 0, 0 100%, from($itemBg4), to(lighten($itemBg4, 10%)));
+											background-image: -webkit-linear-gradient(top, $itemBg4, lighten($itemBg4, 10%));
+											background-image: -o-linear-gradient(top, $itemBg4, lighten($itemBg4, 10%));
+											background-image: linear-gradient(top, $itemBg4, lighten($itemBg4, 10%));
 											background-repeat: repeat-x;
-											filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#149bdf', endColorstr='#0480be', GradientType=0);
+											filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=$itemBg4, endColorstr=lighten($itemBg4, 10%), GradientType=0);
 											
 											-webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
 											-moz-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);

@@ -18,7 +18,8 @@ class AccountForm extends React.Component {
             lastname: '',
             activated: false,
             messages: [],
-            whoami: ''
+            whoami: '',
+            school: null,
         }
         this._handleClickEvents = this._handleClickEvents.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -70,12 +71,12 @@ class AccountForm extends React.Component {
         }
     }
     async send_signup() {
-        const { signup_username, signup_email, signup_password, confirm_signup_password, firstname, lastname, activated, messages, whoami } = this.state;
+        const { signup_username, signup_email, signup_password, confirm_signup_password, firstname, lastname, activated, messages, whoami, school } = this.state;
         if (!signup_username || signup_username.length === 0) return;
         if (!signup_email || signup_email.length === 0) return;
         if (!signup_password || signup_password.length === 0 || signup_password !== confirm_signup_password) return;
         try {
-            const { data } = await API.signup({ signup_username, signup_email, signup_password, firstname, lastname, activated, messages, whoami });
+            const { data } = await API.signup({ signup_username, signup_email, signup_password, firstname, lastname, activated, messages, whoami, school });
             localStorage.setItem("token", data.token);
             localStorage.setItem('email', data.email);
             localStorage.setItem('username', data.username);
@@ -83,6 +84,9 @@ class AccountForm extends React.Component {
             $(".login").toggle(400);
             $('.overlay_menu').toggleClass('overlay_menu--is-closed');
             $('#signup_modal').modal('toggle');
+            $('#signup_modal .modal-close').click(() => {
+                location.reload();
+            });
         } catch (error) {
             console.error(error);
         }
@@ -411,10 +415,6 @@ class Header extends React.Component {
                 $('.navToggle').toggleClass('active');
             }
         });
-
-        $('#signup_modal').on('hidden.bs.modal', function (e) {
-            location.reload;
-        })
 
         document.querySelectorAll(".js-fr").forEach(trigger => {
             // pull trigger

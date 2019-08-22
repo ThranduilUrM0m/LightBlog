@@ -32,6 +32,7 @@ const userSchema = new Schema({
         date: Date,
     }],
     whoami: String,
+    school: {type: Schema.Types.ObjectId, ref: 'School', default: null}
 }, { timestamps: true });
   
 userSchema.methods = {
