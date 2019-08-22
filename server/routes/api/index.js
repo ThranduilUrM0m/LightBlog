@@ -9,5 +9,6 @@ router.use('/exams', require('./exams'));
 router.use('/courses', require('./courses'));
 router.use('/subjects', require('./subjects'));
 router.use('/classrooms', require('./classrooms'));
+router.use('/schools', require('./schools'));
 
 module.exports = router;

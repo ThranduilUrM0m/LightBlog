@@ -1594,17 +1594,25 @@ body, html {
 											left: 0;
 											bottom: 0;
 										}
+										.astuce {
+											position: absolute;
+											font-size: x-small;
+											color: #6c757d;
+											bottom: 0;
+											left: 0;
+											transform: translateY(100%);
+										}
+										&.schoolInformation {
+											display: none;
+											fieldset:last-of-type {
+												display: none;
+											}
+										}
 									}
 									&.personalData_pane {
 										span {
 											color: #6c757d;
 										}
-									}
-									&.changeEmailAddress_pane {
-										
-									}
-									&.changePassword_pane {
-										
 									}
 								}
 							}

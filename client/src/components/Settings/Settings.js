@@ -20,18 +20,17 @@ class Settings extends React.Component {
             _user: {},
             _new_password: '',
             _old_email: '',
+            _school: {},
         };
         this.handleChangeField = this.handleChangeField.bind(this);
-
+        this.handleSubmitSchool = this.handleSubmitSchool.bind(this);
         this.get_user = this.get_user.bind(this);
         this.send_user = this.send_user.bind(this);
-
         this._handleTap = this._handleTap.bind(this);
         this._progress = this._progress.bind(this);
     }
     componentDidMount() {
         this.get_user();
-
         this._handleTap();
         document.getElementById('settings_blog').parentElement.style.height = 'initial';
         $('.nav_link').click((event) => {
@@ -45,8 +44,17 @@ class Settings extends React.Component {
             $('.tab-pane').not(_li_target).removeClass('active');
             $('.tab-pane').not(_li_target).removeClass('show');
         });
+
+        /* const {onLoadSchool} = this.props;
+        axios('http://localhost:8000/api/schools')
+        .then(function (response) {
+            // handle success
+            onLoadSchool(response.data);
+        })
+        .catch(function (error) {
+            console.log(error);
+        }); */
     }
-    
     async get_user() {
         const self = this;
         try {
@@ -68,14 +76,33 @@ class Settings extends React.Component {
         if (!_user.password || _user.password.length === 0) return;
         try {
             const { data } = await API.update({ _user, _new_password, _old_email });
-            location.reload();
         } catch (error) {
             console.error(error);
         }
     }
-
+    handleSubmitSchool() {
+        this.send_user();
+        const { onSubmitSchool } = this.props;
+        const { _name, _address, _principal_name } = this.state._school;
+        
+        console.log(this.state._school);
+        
+        const self = this;
+        return axios.post('http://localhost:8000/api/schools', {
+            _name,
+            _address,
+            _principal_name,
+        })
+            .then((res) => onSubmitSchool(res.data))
+            .then(function() {
+                self.setState({ 
+                    _school: {}
+                })
+            });
+    }
     handleChangeField(key, event) {
         const _val = event.target.value;
+        const _target = event.target;
         if(key === "email" || key === "username" || key === "_new_password" || key === "firstname" || key === "lastname" || key === "whoami"){
             if(key === "email") {
                 this.setState(prevState => ({
@@ -123,12 +150,36 @@ class Settings extends React.Component {
                         ...prevState._user,    // keep all other key-value pairs
                         whoami: _val       // update the value of specific key
                     }
+                }), () => {
+                    _.lowerCase(_val) === 'teacher' ||  _.lowerCase(_val) === 'principal' ? $('.schoolInformation').css('display', 'block') : $('.schoolInformation').css('display', 'none');
+                    _.lowerCase(_val) === 'teacher' ? $('.schoolInformation input#_principal_name').parent().css('display', 'block') : $('.schoolInformation input#_principal_name').parent().css('display', 'none');
+                });
+            }
+        } if(key === "_name" || key === "_address" || key === "_principal_name") {
+            if(key === "_name") {
+                this.setState(prevState => ({
+                    _school: {                   // object that we want to update
+                        ...prevState._school,    // keep all other key-value pairs
+                        _name: _val       // update the value of specific key
+                    }
                 }));
             }
-        } else {
-            this.setState({
-                [key]: event.target.value,
-            });
+            if(key === "_address") {
+                this.setState(prevState => ({
+                    _school: {                   // object that we want to update
+                        ...prevState._school,    // keep all other key-value pairs
+                        _address: _val       // update the value of specific key
+                    }
+                }));
+            }
+            if(key === "_principal_name") {
+                this.setState(prevState => ({
+                    _school: {                   // object that we want to update
+                        ...prevState._school,    // keep all other key-value pairs
+                        _principal_name: _val       // update the value of specific key
+                    }
+                }));
+            }
         }
     }
     _handleTap() {
@@ -177,7 +228,7 @@ class Settings extends React.Component {
     }
     render() {
         const { articles, classrooms, courses, exams, homeworks, letters, reports, schools, students, subjects, user } = this.props;
-        const { _user, _new_password } = this.state;
+        const { _user, _new_password, _school } = this.state;
         return(
             <FullPage scrollMode={'normal'}>
 				<Slide>
@@ -309,10 +360,54 @@ class Settings extends React.Component {
                                                                     />
                                                                     <label htmlFor='whoami'>whoami</label>
                                                                     <div className="form-group-line"></div>
+                                                                    <span className="astuce">Teacher or Principal, Please make sure you correctly write it.</span>
                                                                 </fieldset>
 
                                                             </div>
-                                                            <button onClick={this.handleSubmitUser} className="btn btn-primary float-right">Submit</button>
+                                                            School Information
+                                                            <div className="modal-content_user schoolInformation" style={ _user.whoami ? { display:'block'} : {display : 'none'} }>
+                                                                
+                                                                <fieldset className="input-field form-group">
+                                                                    <input
+                                                                    onChange={(ev) => this.handleChangeField('_name', ev)}
+                                                                    value={_school._name}
+                                                                    className="validate form-group-input _name" 
+                                                                    id="_name"
+                                                                    type="text" 
+                                                                    name="_name" 
+                                                                    />
+                                                                    <label htmlFor='_name'>School name</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
+
+                                                                <fieldset className="input-field form-group">
+                                                                    <input
+                                                                    onChange={(ev) => this.handleChangeField('_address', ev)}
+                                                                    value={_school._address}
+                                                                    className="validate form-group-input _address" 
+                                                                    id="_address"
+                                                                    type="text" 
+                                                                    name="_address" 
+                                                                    />
+                                                                    <label htmlFor='_address'>School address</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
+
+                                                                <fieldset className="input-field form-group" style={ _.lowerCase(_user.whoami) === 'teacher' ? { display:'block'} : {display : 'none'} }>
+                                                                    <input
+                                                                    onChange={(ev) => this.handleChangeField('_principal_name', ev)}
+                                                                    value={_school._principal_name}
+                                                                    className="validate form-group-input _principal_name" 
+                                                                    id="_principal_name"
+                                                                    type="text" 
+                                                                    name="_principal_name" 
+                                                                    />
+                                                                    <label htmlFor='_principal_name'>Principal name</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
+
+                                                            </div>
+                                                            <button onClick={this.handleSubmitSchool} className="btn btn-primary float-right">Submit</button>
                                                         </div>
                                                     </div>
                                                     <div className="side_face">
@@ -362,7 +457,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    onLoad: data => dispatch({ type: 'DASHBOARD_PAGE_LOADED', data }),
+    onLoadSchool: data => dispatch({ type: 'SCHOOL_PAGE_LOADED', data }),
+    onSubmitSchool: data => dispatch({ type: 'SUBMIT_SCHOOL', data }),
 });
   
 export default connect(mapStateToProps, mapDispatchToProps)(Settings)

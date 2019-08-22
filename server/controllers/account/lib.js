@@ -121,7 +121,7 @@ async function update(req, res) {
             },
             { upsert: true }
         );
-        main(user.email).catch(console.error);
+        //main(user.email).catch(console.error);
         return res.status(200).json({
             text: "Succès",
         });

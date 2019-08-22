@@ -4,31 +4,30 @@ const Schools = mongoose.model('Schools');
 
 router.post('/', (req, res, next) => {
   const { body } = req;
-
+  
   if(!body._name) {
     return res.status(422).json({
       errors: {
-        title: 'is required',
+        _name: 'is required',
       },
     });
   }
-
-  if(!body._adresse) {
+  
+  if(!body._address) {
     return res.status(422).json({
       errors: {
-        title: 'is required',
+        _address: 'is required',
       },
     });
   }
-
-  if(!body._prinipal_name) {
+  
+  if(!body._principal_name) {
     return res.status(422).json({
       errors: {
-        title: 'is required',
+        _principal_name: 'is required',
       },
     });
   }
-
   const finalSchool = new Schools(body);
   return finalSchool.save()
     .then(() => res.json({ school: finalSchool.toJSON() }))
@@ -66,8 +65,8 @@ router.patch('/:id', (req, res, next) => {
     req.school._name = body._name;
   }
 
-  if(typeof body._adresse !== 'undefined') {
-    req.school._adresse = body._adresse;
+  if(typeof body._address !== 'undefined') {
+    req.school._address = body._address;
   }
 
   if(typeof body._prinipal_name !== 'undefined') {
