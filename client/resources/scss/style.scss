@@ -1905,9 +1905,8 @@ body, html {
 							._students_header {
 								display: flex;
 								._search_form{
-									margin-left: calc(25rem - 2.5rem);
+									margin-left: 0;
 									position: relative;
-									transform: scale(0.8);
 									transform-origin: left;
 									&::before{
 										width: calc(25rem - 2.5rem);
@@ -2088,6 +2087,9 @@ body, html {
 										margin-left: calc(25rem - 2.5rem);
 										position: relative;
 										transform-origin: left;
+										&._opened {
+											margin-left: 0;
+										}
 										&::before{
 											width: calc(25rem - 2.5rem);
 											position: absolute;
@@ -2247,6 +2249,9 @@ body, html {
 									}
 									._filter_form {
 										display: flex;
+										.dropdown {
+											display: flex;
+										}
 										._filter, ._add_classroom {
 											color: black;
 											background: none;
@@ -2259,6 +2264,9 @@ body, html {
 											i {
 												color: rgba(0, 0, 0, 0.2);
 												margin-right: 0.2rem;
+											}
+											&.dropdown-toggle::after {
+												display:none;
 											}
 											&.focus,
 											&:focus {
@@ -2288,22 +2296,104 @@ body, html {
 												fill: rgba(255, 255, 255, 0.2);
 											}
 										}
+										.dropdown-menu {
+											position: absolute;
+											transform-origin: right;
+											will-change: transform;
+											transform: unset !important;
+											top: 100% !important;
+											left: unset !important;
+											right: 0;
+										}
 									}
 								}
 								._classrooms_content {
 									padding: 1rem;
 									._classrooms_data {
 										.classrooms_list {
+											position: relative;
 											thead {
 												th {
 													color: rgba(0, 0, 0, 0.5);
 													font-weight: initial;
-													text-align: center;
+													cursor: pointer;
+													position: relative;
+													._arrow {
+														float: right;
+														i.fa-caret-down, i.fa-caret-up{
+															color: $itemBg4;
+														}
+													}
 												}
 											}
 											tbody {
 												td {
-													text-align: center;
+													text-align: left;
+													span {
+														cursor: pointer;
+														&.dropdown-toggle::after {
+															display:none;
+														}
+													}
+													.dropdown-menu {
+														position: absolute;
+														transform-origin: right;
+														will-change: transform;
+														transform: unset !important;
+														top: 100% !important;
+														left: unset !important;
+														right: 0;
+													}
+												}
+											}
+											tfoot {
+												&#pagination-demo1 {
+													position: absolute;
+													width: 2.6rem;
+													right: 0;
+													bottom: 0;
+													ul {
+														display: flex;
+														flex-direction: column;
+														justify-content: center;
+														align-items: center;
+														li {
+															display: block;
+															border: 1px solid $mainColor;
+															width: 20%;
+															height: 100%;
+															overflow: hidden;    
+															opacity: 0.6;
+															text-align: center;
+															margin-bottom: 20%;
+															transition: all 0.2s ease-out;
+															a {
+																display: inline-block;
+																width: 100%;
+																line-height: 2.5rem;
+																color: transparent;
+																text-decoration: none;
+															}
+															&.active {
+																a {
+																	background-color: $mainColor;
+																}
+															}
+															&:hover {
+																width: 200%;
+																transform: translateX(-45%);
+																opacity: 1;
+																a {
+																	  color: $mainColor;
+																}
+																&.active {
+																	a {
+																		color: white;
+																	}
+																}
+															}
+														}
+													}
 												}
 											}
 										}

@@ -16,38 +16,59 @@ class Dashboard extends React.Component {
         super(props);
         this.state = {
             _user: {},
-            _classroom: {}
+            _classroom: {},
+            _school: {},
         };
         this.handleChangeField = this.handleChangeField.bind(this);
-        this.handleSubmitArticle = this.handleSubmitArticle.bind(this);
         this.handleSubmitClassroom = this.handleSubmitClassroom.bind(this);
+        this.handleDeleteClassroom = this.handleDeleteClassroom.bind(this);
+        this.handleEditClassroom = this.handleEditClassroom.bind(this);
+
         this.handleSubmitCourse = this.handleSubmitCourse.bind(this);
+        
         this.handleSubmitExam = this.handleSubmitExam.bind(this);
+        
         this.handleSubmitHomework = this.handleSubmitHomework.bind(this);
+        
         this.handleSubmitLetter = this.handleSubmitLetter.bind(this);
+        
         this.handleSubmitReport = this.handleSubmitReport.bind(this);
-        this.handleSubmitSchool = this.handleSubmitSchool.bind(this);
+        
         this.handleSubmitStudent = this.handleSubmitStudent.bind(this);
+        
         this.handleSubmitSubject = this.handleSubmitSubject.bind(this);
+        
         this.get_user = this.get_user.bind(this);
     }
     componentDidMount() {
-        this.get_user();
-        this._handleTap();
         const {onLoadClassroom} = this.props;
         const self = this;
+        this.get_user();
+
         axios('http://localhost:8000/api/classrooms')
-        .then(function (response) {
-            // handle success
-            onLoadClassroom(response.data);
+        .then((res) => onLoadClassroom(res.data))
+        .then((res) => {
+            $(function(){
+                function createDemo(name){
+                    var container = $('#pagination-' + name);
+                    var options = {
+                        dataSource: res.data.classrooms,
+                        pageSize: 5,
+                        autoHidePrevious: true,
+                        autoHideNext: true,
+                    };
+                    container.pagination(options);
+                      return container;
+                }
+                createDemo('demo1');
+            });
         })
         .catch(function (error) {
             // handle error
             console.log(error);
-        })
-        .then(function () {
-            // always executed
         });
+
+        this._handleTap();
         $('.nav_link').click((event) => {
             let _li_parent = $(event.target).parent().parent();
             let _li_target = $($(event.target).attr('href'));
@@ -64,85 +85,140 @@ class Dashboard extends React.Component {
             $(".nav_link").not(_link_target).removeClass('active');
             $('.nav_link').not(_link_target).removeClass('show');
         });
+
+        // sort start
+        function sortTable(f, n, i) {
+            $('._arrow').remove();
+            $(i).append('<div class="_arrow"></div>');
+
+            var rows = $(".classrooms_list tbody tr").get();
+            rows.sort(function(a, b) {
+                var A = getVal(a);
+                var B = getVal(b);
+                if (A < B) {
+                    return -1 * f;
+                }
+                if (A > B) {
+                    return 1 * f;
+                }
+                return 0;
+            });
+            function getVal(elm) {
+                var v = $(elm).children("td").eq(n).text().toUpperCase();
+                if ($.isNumeric(v)) {
+                    v = parseInt(v, 10);
+                }
+                return v;
+            }
+            $.each(rows, function(index, row) {
+                $(".classrooms_list").children("tbody").append(row);
+            });
+
+            if(getVal(_.first(rows)) < getVal(_.last(rows))){
+                $('._arrow').html('<i class="fas fa-caret-down"></i>');
+            }else {
+                $('._arrow').html('<i class="fas fa-caret-up"></i>');
+            }
+        }
+        var f_thisTh = 1;
+        $(".classrooms_list th", this.id).click(function(event) {
+            if(_.startsWith(event.target.className, 'fas')){
+                f_thisTh *= -1;
+                var n = $(this).parent().parent().prevAll().length;
+                var i = event.target.parentNode.parentNode;
+                sortTable(f_thisTh, n, i);
+            }
+            else {
+                f_thisTh *= -1;
+                var n = $(this).prevAll().length;
+                var i = event.target;
+                sortTable(f_thisTh, n, i);
+            }
+        });
+        $('.classrooms_list th').append('<div class="_arrow"></div>');
+        $('._arrow').html('<i class="fas fa-sort"></i>');
+        // sort end 
+        // filter start
+        (function(document) {
+            'use strict';
+            var LightTableFilter = (function(Arr) {
+                var _input;
+                function _onInputEvent(e) {
+                    _input = e.target;
+                    var tables = document.getElementsByClassName(_input.getAttribute('data-table'));
+                    Arr.forEach.call(tables, function(table) {
+                        Arr.forEach.call(table.tBodies, function(tbody) {
+                            Arr.forEach.call(tbody.rows, _filter);
+                        });
+                    });
+                }
+        
+                function _filter(row) {
+                    var text = row.textContent.toLowerCase(), val = _input.value.toLowerCase();
+                    row.style.display = text.indexOf(val) === -1 ? 'none' : 'table-row';
+                }
+        
+                return {
+                    init: function() {
+                        var inputs = document.getElementsByClassName('light-table-filter');
+                        Arr.forEach.call(inputs, function(input) {
+                            input.oninput = _onInputEvent;
+                        });
+                    }
+                };
+            })(Array.prototype);
+            document.addEventListener('readystatechange', function() {
+                if (document.readyState === 'complete') {
+                    LightTableFilter.init();
+                }
+            });
+        })(document);
+        // filter end
     }
     async get_user() {
         const self = this;
         try {
             const { data } = await API.get_user(localStorage.getItem('email'));
-            self.setState({
+            self.setState( prevState => ({
                 _user: data.user
+            }), () => {
+                axios(`http://localhost:8000/api/schools/${data.user.school}`)
+                .then(function (response) {
+                    // handle success
+                    self.setState({
+                        _school: response.data.school,
+                    })
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                });
             });
         } catch (error) {
             console.error(error);
         }
     }
-    handleSubmitArticle(){
-        const { onSubmit, classroomToEdit, onEdit } = this.props;
-        const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state;
-        const self = this;
-        if(!classroomToEdit) {
-            return axios.post('http://localhost:8000/api/classrooms', {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.classroomToEdit) {
+            this.setState({
+                _classroom: nextProps.classroomToEdit,
             })
-                .then((res) => onSubmit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        } else {
-            return axios.patch(`http://localhost:8000/api/classrooms/${classroomToEdit._id}`, {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onEdit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
         }
     }
+
     handleSubmitClassroom(){
-        const { onSubmitClassroom, classroomToEdit } = this.props;
         const { _user } = this.state;
-        const self = this;
-        if(!classroomToEdit) {
-            self.setState(prevState => ({
-                _classroom: {                   // object that we want to update
-                    ...prevState._classroom,    // keep all other key-value pairs
-                    _school: _user.school,       // update the value of specific key
-                    _teacher: _user._id,
-                },
-            }), () => {
-                const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state._classroom;
+        this.setState(prevState => ({
+            _classroom: {
+                ...prevState._classroom,
+                _school: _user.school,
+                _teacher: _user._id,
+            },
+        }), () => {
+            const { onSubmitClassroom, classroomToEdit, onEditClassroom } = this.props;
+            const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state._classroom;
+            const self = this;
+            if(!classroomToEdit) {
                 return axios.post('http://localhost:8000/api/classrooms', {
                     _code,
                     _name,
@@ -154,32 +230,43 @@ class Dashboard extends React.Component {
                     _students,
                 })
                     .then((res) => onSubmitClassroom(res.data))
-                    .then((res) => {
+                    .then(function() {
                         self.setState({ 
                             _classroom: {}
                         });
                         $('#_classroom_modal').modal('toggle');
                     });
-            });
-        } else {
-            return axios.patch(`http://localhost:8000/api/classrooms/${classroomToEdit._id}`, {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onEdit(res.data))
-                .then((res) => {
-                    self.setState({ 
-                        _classroom: {}
-                    })
-                });
-        }
+            } else {
+                return axios.patch(`http://localhost:8000/api/classrooms/${classroomToEdit._id}`, {
+                    _code,
+                    _name,
+                    _grade,
+                    _section,
+                    _school,
+                    _teacher,
+                    _subjects,
+                    _students,
+                })
+                    .then((res) => onEditClassroom(res.data))
+                    .then(function() {
+                        self.setState({ 
+                            _classroom: {}
+                        });
+                        $('#_classroom_modal').modal('toggle');
+                    });
+            }
+        });
     }
+    handleDeleteClassroom(id) {
+        const { onDeleteClassroom } = this.props;
+        return axios.delete(`http://localhost:8000/api/classrooms/${id}`)
+            .then(() => onDeleteClassroom(id));
+    }
+    handleEditClassroom(classroom) {
+        const { setEditClassroom } = this.props;
+        setEditClassroom(classroom);
+    }
+
     handleSubmitCourse(){
         const { onSubmit, classroomToEdit, onEdit } = this.props;
         const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state;
@@ -450,60 +537,6 @@ class Dashboard extends React.Component {
                 });
         }
     }
-    handleSubmitSchool(){
-        const { onSubmit, classroomToEdit, onEdit } = this.props;
-        const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state;
-        const self = this;
-        if(!classroomToEdit) {
-            return axios.post('http://localhost:8000/api/classrooms', {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onSubmit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        } else {
-            return axios.patch(`http://localhost:8000/api/classrooms/${classroomToEdit._id}`, {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onEdit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        }
-    }
     handleSubmitStudent(){
         const { onSubmit, classroomToEdit, onEdit } = this.props;
         const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state;
@@ -658,11 +691,13 @@ class Dashboard extends React.Component {
 
         $('.search-name').click(() => {
             if (!searchActivated_name) {
+                $('._search_form').addClass('_opened');
                 searchWrapper_name.classList.add('focused');
                 searchIcon_name.classList.add('active');
                 searchInput_name.focus();
                 searchActivated_name = !searchActivated_name;
             } else {
+                $('._search_form').removeClass('_opened');
                 searchWrapper_name.classList.remove('focused');
                 searchIcon_name.classList.remove('active');
                 searchActivated_name = !searchActivated_name;
@@ -670,8 +705,8 @@ class Dashboard extends React.Component {
         });
     }
     render() {
-        const { articles, classrooms, courses, exams, homeworks, letters, reports, schools, students, subjects, user } = this.props;
-        const { _classroom } = this.state;
+        const { articles, classrooms, classroomToEdit, courses, exams, homeworks, letters, reports, schools, students, subjects, user } = this.props;
+        const { _classroom, _user, _school } = this.state;
         return(
             <FullPage scrollMode={'normal'}>
 				<Slide>
@@ -815,21 +850,20 @@ class Dashboard extends React.Component {
                                         <div className="_classrooms_header">
                                             <div className="_search_form">
                                                 <div className="search-wrapper-name">
-                                                    <input className="search-input-name" type="text" placeholder="Search"/>
+                                                    <input className="search-input-name light-table-filter" type="search" data-table="classrooms_list" placeholder="Search"/>
                                                     <span></span>
                                                     <div className='search-name'></div>
                                                 </div>
                                             </div>
                                             <div className="_filter_form">
-                                                <button className="_filter btn-primary"><i className="fas fa-filter"></i>Filter</button>
                                                 <button className="_add_classroom btn-primary" data-toggle="modal" data-target="#_classroom_modal"><i className="fas fa-plus"></i>Add Classroom</button>
                                             </div>
                                         </div>
                                         <div className="_classrooms_content">
                                             <div className="_classrooms_data">
-                                                <table className="classrooms_list">
+                                                <table className="classrooms_list table table-striped">
                                                     <thead>
-                                                        <tr>
+                                                        <tr className="classrooms_list_header">
                                                             <th>Code</th>
                                                             <th>Name</th>
                                                             <th>Grade</th>
@@ -838,9 +872,11 @@ class Dashboard extends React.Component {
                                                             <th>Teacher</th>
                                                             <th>Subjects</th>
                                                             <th>Students</th>
+                                                            <th></th>
+                                                            <th></th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody>
+                                                    <tbody className="data-container">
                                                     {
                                                         _.orderBy(classrooms, ['createdAt'], ['desc']).map((classroom, index) => {
                                                             return (
@@ -849,18 +885,27 @@ class Dashboard extends React.Component {
                                                                     <td>{classroom._name}</td>
                                                                     <td>{classroom._grade}</td>
                                                                     <td>{classroom._section}</td>
-                                                                    <td>{classroom._school._name}</td>
-                                                                    <td>{classroom._teacher.username}</td>
+                                                                    <td>{_school._name}</td>
+                                                                    <td>{classroom._teacher === _user._id ? _user.firstname+' '+_user.lastname : ''}</td>
                                                                     <td>{_.size(classroom._subjects)}</td>
                                                                     <td>{_.size(classroom._students)}</td>
+                                                                    <td className="dropdown">
+                                                                        <span className="dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                            <i className="fas fa-ellipsis-h"></i>
+                                                                        </span>
+                                                                        <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                                            <a className="dropdown-item" href="" data-toggle="modal" data-target="#_classroom_modal" onClick={() => this.handleEditClassroom(classroom)}>Edit Classroom {classroom._code}</a>
+                                                                            <a className="dropdown-item" href="" onClick={() => this.handleDeleteClassroom(classroom._id)}>Delete Classroom {classroom._code}</a>
+                                                                        </div>
+                                                                    </td>
                                                                 </tr>
                                                             )
                                                         })
                                                     }
                                                     </tbody>
+                                                    <tfoot id="pagination-demo1"></tfoot>
                                                 </table>
                                             </div>
-                                            <div id="_classrooms_data_indexes"></div>
                                         </div>
                                     </div>
                                     <div className="_classroom_modal modal fade" id="_classroom_modal" tabIndex="-1" role="dialog" aria-labelledby="_classroom_modalLabel" aria-hidden="true">
@@ -925,7 +970,6 @@ class Dashboard extends React.Component {
                                                                 <div className="form-group-line"></div>
                                                             </fieldset>
                                                         </div>
-
                                                         <button onClick={this.handleSubmitClassroom} className="btn btn-primary float-right">Submit</button>
                                                     </div>
                                                 </div>
@@ -962,11 +1006,15 @@ class Dashboard extends React.Component {
 
 const mapStateToProps = state => ({
     classrooms: state.home.classrooms,
+    classroomToEdit: state.home.classroomToEdit,
 });
 
 const mapDispatchToProps = dispatch => ({
     onLoadClassroom: data => dispatch({ type: 'CLASSROOM_PAGE_LOADED', data }),
     onSubmitClassroom: data => dispatch({ type: 'SUBMIT_CLASSROOM', data }),
+    onEditClassroom: data => dispatch({ type: 'EDIT_CLASSROOM', data }),
+    onDeleteClassroom: id => dispatch({ type : 'DELETE_CLASSROOM', id }),
+    setEditClassroom: classroom => dispatch({ type: 'SET_EDIT_CLASSROOM', classroom }),
 });
-  
+
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard) 
