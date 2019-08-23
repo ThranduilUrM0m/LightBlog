@@ -7,9 +7,8 @@ const ClassroomsSchema = new Schema({
     _grade: String,
     _section: String,
     _school: {
-        _name: String,
-        _adresse: String,
-        _prinipal_name: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'School'
     },
     _teacher: {
         type: mongoose.Schema.Types.ObjectId,

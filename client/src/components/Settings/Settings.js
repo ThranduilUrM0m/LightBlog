@@ -296,6 +296,7 @@ class Settings extends React.Component {
                                                                     onChange={(ev) => this.handleChangeField('username', ev)}
                                                                     value={_user.username}
                                                                     className="validate form-group-input username" 
+                                                                    id="username"
                                                                     type="text" 
                                                                     name="username" 
                                                                     required="required"

@@ -8,7 +8,6 @@ import { Link } from 'react-router-dom';
 import 'whatwg-fetch';
 import { pagination } from 'paginationjs';
 import Fingerprint from 'fingerprintjs';
-import Calendar from 'rc-calendar';
 import API from '../../utils/API';
 var _ = require('lodash');
 
@@ -16,34 +15,54 @@ class Dashboard extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            _user: {}
+            _user: {},
+            _classroom: {}
         };
-        this.handleSubmitArticle = this.handleSubmitArticle.bind(this);
-        this.handleSubmitClassroom = this.handleSubmitArticle.bind(this);
-        this.handleSubmitCourse = this.handleSubmitArticle.bind(this);
-        this.handleSubmitExam = this.handleSubmitArticle.bind(this);
-        this.handleSubmitHomework = this.handleSubmitArticle.bind(this);
-        this.handleSubmitLetter = this.handleSubmitArticle.bind(this);
-        this.handleSubmitReport = this.handleSubmitArticle.bind(this);
-        this.handleSubmitSchool = this.handleSubmitArticle.bind(this);
-        this.handleSubmitStudent = this.handleSubmitArticle.bind(this);
-        this.handleSubmitSubject = this.handleSubmitArticle.bind(this);
         this.handleChangeField = this.handleChangeField.bind(this);
+        this.handleSubmitArticle = this.handleSubmitArticle.bind(this);
+        this.handleSubmitClassroom = this.handleSubmitClassroom.bind(this);
+        this.handleSubmitCourse = this.handleSubmitCourse.bind(this);
+        this.handleSubmitExam = this.handleSubmitExam.bind(this);
+        this.handleSubmitHomework = this.handleSubmitHomework.bind(this);
+        this.handleSubmitLetter = this.handleSubmitLetter.bind(this);
+        this.handleSubmitReport = this.handleSubmitReport.bind(this);
+        this.handleSubmitSchool = this.handleSubmitSchool.bind(this);
+        this.handleSubmitStudent = this.handleSubmitStudent.bind(this);
+        this.handleSubmitSubject = this.handleSubmitSubject.bind(this);
         this.get_user = this.get_user.bind(this);
     }
     componentDidMount() {
         this.get_user();
         this._handleTap();
+        const {onLoadClassroom} = this.props;
+        const self = this;
+        axios('http://localhost:8000/api/classrooms')
+        .then(function (response) {
+            // handle success
+            onLoadClassroom(response.data);
+        })
+        .catch(function (error) {
+            // handle error
+            console.log(error);
+        })
+        .then(function () {
+            // always executed
+        });
         $('.nav_link').click((event) => {
             let _li_parent = $(event.target).parent().parent();
             let _li_target = $($(event.target).attr('href'));
+            let _link_target = $(event.target);
 
             $(_li_parent).addClass('active');
             $(_li_target).addClass('active');
             $(_li_target).addClass('show');
-            $("._content li").not(_li_parent).removeClass('active');
+            $(_link_target).addClass('active');
+            $(_link_target).addClass('show');
+            $(".nav li").not(_li_parent).removeClass('active');
             $('.tab-pane').not(_li_target).removeClass('active');
             $('.tab-pane').not(_li_target).removeClass('show');
+            $(".nav_link").not(_link_target).removeClass('active');
+            $('.nav_link').not(_link_target).removeClass('show');
         });
     }
     async get_user() {
@@ -57,7 +76,6 @@ class Dashboard extends React.Component {
             console.error(error);
         }
     }
-
     handleSubmitArticle(){
         const { onSubmit, classroomToEdit, onEdit } = this.props;
         const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state;
@@ -113,33 +131,36 @@ class Dashboard extends React.Component {
         }
     }
     handleSubmitClassroom(){
-        const { onSubmit, classroomToEdit, onEdit } = this.props;
-        const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state;
+        const { onSubmitClassroom, classroomToEdit } = this.props;
+        const { _user } = this.state;
         const self = this;
         if(!classroomToEdit) {
-            return axios.post('http://localhost:8000/api/classrooms', {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onSubmit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
+            self.setState(prevState => ({
+                _classroom: {                   // object that we want to update
+                    ...prevState._classroom,    // keep all other key-value pairs
+                    _school: _user.school,       // update the value of specific key
+                    _teacher: _user._id,
+                },
+            }), () => {
+                const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state._classroom;
+                return axios.post('http://localhost:8000/api/classrooms', {
+                    _code,
+                    _name,
+                    _grade,
+                    _section,
+                    _school,
+                    _teacher,
+                    _subjects,
+                    _students,
+                })
+                    .then((res) => onSubmitClassroom(res.data))
+                    .then((res) => {
+                        self.setState({ 
+                            _classroom: {}
+                        });
+                        $('#_classroom_modal').modal('toggle');
+                    });
+            });
         } else {
             return axios.patch(`http://localhost:8000/api/classrooms/${classroomToEdit._id}`, {
                 _code,
@@ -152,16 +173,9 @@ class Dashboard extends React.Component {
                 _students,
             })
                 .then((res) => onEdit(res.data))
-                .then(function() {
+                .then((res) => {
                     self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
+                        _classroom: {}
                     })
                 });
         }
@@ -598,11 +612,43 @@ class Dashboard extends React.Component {
                 });
         }
     }
-
     handleChangeField(key, event) {
-        this.setState({
-            [key]: event.target.value,
-        });
+        const _val = event.target.value;
+        const _target = event.target;
+        if(key === "_code" || key === "_name" || key === "_grade" || key === "_section"){
+            if(key === "_code") {
+                this.setState(prevState => ({
+                    _classroom: {                   // object that we want to update
+                        ...prevState._classroom,    // keep all other key-value pairs
+                        _code: _val       // update the value of specific key
+                    }
+                }));
+            }
+            if(key === "_name") {
+                this.setState(prevState => ({
+                    _classroom: {                   // object that we want to update
+                        ...prevState._classroom,    // keep all other key-value pairs
+                        _name: _val       // update the value of specific key
+                    }
+                }));
+            }
+            if(key === "_grade") {
+                this.setState(prevState => ({
+                    _classroom: {                   // object that we want to update
+                        ...prevState._classroom,    // keep all other key-value pairs
+                        _grade: _val       // update the value of specific key
+                    }
+                }));
+            }
+            if(key === "_section") {
+                this.setState(prevState => ({
+                    _classroom: {                   // object that we want to update
+                        ...prevState._classroom,    // keep all other key-value pairs
+                        _section: _val       // update the value of specific key
+                    }
+                }));
+            }
+        }
     }
     _handleTap() {
         let searchWrapper_name = document.querySelector('.search-wrapper-name'),
@@ -625,65 +671,53 @@ class Dashboard extends React.Component {
     }
     render() {
         const { articles, classrooms, courses, exams, homeworks, letters, reports, schools, students, subjects, user } = this.props;
-        const { _user } = this.state;
+        const { _classroom } = this.state;
         return(
             <FullPage scrollMode={'normal'}>
 				<Slide>
 					<section className="first_section_dashboard">
                         <div className="wrapper_full">
-
-                            <div className="dashboard_menu">
-                                <ul className="nav nav-tabs flex-column">
-                                    <li className="active">
-                                        <i className="fas fa-th-large"></i>
-                                        <span className="item"><a href="#1a" className="nav_link" data-toggle="tab">  Dashboards </a></span>
-                                    </li>
-                                    <li>
-                                        <i className="fas fa-inbox"></i>
-                                        <span className="item"><a href="#2a" className="nav_link" data-toggle="tab">  Inbox </a></span>
-                                    </li>
-                                    <li>
-                                        <i className="far fa-bell"></i>
-                                        <span className="item"><a href="#3a" className="nav_link" data-toggle="tab">  Notifications </a></span>
-                                    </li>
-                                    <li>
-                                        <i className="fas fa-users"></i>
-                                        <span className="item"><a href="#4a" className="nav_link" data-toggle="tab">  Students </a></span>
-                                    </li>
-                                    <li>
-                                        <i className="fas fa-chalkboard"></i>
-                                        <span className="item"><a href="#5a" className="nav_link" data-toggle="tab">  Classrooms </a></span>
-                                    </li>
-                                    <li>
-                                        <i className="fas fa-book"></i>
-                                        <span className="item"><a href="#6a" className="nav_link" data-toggle="tab">  Subjects </a></span>
-                                    </li>
-                                    <li>
-                                        <i className="far fa-bookmark"></i>
-                                        <span className="item"><a href="#7a" className="nav_link" data-toggle="tab">  Courses </a></span>
-                                    </li>
-                                    <li>
-                                        <i className="far fa-copy"></i>
-                                        <span className="item"><a href="#8a" className="nav_link" data-toggle="tab">  Homeworks </a></span>
-                                    </li>
-                                    <li>
-                                        <i className="far fa-file-alt"></i>
-                                        <span className="item"><a href="#9a" className="nav_link" data-toggle="tab">  Reports </a></span>
-                                    </li>
-                                    <li>
-                                        <i className="fas fa-graduation-cap"></i>
-                                        <span className="item"><a href="#10a" className="nav_link" data-toggle="tab">  Exams </a></span>
-                                    </li>
-                                    <li>
-                                        <i className="far fa-newspaper"></i>
-                                        <span className="item"><a href="#11a" className="nav_link" data-toggle="tab">  Blog </a></span>
-                                    </li>
-                                </ul>
-                            </div>
-
+                            <ul className="nav nav-pills flex-column">
+                                <li>
+                                    <span className="_icon"><i className="fas fa-th-large"></i></span>
+                                    <span className="item"><a href="#1a" className="nav_link active" data-toggle="tab">  Dashboards </a></span>
+                                </li>
+                                <li>
+                                    <span className="_icon"><i className="fas fa-inbox"></i></span>
+                                    <span className="item"><a href="#2a" className="nav_link" data-toggle="tab">  Inbox </a></span>
+                                </li>
+                                <li>
+                                    <span className="_icon"><i className="fas fa-users"></i></span>
+                                    <span className="item"><a href="#3a" className="nav_link" data-toggle="tab">  Students </a></span>
+                                </li>
+                                <li>
+                                    <span className="_icon"><i className="fas fa-chalkboard"></i></span>
+                                    <span className="item"><a href="#4a" className="nav_link" data-toggle="tab">  Classrooms </a></span>
+                                </li>
+                                <li>
+                                    <span className="_icon"><i className="fas fa-book"></i></span>
+                                    <span className="item"><a href="#5a" className="nav_link" data-toggle="tab">  Subjects </a></span>
+                                </li>
+                                <li>
+                                    <span className="_icon"><i className="far fa-bookmark"></i></span>
+                                    <span className="item"><a href="#6a" className="nav_link" data-toggle="tab">  Courses </a></span>
+                                </li>
+                                <li>
+                                    <span className="_icon"><i className="far fa-copy"></i></span>
+                                    <span className="item"><a href="#7a" className="nav_link" data-toggle="tab">  Homeworks </a></span>
+                                </li>
+                                <li>
+                                    <span className="_icon"><i className="far fa-file-alt"></i></span>
+                                    <span className="item"><a href="#8a" className="nav_link" data-toggle="tab">  Reports </a></span>
+                                </li>
+                                <li>
+                                    <span className="_icon"><i className="fas fa-graduation-cap"></i></span>
+                                    <span className="item"><a href="#9a" className="nav_link" data-toggle="tab">  Exams </a></span>
+                                </li>
+                            </ul>
                             <div className="tab-content clearfix">
                                 <div className="dashboard_pane tab-pane active" id="1a">
-                                    <ul className="cards">
+                                    {/* <ul className="cards">
                                         <li className="cards__item">
                                             <div className="card">
                                                 <div className="card__content">
@@ -712,15 +746,12 @@ class Dashboard extends React.Component {
                                                 </div>
                                             </div>
                                         </li>
-                                    </ul>
+                                    </ul> */}
                                 </div>
                                 <div className="inbox_pane tab-pane" id="2a">
                                 
                                 </div>
-                                <div className="notifications_pane tab-pane" id="3a">
-                                
-                                </div>
-                                <div className="students_pane tab-pane" id="4a">
+                                <div className="students_pane tab-pane" id="3a">
                                     {/* <div className="_students_header">
                                         <div className="_search_form">
                                             <div className="search-wrapper-name">
@@ -779,123 +810,145 @@ class Dashboard extends React.Component {
 
                                     </div> */}
                                 </div>
-                                <div className="classrooms_pane tab-pane" id="5a">
-                                    {/* <div className="_classrooms_header">
-                                        <div className="_search_form">
-                                            <div className="search-wrapper-name">
-                                                <input className="search-input-name" type="text" placeholder="Search"/>
-                                                <span></span>
-                                                <div className='search-name'></div>
+                                <div className="classrooms_pane tab-pane" id="4a">
+                                    <div className="_classroms_pane">
+                                        <div className="_classrooms_header">
+                                            <div className="_search_form">
+                                                <div className="search-wrapper-name">
+                                                    <input className="search-input-name" type="text" placeholder="Search"/>
+                                                    <span></span>
+                                                    <div className='search-name'></div>
+                                                </div>
+                                            </div>
+                                            <div className="_filter_form">
+                                                <button className="_filter btn-primary"><i className="fas fa-filter"></i>Filter</button>
+                                                <button className="_add_classroom btn-primary" data-toggle="modal" data-target="#_classroom_modal"><i className="fas fa-plus"></i>Add Classroom</button>
                                             </div>
                                         </div>
-
-                                        <button className="_filter">Filter</button>
-                                        <button className="_add_classroom" data-toggle="modal" data-target="#_classroom_modal">Add Classroom</button>
-                                    </div>
-                                    <div className="_classrooms_content">
-
-                                        <div className="_classrooms_data">
-                                            <table className="classrooms_list">
-                                                <thead>
-                                                    <tr>
-                                                        <th>_code</th>
-                                                        <th>_name</th>
-                                                        <th>_grade</th>
-                                                        <th>_section</th>
-                                                        <th>_school</th>
-                                                        <th>_teacher</th>
-                                                        <th>_subjects</th>
-                                                        <th>_students</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                {
-                                                    _.orderBy(classrooms, ['createdAt'], ['desc']).map((classroom, index) => {
-                                                        return (
-                                                            <tr>
-                                                                <td>{classroom._code}</td>
-                                                                <td>{classroom._name}</td>
-                                                                <td>{classroom._grade}</td>
-                                                                <td>{classroom._section}</td>
-                                                                <td>{classroom._school}</td>
-                                                                <td>{classroom._teacher}</td>
-                                                                <td>{_.size(classroom._subjects)}</td>
-                                                                <td>{_.size(classroom._students)}</td>
-                                                            </tr>
-                                                        )
-                                                    })
-                                                }
-                                                </tbody>
-                                            </table>
+                                        <div className="_classrooms_content">
+                                            <div className="_classrooms_data">
+                                                <table className="classrooms_list">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Code</th>
+                                                            <th>Name</th>
+                                                            <th>Grade</th>
+                                                            <th>Section</th>
+                                                            <th>School</th>
+                                                            <th>Teacher</th>
+                                                            <th>Subjects</th>
+                                                            <th>Students</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {
+                                                        _.orderBy(classrooms, ['createdAt'], ['desc']).map((classroom, index) => {
+                                                            return (
+                                                                <tr>
+                                                                    <td>{classroom._code}</td>
+                                                                    <td>{classroom._name}</td>
+                                                                    <td>{classroom._grade}</td>
+                                                                    <td>{classroom._section}</td>
+                                                                    <td>{classroom._school._name}</td>
+                                                                    <td>{classroom._teacher.username}</td>
+                                                                    <td>{_.size(classroom._subjects)}</td>
+                                                                    <td>{_.size(classroom._students)}</td>
+                                                                </tr>
+                                                            )
+                                                        })
+                                                    }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div id="_classrooms_data_indexes"></div>
                                         </div>
-                                        <div id="_classrooms_data_indexes"></div>
-
                                     </div>
                                     <div className="_classroom_modal modal fade" id="_classroom_modal" tabIndex="-1" role="dialog" aria-labelledby="_classroom_modalLabel" aria-hidden="true">
                                         <div className="modal-dialog" role="document">
                                             <div className="modal-content">
                                                 <div className="modal-body">
                                                     <a title="Close" className="modal-close" data-dismiss="modal">Close</a>
-                                                    <h5 className="modal-title" id="_classroom_modalLabel">Voilà!</h5>
-                                                    
+                                                    <h5 className="modal-title" id="_classroom_modalLabel">OKAY!</h5>
                                                     <div className="wrapper_form_classroom">
-
-                                                        <input
-                                                        onChange={(ev) => this.handleChangeField('_code', ev)}
-                                                        value={_code}
-                                                        className="form-control my-3 _code_classroom"
-                                                        placeholder="_code"
-                                                        />
-
-                                                        <input
-                                                        onChange={(ev) => this.handleChangeField('_name', ev)}
-                                                        value={_name}
-                                                        className="form-control my-3 _name_classroom"
-                                                        placeholder="_name"
-                                                        />
-
-                                                        <input
-                                                        onChange={(ev) => this.handleChangeField('_grade', ev)}
-                                                        value={_grade}
-                                                        className="form-control my-3 _grade_classroom"
-                                                        placeholder="_grade"
-                                                        />
-
-                                                        <input
-                                                        onChange={(ev) => this.handleChangeField('_section', ev)}
-                                                        value={_section}
-                                                        className="form-control my-3 _section_classroom"
-                                                        placeholder="_section"
-                                                        />
+                                                        <span>Classroom Information : </span>
+                                                        <div className="modal-content_classroom">
+                                                            <fieldset className="input-field form-group">
+                                                                <input
+                                                                onChange={(ev) => this.handleChangeField('_code', ev)}
+                                                                value={_classroom._code}
+                                                                className="validate form-group-input _code" 
+                                                                id="_code"
+                                                                type="text" 
+                                                                name="_code" 
+                                                                required="required"
+                                                                />
+                                                                <label htmlFor='_code' className={_classroom._code ? 'active' : ''}>Classroom Code</label>
+                                                                <div className="form-group-line"></div>
+                                                            </fieldset>
+                                                            <fieldset className="input-field form-group">
+                                                                <input
+                                                                onChange={(ev) => this.handleChangeField('_name', ev)}
+                                                                value={_classroom._name}
+                                                                className="validate form-group-input _name" 
+                                                                id="_name"
+                                                                type="text" 
+                                                                name="_name" 
+                                                                required="required"
+                                                                />
+                                                                <label htmlFor='_name' className={_classroom._name ? 'active' : ''}>Classroom Name</label>
+                                                                <div className="form-group-line"></div>
+                                                            </fieldset>
+                                                            <fieldset className="input-field form-group">
+                                                                <input
+                                                                onChange={(ev) => this.handleChangeField('_grade', ev)}
+                                                                value={_classroom._grade}
+                                                                className="validate form-group-input _grade" 
+                                                                id="_grade"
+                                                                type="text" 
+                                                                name="_grade" 
+                                                                required="required"
+                                                                />
+                                                                <label htmlFor='_grade' className={_classroom._grade ? 'active' : ''}>Grade</label>
+                                                                <div className="form-group-line"></div>
+                                                            </fieldset>
+                                                            <fieldset className="input-field form-group">
+                                                                <input
+                                                                onChange={(ev) => this.handleChangeField('_section', ev)}
+                                                                value={_classroom._section}
+                                                                className="validate form-group-input _section" 
+                                                                id="_section"
+                                                                type="text" 
+                                                                name="_section" 
+                                                                required="required"
+                                                                />
+                                                                <label htmlFor='_section' className={_classroom._section ? 'active' : ''}>Section</label>
+                                                                <div className="form-group-line"></div>
+                                                            </fieldset>
+                                                        </div>
 
                                                         <button onClick={this.handleSubmitClassroom} className="btn btn-primary float-right">Submit</button>
                                                     </div>
-                                                    
                                                 </div>
                                             </div>
                                         </div>
-                                    </div> */}
+                                    </div>
                                 </div>
-                                <div className="subjects_pane tab-pane" id="6a">
+                                <div className="subjects_pane tab-pane" id="5a">
                                 
                                 </div>
-                                <div className="courses_pane tab-pane" id="7a">
+                                <div className="courses_pane tab-pane" id="6a">
                                 
                                 </div>
-                                <div className="homeworks_pane tab-pane" id="8a">
+                                <div className="homeworks_pane tab-pane" id="7a">
                                 
                                 </div>
-                                <div className="reports_pane tab-pane" id="9a">
+                                <div className="reports_pane tab-pane" id="8a">
                                 
                                 </div>
-                                <div className="exams_pane tab-pane" id="10a">
+                                <div className="exams_pane tab-pane" id="9a">
                                 
-                                </div>
-                                <div className="blog_pane tab-pane" id="11a">
-                                    
                                 </div>
                             </div>
-
                         </div>
                     </section>
 				</Slide>
@@ -908,22 +961,12 @@ class Dashboard extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    articles: state.home.articles,
     classrooms: state.home.classrooms,
-    courses: state.home.courses,
-    exams: state.home.exams,
-    homeworks: state.home.homeworks,
-    letters: state.home.letters,
-    reports: state.home.reports,
-    schools: state.home.schools,
-    students: state.home.students,
-    subjects: state.home.subjects,
-    user: state.home.user,
 });
 
 const mapDispatchToProps = dispatch => ({
-    onLoad: data => dispatch({ type: 'USER_PAGE_LOADED', data }),
-	onSubmit: data => dispatch({ type: 'SUBMIT_CLASSROOM', data }),
+    onLoadClassroom: data => dispatch({ type: 'CLASSROOM_PAGE_LOADED', data }),
+    onSubmitClassroom: data => dispatch({ type: 'SUBMIT_CLASSROOM', data }),
 });
   
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard) 

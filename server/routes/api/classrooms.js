@@ -4,7 +4,6 @@ const Classrooms = mongoose.model('Classrooms');
 
 router.post('/', (req, res, next) => {
   const { body } = req;
-
   if(!body._code) {
     return res.status(422).json({
       errors: {
@@ -12,7 +11,6 @@ router.post('/', (req, res, next) => {
       },
     });
   }
-
   if(!body._name) {
     return res.status(422).json({
       errors: {
@@ -20,15 +18,13 @@ router.post('/', (req, res, next) => {
       },
     });
   }
-
-  if(!body._year) {
+  if(!body._grade) {
     return res.status(422).json({
       errors: {
         title: 'is required',
       },
     });
   }
-
   if(!body._section) {
     return res.status(422).json({
       errors: {
@@ -36,7 +32,6 @@ router.post('/', (req, res, next) => {
       },
     });
   }
-
   if(!body._school) {
     return res.status(422).json({
       errors: {
@@ -44,7 +39,6 @@ router.post('/', (req, res, next) => {
       },
     });
   }
-
   if(!body._teacher) {
     return res.status(422).json({
       errors: {
