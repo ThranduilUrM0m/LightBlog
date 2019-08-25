@@ -45,14 +45,6 @@ router.post('/', (req, res, next) => {
     });
   }
 
-  if(!body._attendance) {
-    return res.status(422).json({
-      errors: {
-        author: 'is required',
-      },
-    });
-  }
-
   if(!body._first_parent) {
     return res.status(422).json({
       errors: {

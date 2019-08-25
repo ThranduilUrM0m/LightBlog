@@ -15,12 +15,18 @@ const CoursesSchema = new Schema({
             _description: String,
         }],
     }],
+    _subject: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Subject'
+    },
 }, { timestamps: true });
 CoursesSchema.methods.toJSON = function() {
     return {
         _id: this._id,
 
         _name: this._name,
+        _abilities_inview: this._abilities_inview,
+        _sessions: this._sessions,
         _subject: this._subject,
 
         createdAt: this.createdAt,

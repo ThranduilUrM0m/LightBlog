@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const StudentsSchema = new Schema({
-    _registration_number: Number,
+    _registration_number: String,
     _first_name: String,
     _last_name: String,
     _classroom: {
@@ -21,34 +21,31 @@ const StudentsSchema = new Schema({
         _remark: String,
     },
     _first_parent: {
-        _first_name: String,
-        _last_name: String,
-        _gender: {
+        _full_name_first_parent: String,
+        _gender_first_parent: {
             type: String, 
             enum: ['Mr.', 'Mrs.', 'Ms.', 'Other']
         },
-        _adresse: String,
-        _phone: String,
+        _adresse_first_parent: String,
+        _phone_first_parent: String,
     },
     _second_parent: {
-        _first_name: String,
-        _last_name: String,
-        _gender: {
+        _full_name_second_parent: String,
+        _gender_second_parent: {
             type: String, 
             enum: ['Mr.', 'Mrs.', 'Ms.', 'Other']
         },
-        _adresse: String,
-        _phone: String,
+        _adresse_second_parent: String,
+        _phone_second_parent: String,
     },
     _guardian: {
-        _first_name: String,
-        _last_name: String,
-        _gender: {
+        _full_name_guardian: String,
+        _gender_guardian: {
             type: String, 
             enum: ['Mr.', 'Mrs.', 'Ms.', 'Other']
         },
-        _adresse: String,
-        _phone: String,
+        _adresse_guardian: String,
+        _phone_guardian: String,
     },
 }, { timestamps: true });
 StudentsSchema.methods.toJSON = function() {

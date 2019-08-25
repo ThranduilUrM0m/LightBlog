@@ -17,31 +17,28 @@ class Dashboard extends React.Component {
         this.state = {
             _user: {},
             _classroom: {},
+            _student: {},
+            _first_parent: {},
+            _second_parent: {},
+            _guardian: {},
             _school: {},
         };
         this.handleChangeField = this.handleChangeField.bind(this);
+
+        /* CLASSROOM */
         this.handleSubmitClassroom = this.handleSubmitClassroom.bind(this);
         this.handleDeleteClassroom = this.handleDeleteClassroom.bind(this);
         this.handleEditClassroom = this.handleEditClassroom.bind(this);
 
-        this.handleSubmitCourse = this.handleSubmitCourse.bind(this);
-        
-        this.handleSubmitExam = this.handleSubmitExam.bind(this);
-        
-        this.handleSubmitHomework = this.handleSubmitHomework.bind(this);
-        
-        this.handleSubmitLetter = this.handleSubmitLetter.bind(this);
-        
-        this.handleSubmitReport = this.handleSubmitReport.bind(this);
-        
+        /* STUDENT */
         this.handleSubmitStudent = this.handleSubmitStudent.bind(this);
-        
-        this.handleSubmitSubject = this.handleSubmitSubject.bind(this);
+        this.handleDeleteStudent = this.handleDeleteStudent.bind(this);
+        this.handleEditStudent = this.handleEditStudent.bind(this);
         
         this.get_user = this.get_user.bind(this);
     }
     componentDidMount() {
-        const {onLoadClassroom} = this.props;
+        const {onLoadClassroom, onLoadStudent} = this.props;
         const self = this;
         this.get_user();
 
@@ -50,17 +47,17 @@ class Dashboard extends React.Component {
         .then((res) => {
             $(function(){
                 function createDemo(name){
-                    var container = $('#pagination-' + name);
+                    var container = $('#pagination_' + name);
                     var options = {
                         dataSource: res.data.classrooms,
-                        pageSize: 5,
+                        pageSize: 10,
                         autoHidePrevious: true,
                         autoHideNext: true,
                     };
                     container.pagination(options);
                       return container;
                 }
-                createDemo('demo1');
+                createDemo('classrooms');
             });
         })
         .catch(function (error) {
@@ -68,7 +65,31 @@ class Dashboard extends React.Component {
             console.log(error);
         });
 
-        this._handleTap();
+        axios('http://localhost:8000/api/students')
+        .then((res) => onLoadStudent(res.data))
+        .then((res) => {
+            $(function(){
+                function createDemo(name){
+                    var container = $('#pagination_' + name);
+                    var options = {
+                        dataSource: res.data.students,
+                        pageSize: 10,
+                        autoHidePrevious: true,
+                        autoHideNext: true,
+                    };
+                    container.pagination(options);
+                      return container;
+                }
+                createDemo('students');
+            });
+        })
+        .catch(function (error) {
+            // handle error
+            console.log(error);
+        });
+
+        this._handleTap('_students');
+        this._handleTap('_classrooms');
         $('.nav_link').click((event) => {
             let _li_parent = $(event.target).parent().parent();
             let _li_target = $($(event.target).attr('href'));
@@ -86,59 +107,64 @@ class Dashboard extends React.Component {
             $('.nav_link').not(_link_target).removeClass('show');
         });
 
-        // sort start
-        function sortTable(f, n, i) {
-            $('._arrow').remove();
-            $(i).append('<div class="_arrow"></div>');
+        this._handleSort('classrooms_list');
+        this._handleSort('students_list');
+        this._handleFilter()
+        this._handleSteps('_student_box');
 
-            var rows = $(".classrooms_list tbody tr").get();
-            rows.sort(function(a, b) {
-                var A = getVal(a);
-                var B = getVal(b);
-                if (A < B) {
-                    return -1 * f;
+        $('input.datepicker').datepicker({
+            dateFormat: 'yy-mm-dd',
+            showButtonPanel: true,
+            changeMonth: true,
+            changeYear: true,
+            defaultDate: +0,
+            showAnim: "fold",
+            onSelect: function(dateText) {
+                if(($(this)[0].$el)[0].id === "_dateofbirth"){
+                    self.setState(prevState => ({
+                        _student: {                   // object that we want to update
+                            ...prevState._student,    // keep all other key-value pairs
+                            _dateofbirth: moment(dateText).format('MMM DD, YYYY')       // update the value of specific key
+                        }
+                    }));
                 }
-                if (A > B) {
-                    return 1 * f;
+                if(($(this)[0].$el)[0].id === "_registration_date"){
+                    self.setState(prevState => ({
+                        _student: {                   // object that we want to update
+                            ...prevState._student,    // keep all other key-value pairs
+                            _registration_date: moment(dateText).format('MMM DD, YYYY')       // update the value of specific key
+                        }
+                    }));
                 }
-                return 0;
-            });
-            function getVal(elm) {
-                var v = $(elm).children("td").eq(n).text().toUpperCase();
-                if ($.isNumeric(v)) {
-                    v = parseInt(v, 10);
-                }
-                return v;
-            }
-            $.each(rows, function(index, row) {
-                $(".classrooms_list").children("tbody").append(row);
-            });
-
-            if(getVal(_.first(rows)) < getVal(_.last(rows))){
-                $('._arrow').html('<i class="fas fa-caret-down"></i>');
-            }else {
-                $('._arrow').html('<i class="fas fa-caret-up"></i>');
-            }
-        }
-        var f_thisTh = 1;
-        $(".classrooms_list th", this.id).click(function(event) {
-            if(_.startsWith(event.target.className, 'fas')){
-                f_thisTh *= -1;
-                var n = $(this).parent().parent().prevAll().length;
-                var i = event.target.parentNode.parentNode;
-                sortTable(f_thisTh, n, i);
-            }
-            else {
-                f_thisTh *= -1;
-                var n = $(this).prevAll().length;
-                var i = event.target;
-                sortTable(f_thisTh, n, i);
-            }
+            },
         });
-        $('.classrooms_list th').append('<div class="_arrow"></div>');
-        $('._arrow').html('<i class="fas fa-sort"></i>');
-        // sort end 
-        // filter start
+    
+        $('.datepicker.sample').datepicker({
+            dateFormat: 'yy-mm-dd',
+            showButtonPanel: true,
+            changeMonth: true,
+            changeYear: true,
+            defaultDate: +0,
+            showAnim: "fold"
+        });
+    }
+    _handleSteps(_class) {
+        $('.next-button').click(function(){
+            var current = $(this).parent();
+            var next = $(this).parent().next();
+            $(".progress li").eq($("."+_class+"").index(next)).addClass("active");
+            current.hide();
+            next.show();
+        });
+        $('.prev-button').click(function(){
+            var current = $(this).parent();
+            var prev = $(this).parent().prev()
+            $(".progress li").eq($("."+_class+"").index(current)).removeClass("active");
+            current.hide();
+            prev.show();
+        });
+    }
+    _handleFilter() {
         (function(document) {
             'use strict';
             var LightTableFilter = (function(Arr) {
@@ -173,7 +199,60 @@ class Dashboard extends React.Component {
                 }
             });
         })(document);
-        // filter end
+    }
+    _handleSort(_class) {
+        // sort start
+        function sortTable(f, n, i, _class) {
+            $('._arrow').remove();
+            $(i).append('<div class="_arrow"></div>');
+
+            var rows = $("."+_class+" tbody tr").get();
+            rows.sort(function(a, b) {
+                var A = getVal(a);
+                var B = getVal(b);
+                if (A < B) {
+                    return -1 * f;
+                }
+                if (A > B) {
+                    return 1 * f;
+                }
+                return 0;
+            });
+            function getVal(elm) {
+                var v = $(elm).children("td").eq(n).text().toUpperCase();
+                if ($.isNumeric(v)) {
+                    v = parseInt(v, 10);
+                }
+                return v;
+            }
+            $.each(rows, function(index, row) {
+                $("."+_class+"").children("tbody").append(row);
+            });
+
+            if(getVal(_.first(rows)) < getVal(_.last(rows))){
+                $('._arrow').html('<i class="fas fa-caret-down"></i>');
+            }else {
+                $('._arrow').html('<i class="fas fa-caret-up"></i>');
+            }
+        }
+        var f_thisTh = 1;
+        $("."+_class+" th:not(._empty)", this.id).click(function(event) {
+            if(_.startsWith(event.target.className, 'fas')){
+                f_thisTh *= -1;
+                var n = $(this).parent().parent().prevAll().length;
+                var i = event.target.parentNode.parentNode;
+                sortTable(f_thisTh, n, i, _class);
+            }
+            else {
+                f_thisTh *= -1;
+                var n = $(this).prevAll().length;
+                var i = event.target;
+                sortTable(f_thisTh, n, i, _class);
+            }
+        });
+        $('.'+_class+' th:not(._empty)').append('<div class="_arrow"></div>');
+        $('._arrow').html('<i class="fas fa-sort"></i>');
+        // sort end 
     }
     async get_user() {
         const self = this;
@@ -204,8 +283,14 @@ class Dashboard extends React.Component {
                 _classroom: nextProps.classroomToEdit,
             })
         }
+        if(nextProps.studentToEdit) {
+            this.setState({
+                _student: nextProps.studentToEdit,
+            })
+        }
     }
 
+    /* CLASSROOM */
     handleSubmitClassroom(){
         const { _user } = this.state;
         this.setState(prevState => ({
@@ -266,385 +351,77 @@ class Dashboard extends React.Component {
         const { setEditClassroom } = this.props;
         setEditClassroom(classroom);
     }
-
-    handleSubmitCourse(){
-        const { onSubmit, classroomToEdit, onEdit } = this.props;
-        const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state;
-        const self = this;
-        if(!classroomToEdit) {
-            return axios.post('http://localhost:8000/api/classrooms', {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onSubmit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        } else {
-            return axios.patch(`http://localhost:8000/api/classrooms/${classroomToEdit._id}`, {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onEdit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        }
-    }
-    handleSubmitExam(){
-        const { onSubmit, classroomToEdit, onEdit } = this.props;
-        const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state;
-        const self = this;
-        if(!classroomToEdit) {
-            return axios.post('http://localhost:8000/api/classrooms', {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onSubmit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        } else {
-            return axios.patch(`http://localhost:8000/api/classrooms/${classroomToEdit._id}`, {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onEdit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        }
-    }
-    handleSubmitHomework(){
-        const { onSubmit, classroomToEdit, onEdit } = this.props;
-        const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state;
-        const self = this;
-        if(!classroomToEdit) {
-            return axios.post('http://localhost:8000/api/classrooms', {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onSubmit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        } else {
-            return axios.patch(`http://localhost:8000/api/classrooms/${classroomToEdit._id}`, {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onEdit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        }
-    }
-    handleSubmitLetter(){
-        const { onSubmit, classroomToEdit, onEdit } = this.props;
-        const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state;
-        const self = this;
-        if(!classroomToEdit) {
-            return axios.post('http://localhost:8000/api/classrooms', {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onSubmit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        } else {
-            return axios.patch(`http://localhost:8000/api/classrooms/${classroomToEdit._id}`, {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onEdit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        }
-    }
-    handleSubmitReport(){
-        const { onSubmit, classroomToEdit, onEdit } = this.props;
-        const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state;
-        const self = this;
-        if(!classroomToEdit) {
-            return axios.post('http://localhost:8000/api/classrooms', {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onSubmit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        } else {
-            return axios.patch(`http://localhost:8000/api/classrooms/${classroomToEdit._id}`, {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onEdit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        }
-    }
+    
+    /* STUDENT */
     handleSubmitStudent(){
-        const { onSubmit, classroomToEdit, onEdit } = this.props;
-        const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state;
-        const self = this;
-        if(!classroomToEdit) {
-            return axios.post('http://localhost:8000/api/classrooms', {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onSubmit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        } else {
-            return axios.patch(`http://localhost:8000/api/classrooms/${classroomToEdit._id}`, {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onEdit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        }
+        const { _first_parent, _second_parent, _guardian } = this.state;
+        this.setState(prevState => ({
+            _student: {
+                ...prevState._student,
+                _first_parent: _first_parent,
+                _second_parent: _second_parent,
+                _guardian: _guardian,
+            }
+        }), () => {
+            const { _user } = this.state;
+            const { onSubmitStudent, studentToEdit, onEditStudent } = this.props;
+            const { _registration_number, _first_name, _last_name, _classroom, _gender, _dateofbirth, _registration_date, _attendance, _first_parent, _second_parent, _guardian} = this.state._student;
+            const self = this;
+            if(!studentToEdit) {
+                return axios.post('http://localhost:8000/api/students', {
+                    _registration_number,
+                    _first_name,
+                    _last_name,
+                    _classroom,
+                    _gender,
+                    _dateofbirth,
+                    _registration_date,
+                    _attendance,
+                    _first_parent,
+                    _second_parent,
+                    _guardian,
+                })
+                    .then((res) => onSubmitStudent(res.data))
+                    .then(function() {
+                        self.setState({ 
+                            _student: {}
+                        });
+                        $('#_student_modal').modal('toggle');
+                    });
+            } else {
+                return axios.patch(`http://localhost:8000/api/students/${studentToEdit._id}`, {
+                    _registration_number,
+                    _first_name,
+                    _last_name,
+                    _classroom,
+                    _gender,
+                    _dateofbirth,
+                    _registration_date,
+                    _attendance,
+                    _first_parent,
+                    _second_parent,
+                    _guardian,
+                })
+                    .then((res) => onEditStudent(res.data))
+                    .then(function() {
+                        self.setState({ 
+                            _student: {}
+                        });
+                        $('#_student_modal').modal('toggle');
+                    });
+            }
+        });
     }
-    handleSubmitSubject(){
-        const { onSubmit, classroomToEdit, onEdit } = this.props;
-        const { _code, _name, _grade, _section, _school, _teacher, _subjects, _students } = this.state;
-        const self = this;
-        if(!classroomToEdit) {
-            return axios.post('http://localhost:8000/api/classrooms', {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onSubmit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        } else {
-            return axios.patch(`http://localhost:8000/api/classrooms/${classroomToEdit._id}`, {
-                _code,
-                _name,
-                _grade,
-                _section,
-                _school,
-                _teacher,
-                _subjects,
-                _students,
-            })
-                .then((res) => onEdit(res.data))
-                .then(function() {
-                    self.setState({ 
-                        _code: '',
-                        _name: '',
-                        _grade: '',
-                        _section: '',
-                        _school: {},
-                        _teacher: {},
-                        _subjects: [],
-                        _students: [],
-                    })
-                });
-        }
+    handleDeleteStudent(id) {
+        const { onDeleteStudent } = this.props;
+        return axios.delete(`http://localhost:8000/api/students/${id}`)
+            .then(() => onDeleteStudent(id));
     }
+    handleEditStudent(student) {
+        const { setEditStudent } = this.props;
+        setEditStudent(student);
+    }
+
     handleChangeField(key, event) {
         const _val = event.target.value;
         const _target = event.target;
@@ -682,22 +459,164 @@ class Dashboard extends React.Component {
                 }));
             }
         }
+        if(key === "_registration_number" || key === "_first_name" || key === "_last_name" || key === "_classroom" || key === "_gender" || key === "_dateofbirth" || key === "_registration_date" || _.endsWith(key, "_first_parent") || _.endsWith(key, "_second_parent") || _.endsWith(key, "_guardian")) {
+            if(key === "_registration_number"){
+                this.setState(prevState => ({
+                    _student: {                   // object that we want to update
+                        ...prevState._student,    // keep all other key-value pairs
+                        _registration_number: _val       // update the value of specific key
+                    }
+                }));
+            }
+            if(key === "_first_name"){
+                this.setState(prevState => ({
+                    _student: {                   // object that we want to update
+                        ...prevState._student,    // keep all other key-value pairs
+                        _first_name: _val       // update the value of specific key
+                    }
+                }));
+            }
+            if(key === "_last_name"){
+                this.setState(prevState => ({
+                    _student: {                   // object that we want to update
+                        ...prevState._student,    // keep all other key-value pairs
+                        _last_name: _val       // update the value of specific key
+                    }
+                }));
+            }
+            if(key === "_gender"){
+                this.setState(prevState => ({
+                    _student: {                   // object that we want to update
+                        ...prevState._student,    // keep all other key-value pairs
+                        _gender: _val       // update the value of specific key
+                    }
+                }));
+            }
+            
+            if(key === "_classroom") {
+                this.setState(prevState => ({
+                    _student: {                   // object that we want to update
+                        ...prevState._student,    // keep all other key-value pairs
+                        _classroom: _val       // update the value of specific key
+                    }
+                }));
+            }
+
+            if(key === "_full_name_first_parent"){
+                this.setState(prevState => ({
+                    _first_parent: {                   // object that we want to update
+                        ...prevState._first_parent,    // keep all other key-value pairs
+                        _full_name_first_parent: _val       // update the value of specific key
+                    }
+                }));
+            }
+            if(key === "_gender_first_parent"){
+                this.setState(prevState => ({
+                    _first_parent: {                   // object that we want to update
+                        ...prevState._first_parent,    // keep all other key-value pairs
+                        _gender_first_parent: _val       // update the value of specific key
+                    }
+                }));
+            }
+            if(key === "_adresse_first_parent"){
+                this.setState(prevState => ({
+                    _first_parent: {                   // object that we want to update
+                        ...prevState._first_parent,    // keep all other key-value pairs
+                        _adresse_first_parent: _val       // update the value of specific key
+                    }
+                }));
+            }
+            if(key === "_phone_first_parent"){
+                this.setState(prevState => ({
+                    _first_parent: {                   // object that we want to update
+                        ...prevState._first_parent,    // keep all other key-value pairs
+                        _phone_first_parent: _val       // update the value of specific key
+                    }
+                }));
+            }
+
+            if(key === "_full_name_second_parent"){
+                this.setState(prevState => ({
+                    _second_parent: {                   // object that we want to update
+                        ...prevState._second_parent,    // keep all other key-value pairs
+                        _full_name_second_parent: _val       // update the value of specific key
+                    }
+                }));
+            }
+            if(key === "_gender_second_parent"){
+                this.setState(prevState => ({
+                    _second_parent: {                   // object that we want to update
+                        ...prevState._second_parent,    // keep all other key-value pairs
+                        _gender_second_parent: _val       // update the value of specific key
+                    }
+                }));
+            }
+            if(key === "_adresse_second_parent"){
+                this.setState(prevState => ({
+                    _second_parent: {                   // object that we want to update
+                        ...prevState._second_parent,    // keep all other key-value pairs
+                        _adresse_second_parent: _val       // update the value of specific key
+                    }
+                }));
+            }
+            if(key === "_phone_second_parent"){
+                this.setState(prevState => ({
+                    _second_parent: {                   // object that we want to update
+                        ...prevState._second_parent,    // keep all other key-value pairs
+                        _phone_second_parent: _val       // update the value of specific key
+                    }
+                }));
+            }
+
+            if(key === "_full_name_guardian"){
+                this.setState(prevState => ({
+                    _guardian: {                   // object that we want to update
+                        ...prevState._guardian,    // keep all other key-value pairs
+                        _full_name_guardian: _val       // update the value of specific key
+                    }
+                }));
+            }
+            if(key === "_gender_guardian"){
+                this.setState(prevState => ({
+                    _guardian: {                   // object that we want to update
+                        ...prevState._guardian,    // keep all other key-value pairs
+                        _gender_guardian: _val       // update the value of specific key
+                    }
+                }));
+            }
+            if(key === "_adresse_guardian"){
+                this.setState(prevState => ({
+                    _guardian: {                   // object that we want to update
+                        ...prevState._guardian,    // keep all other key-value pairs
+                        _adresse_guardian: _val       // update the value of specific key
+                    }
+                }));
+            }
+            if(key === "_phone_guardian"){
+                this.setState(prevState => ({
+                    _guardian: {                   // object that we want to update
+                        ...prevState._guardian,    // keep all other key-value pairs
+                        _phone_guardian: _val       // update the value of specific key
+                    }
+                }));
+            }
+        }
     }
-    _handleTap() {
-        let searchWrapper_name = document.querySelector('.search-wrapper-name'),
-            searchInput_name = document.querySelector('.search-input-name'),
-            searchIcon_name = document.querySelector('.search-name'),
+    _handleTap(_class) {
+        let searchWrapper_name = document.querySelector('.search-wrapper-name'+_class),
+            searchInput_name = document.querySelector('.search-input-name'+_class),
+            searchIcon_name = document.querySelector('.search-name'+_class),
             searchActivated_name = false;
 
-        $('.search-name').click(() => {
+        $('.search-name'+_class).click(() => {
             if (!searchActivated_name) {
-                $('._search_form').addClass('_opened');
+                $('._search_form'+_class).addClass('_opened');
                 searchWrapper_name.classList.add('focused');
                 searchIcon_name.classList.add('active');
                 searchInput_name.focus();
                 searchActivated_name = !searchActivated_name;
             } else {
-                $('._search_form').removeClass('_opened');
+                $('._search_form'+_class).removeClass('_opened');
                 searchWrapper_name.classList.remove('focused');
                 searchIcon_name.classList.remove('active');
                 searchActivated_name = !searchActivated_name;
@@ -705,8 +624,8 @@ class Dashboard extends React.Component {
         });
     }
     render() {
-        const { articles, classrooms, classroomToEdit, courses, exams, homeworks, letters, reports, schools, students, subjects, user } = this.props;
-        const { _classroom, _user, _school } = this.state;
+        const { articles, classrooms, classroomToEdit, courses, exams, homeworks, letters, reports, schools, students, studentToEdit, subjects, user } = this.props;
+        const { _classroom, _user, _school, _student, _first_parent, _second_parent, _guardian } = this.state;
         return(
             <FullPage scrollMode={'normal'}>
 				<Slide>
@@ -787,72 +706,428 @@ class Dashboard extends React.Component {
                                 
                                 </div>
                                 <div className="students_pane tab-pane" id="3a">
-                                    {/* <div className="_students_header">
-                                        <div className="_search_form">
-                                            <div className="search-wrapper-name">
-                                                <input className="search-input-name" type="text" placeholder="Search"/>
-                                                <span></span>
-                                                <div className='search-name'></div>
+                                    <div className="_students_pane">
+                                        <div className="_students_header">
+                                            <div className="_search_form_students">
+                                                <div className="search-wrapper-name_students">
+                                                    <input className="search-input-name_students light-table-filter" type="search" data-table="students_list" placeholder="Search"/>
+                                                    <span></span>
+                                                    <div className='search-name_students'></div>
+                                                </div>
+                                            </div>
+                                            <div className="_filter_form">
+                                                <button className="_add_student btn-primary" data-toggle="modal" data-target="#_student_modal"><i className="fas fa-plus"></i>Add Student</button>
                                             </div>
                                         </div>
-
-                                        <button className="_filter">Filter</button>
-                                        <button className="_add_student">Add Student</button>
-                                    </div>
-                                    <div className="_students_content">
-
-                                        <div className="_student_data">
-                                            <table className="students_list">
-                                                <thead>
-                                                    <tr>
-                                                        <th>#</th>
-                                                        <th>Name</th>
-                                                        <th>Classroom</th>
-                                                        <th>Grade</th>
-                                                        <th>Gender</th>
-                                                        <th>Birthdate</th>
-                                                        <th>Registration</th>
-                                                        <th>Attendance</th>
-                                                        <th>Parent #1</th>
-                                                        <th>Parent #2</th>
-                                                        <th>Guardian</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                {
-                                                    _.orderBy(students, ['_dateofbirth'], ['desc']).map((student, index) => {
-                                                        return (
-                                                            <tr>
-                                                                <td>{student._registration_number}</td>
-                                                                <td>{student._last_name} {student._first_name}</td>
-                                                                <td>{student._classroom._name}</td>
-                                                                <td>{student._classroom._grade}</td>
-                                                                <td>{student._gender}</td>
-                                                                <td>{student._dateofbirth}</td>
-                                                                <td>{student._registration_date}</td>
-                                                                <td>?</td>
-                                                                <td>{student._first_parent._first_name} {student._first_parent._last_name}</td>
-                                                                <td>{student._second_parent._first_name} {student._second_parent._last_name}</td>
-                                                                <td>{student._guardian._first_name} {student._guardian._last_name}</td>
-                                                            </tr>
-                                                        )
-                                                    })
-                                                }
-                                                </tbody>
-                                            </table>
+                                        <div className="_students_content">
+                                            <div className="_students_data">
+                                                <table className="students_list table table-striped">
+                                                    <thead>
+                                                        <tr className="students_list_header">
+                                                            <th>Reg Number</th>
+                                                            <th>Reg Date</th>
+                                                            <th>Classroom</th>
+                                                            <th>Full Name</th>
+                                                            <th>Birthday</th>
+                                                            <th>Gender</th>
+                                                            <th>Attendance</th>
+                                                            <th>First Parent</th>
+                                                            <th>Second Parent</th>
+                                                            <th>Guardian</th>
+                                                            <th className="_empty"></th>
+                                                            <th className="_empty"></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="data-container">
+                                                    {
+                                                        _.orderBy(students, ['createdAt'], ['desc']).map((student, index) => {
+                                                            return (
+                                                                <tr>
+                                                                    <td>{student._registration_number}</td>
+                                                                    <td>{moment(student._registration_date).format('MMM DD, YYYY')}</td>
+                                                                    <td>{_.get(_.find(classrooms, {'_id': student._classroom}), '_code')}</td>
+                                                                    <td>{student._first_name} {student._last_name}</td>
+                                                                    <td>{moment(student._dateofbirth).format('MMM DD, YYYY')}</td>
+                                                                    <td>{student._gender}</td>
+                                                                    <td>{/* student._attendance */}</td>
+                                                                    <td>{student._first_parent._full_name_first_parent}</td>
+                                                                    <td>{student._second_parent._full_name_second_parent}</td>
+                                                                    <td>{student._guardian._full_name_guardian}</td>
+                                                                    <td className="dropdown">
+                                                                        <span className="dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                            <i className="fas fa-ellipsis-h"></i>
+                                                                        </span>
+                                                                        <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                                            <a className="dropdown-item" href="" data-toggle="modal" data-target="#_student_modal" onClick={() => this.handleEditStudent(student)}>Edit Student {student._code}</a>
+                                                                            <a className="dropdown-item" href="" onClick={() => this.handleDeleteStudent(student._id)}>Delete Student {student._code}</a>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            )
+                                                        })
+                                                    }
+                                                    </tbody>
+                                                    <tfoot id="pagination_students"></tfoot>
+                                                </table>
+                                            </div>
                                         </div>
-                                        <div id="_student_data_indexes"></div>
+                                    </div>
+                                    <div className="_student_modal modal fade" id="_student_modal" tabIndex="-1" role="dialog" aria-labelledby="_student_modalLabel" aria-hidden="true">
+                                        <div className="modal-dialog" role="document">
+                                            <div className="modal-content">
+                                                <div className="modal-body">
+                                                    <div className="_top_shelf">
+                                                        <ul className='progress'>
+                                                            <li className="active"></li>
+                                                            <li></li>
+                                                            <li></li>
+                                                            <li></li>
+                                                            <li></li>
+                                                        </ul>
+                                                        <a title="Close" className="modal-close" data-dismiss="modal">Close</a>
+                                                    </div>
+                                                    <h5 className="modal-title" id="_student_modalLabel">OKAY!</h5>
+                                                    <div className="wrapper_form_student">
+                                                        <div className="_student_box modal-body-step-1 is-showing">
+                                                            <span>Student Registration Information : </span>
+                                                            <div className="modal-content_student">
+                                                                <fieldset className="input-field form-group">
+                                                                    <input
+                                                                    onChange={(ev) => this.handleChangeField('_registration_number', ev)}
+                                                                    value={_student._registration_number}
+                                                                    className="validate form-group-input _registration_number" 
+                                                                    id="_registration_number"
+                                                                    type="text" 
+                                                                    name="_registration_number" 
+                                                                    required="required"
+                                                                    />
+                                                                    <label htmlFor='_registration_number' className={_student._registration_number ? 'active' : ''}>Student _registration_number</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
+                                                                <fieldset className="input-field form-group">
+                                                                    <input
+                                                                    onChange={(ev) => this.handleChangeField('_registration_date', ev)}
+                                                                    value={_student._registration_date}
+                                                                    className="validate datepicker form-group-input _registration_date" 
+                                                                    id="_registration_date"
+                                                                    type="text" 
+                                                                    name="_registration_date" 
+                                                                    required="required"
+                                                                    />
+                                                                    <label htmlFor='_registration_date' className={_student._registration_date ? 'active' : ''}>Student _registration_date</label>
+                                                                    <div className="form-group-line"></div>
+                                                                    <div className="datepicker sample"></div>
+                                                                </fieldset>
+                                                                <fieldset className="input-field form-group">
+                                                                    <select 
+                                                                    onChange={(ev) => this.handleChangeField('_classroom', ev)}
+                                                                    value={_student._classroom}
+                                                                    className="validate form-group-input _classroom" 
+                                                                    id="_classroom"
+                                                                    name="_classroom" 
+                                                                    required="required"
+                                                                    >
+                                                                        <option hidden disabled selected value></option>
+                                                                        {
+                                                                            _.orderBy(classrooms, ['createdAt'], ['desc']).map((classroom, index) => {
+                                                                                return (
+                                                                                    <option value={classroom._id}>{classroom._code}</option>
+                                                                                )
+                                                                            })
+                                                                        }
+                                                                    </select>
+                                                                    <label htmlFor='_classroom' className={_student._classroom ? 'active' : ''}>_classroom</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
+                                                            </div>
+                                                            <input type='button' name='next' className='next-button custom-button' value="Next"></input>
+                                                        </div>
 
-                                    </div> */}
+                                                        <div className="_student_box modal-body-step-2">
+                                                            <span>Student Personal Information</span>
+                                                            <div className="modal-content_student">
+                                                                <fieldset className="input-field form-group">
+                                                                    <input
+                                                                    onChange={(ev) => this.handleChangeField('_first_name', ev)}
+                                                                    value={_student._first_name}
+                                                                    className="validate form-group-input _first_name" 
+                                                                    id="_first_name"
+                                                                    type="text" 
+                                                                    name="_first_name" 
+                                                                    required="required"
+                                                                    />
+                                                                    <label htmlFor='_first_name' className={_student._first_name ? 'active' : ''}>_first_name</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
+                                                                <fieldset className="input-field form-group">
+                                                                    <input
+                                                                    onChange={(ev) => this.handleChangeField('_last_name', ev)}
+                                                                    value={_student._last_name}
+                                                                    className="validate form-group-input _last_name" 
+                                                                    id="_last_name"
+                                                                    type="text" 
+                                                                    name="_last_name" 
+                                                                    required="required"
+                                                                    />
+                                                                    <label htmlFor='_last_name' className={_student._last_name ? 'active' : ''}>_last_name</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
+                                                                <fieldset className="input-field form-group">
+                                                                    <input
+                                                                    onChange={(ev) => this.handleChangeField('_dateofbirth', ev)}
+                                                                    value={_student._dateofbirth}
+                                                                    className="validate datepicker form-group-input _dateofbirth" 
+                                                                    id="_dateofbirth"
+                                                                    type="text" 
+                                                                    name="_dateofbirth" 
+                                                                    required="required"
+                                                                    />
+                                                                    <label htmlFor='_dateofbirth' className={_student._dateofbirth ? 'active' : ''}>_dateofbirth</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
+                                                                <fieldset className="input-field form-group">
+                                                                    <select 
+                                                                    onChange={(ev) => this.handleChangeField('_gender', ev)}
+                                                                    value={_student._gender}
+                                                                    className="validate form-group-input _gender" 
+                                                                    id="_gender"
+                                                                    name="_gender" 
+                                                                    required="required"
+                                                                    >
+                                                                        <option hidden disabled selected value></option>
+                                                                        {
+                                                                            ['Mr.', 'Mrs.', 'Ms.', 'Other'].map((g, index) => {
+                                                                                return (
+                                                                                    <option value={g}>{g}</option>
+                                                                                )
+                                                                            })
+                                                                        }
+                                                                    </select>
+                                                                    <label htmlFor='_gender' className={_student._gender ? 'active' : ''}>_gender</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
+                                                            </div>
+                                                            <input type='button' name='next' className='next-button custom-button' value="Next"></input>
+                                                            <input type='button' name='previous' className='prev-button custom-button' value="Back"></input>
+                                                        </div>
+
+                                                        <div className="_student_box modal-body-step-3">
+                                                            <span>First Parent Information : </span>
+                                                            <div className="modal-content_student">
+                                                                <fieldset className="input-field form-group">
+                                                                    <input
+                                                                    onChange={(ev) => this.handleChangeField('_full_name_first_parent', ev)}
+                                                                    value={_first_parent._full_name_first_parent}
+                                                                    className="validate form-group-input _full_name_first_parent" 
+                                                                    id="_full_name_first_parent"
+                                                                    type="text" 
+                                                                    name="_full_name_first_parent" 
+                                                                    required="required"
+                                                                    />
+                                                                    <label htmlFor='_full_name_first_parent' className={_first_parent._full_name_first_parent ? 'active' : ''}>_full_name_first_parent</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
+                                                                <fieldset className="input-field form-group">
+                                                                    <select 
+                                                                    onChange={(ev) => this.handleChangeField('_gender_first_parent', ev)}
+                                                                    value={_first_parent._gender_first_parent}
+                                                                    className="validate form-group-input _gender_first_parent" 
+                                                                    id="_gender_first_parent"
+                                                                    name="_gender_first_parent" 
+                                                                    required="required"
+                                                                    >
+                                                                        <option hidden disabled selected value></option>
+                                                                        {
+                                                                            ['Mr.', 'Mrs.', 'Ms.', 'Other'].map((g, index) => {
+                                                                                return (
+                                                                                    <option value={g}>{g}</option>
+                                                                                )
+                                                                            })
+                                                                        }
+                                                                    </select>
+                                                                    <label htmlFor='_gender_first_parent' className={_first_parent._gender_first_parent ? 'active' : ''}>_gender_first_parent</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
+                                                                <fieldset className="input-field form-group">
+                                                                    <input
+                                                                    onChange={(ev) => this.handleChangeField('_adresse_first_parent', ev)}
+                                                                    value={_first_parent._adresse_first_parent}
+                                                                    className="validate form-group-input _adresse_first_parent" 
+                                                                    id="_adresse_first_parent"
+                                                                    type="text" 
+                                                                    name="_adresse_first_parent" 
+                                                                    required="required"
+                                                                    />
+                                                                    <label htmlFor='_adresse_first_parent' className={_first_parent._adresse_first_parent ? 'active' : ''}>_adresse_first_parent</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
+                                                                <fieldset className="input-field form-group">
+                                                                    <input
+                                                                    onChange={(ev) => this.handleChangeField('_phone_first_parent', ev)}
+                                                                    value={_first_parent._phone_first_parent}
+                                                                    className="validate form-group-input _phone_first_parent" 
+                                                                    id="_phone_first_parent"
+                                                                    type="text" 
+                                                                    name="_phone_first_parent" 
+                                                                    required="required"
+                                                                    />
+                                                                    <label htmlFor='_phone_first_parent' className={_first_parent._phone_first_parent ? 'active' : ''}>_phone_first_parent</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
+                                                            </div>
+                                                            <input type='button' name='next' className='next-button custom-button' value="Next"></input>
+                                                            <input type='button' name='previous' className='prev-button custom-button' value="Back"></input>
+                                                        </div>
+
+                                                        <div className="_student_box modal-body-step-4">
+                                                            <span>Second Parent Information : </span>
+                                                            <div className="modal-content_student">
+                                                                <fieldset className="input-field form-group">
+                                                                    <input
+                                                                    onChange={(ev) => this.handleChangeField('_full_name_second_parent', ev)}
+                                                                    value={_second_parent._full_name_second_parent}
+                                                                    className="validate form-group-input _full_name_second_parent" 
+                                                                    id="_full_name_second_parent"
+                                                                    type="text" 
+                                                                    name="_full_name_second_parent" 
+                                                                    required="required"
+                                                                    />
+                                                                    <label htmlFor='_full_name_second_parent' className={_second_parent._full_name_second_parent ? 'active' : ''}>_full_name_second_parent</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
+                                                                <fieldset className="input-field form-group">
+                                                                    <select 
+                                                                    onChange={(ev) => this.handleChangeField('_gender_second_parent', ev)}
+                                                                    value={_second_parent._gender_second_parent}
+                                                                    className="validate form-group-input _gender_second_parent" 
+                                                                    id="_gender_second_parent"
+                                                                    name="_gender_second_parent" 
+                                                                    required="required"
+                                                                    >
+                                                                        <option hidden disabled selected value></option>
+                                                                        {
+                                                                            ['Mr.', 'Mrs.', 'Ms.', 'Other'].map((g, index) => {
+                                                                                return (
+                                                                                    <option value={g}>{g}</option>
+                                                                                )
+                                                                            })
+                                                                        }
+                                                                    </select>
+                                                                    <label htmlFor='_gender_second_parent' className={_second_parent._gender_second_parent ? 'active' : ''}>_gender_second_parent</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
+                                                                <fieldset className="input-field form-group">
+                                                                    <input
+                                                                    onChange={(ev) => this.handleChangeField('_adresse_second_parent', ev)}
+                                                                    value={_second_parent._adresse_second_parent}
+                                                                    className="validate form-group-input _adresse_second_parent" 
+                                                                    id="_adresse_second_parent"
+                                                                    type="text" 
+                                                                    name="_adresse_second_parent" 
+                                                                    required="required"
+                                                                    />
+                                                                    <label htmlFor='_adresse_second_parent' className={_second_parent._adresse_second_parent ? 'active' : ''}>_adresse_second_parent</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
+                                                                <fieldset className="input-field form-group">
+                                                                    <input
+                                                                    onChange={(ev) => this.handleChangeField('_phone_second_parent', ev)}
+                                                                    value={_second_parent._phone_second_parent}
+                                                                    className="validate form-group-input _phone_second_parent" 
+                                                                    id="_phone_second_parent"
+                                                                    type="text" 
+                                                                    name="_phone_second_parent" 
+                                                                    required="required"
+                                                                    />
+                                                                    <label htmlFor='_phone_second_parent' className={_second_parent._phone_second_parent ? 'active' : ''}>_phone_second_parent</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
+                                                            </div>
+                                                            <input type='button' name='next' className='next-button custom-button' value="Next"></input>
+                                                            <input type='button' name='previous' className='prev-button custom-button' value="Back"></input>
+                                                        </div>
+
+                                                        <div className="_student_box modal-body-step-5">
+                                                            <span>Guardian Information : </span>
+                                                            <div className="modal-content_student">
+                                                                <fieldset className="input-field form-group">
+                                                                    <input
+                                                                    onChange={(ev) => this.handleChangeField('_full_name_guardian', ev)}
+                                                                    value={_guardian._full_name_guardian}
+                                                                    className="validate form-group-input _full_name_guardian" 
+                                                                    id="_full_name_guardian"
+                                                                    type="text" 
+                                                                    name="_full_name_guardian" 
+                                                                    required="required"
+                                                                    />
+                                                                    <label htmlFor='_full_name_guardian' className={_guardian._full_name_guardian ? 'active' : ''}>_full_name_guardian</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
+                                                                <fieldset className="input-field form-group">
+                                                                    <select 
+                                                                    onChange={(ev) => this.handleChangeField('_gender_guardian', ev)}
+                                                                    value={_guardian._gender_guardian}
+                                                                    className="validate form-group-input _gender_guardian" 
+                                                                    id="_gender_guardian"
+                                                                    name="_gender_guardian" 
+                                                                    required="required"
+                                                                    >
+                                                                        <option hidden disabled selected value></option>
+                                                                        {
+                                                                            ['Mr.', 'Mrs.', 'Ms.', 'Other'].map((g, index) => {
+                                                                                return (
+                                                                                    <option value={g}>{g}</option>
+                                                                                )
+                                                                            })
+                                                                        }
+                                                                    </select>
+                                                                    <label htmlFor='_gender_guardian' className={_guardian._gender_guardian ? 'active' : ''}>_gender_guardian</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
+                                                                <fieldset className="input-field form-group">
+                                                                    <input
+                                                                    onChange={(ev) => this.handleChangeField('_adresse_guardian', ev)}
+                                                                    value={_guardian._adresse_guardian}
+                                                                    className="validate form-group-input _adresse_guardian" 
+                                                                    id="_adresse_guardian"
+                                                                    type="text" 
+                                                                    name="_adresse_guardian" 
+                                                                    required="required"
+                                                                    />
+                                                                    <label htmlFor='_adresse_guardian' className={_guardian._adresse_guardian ? 'active' : ''}>_adresse_guardian</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
+                                                                <fieldset className="input-field form-group">
+                                                                    <input
+                                                                    onChange={(ev) => this.handleChangeField('_phone_guardian', ev)}
+                                                                    value={_guardian._phone_guardian}
+                                                                    className="validate form-group-input _phone_guardian" 
+                                                                    id="_phone_guardian"
+                                                                    type="text" 
+                                                                    name="_phone_guardian" 
+                                                                    required="required"
+                                                                    />
+                                                                    <label htmlFor='_phone_guardian' className={_guardian._phone_guardian ? 'active' : ''}>_phone_guardian</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
+                                                            </div>
+                                                            <button onClick={this.handleSubmitStudent} className="btn btn-primary float-right">{studentToEdit ? 'Update' : 'Submit'}</button>
+                                                            <input type='button' name='previous' className='prev-button custom-button' value="Back"></input>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className="classrooms_pane tab-pane" id="4a">
-                                    <div className="_classroms_pane">
+                                    <div className="_classrooms_pane">
                                         <div className="_classrooms_header">
-                                            <div className="_search_form">
-                                                <div className="search-wrapper-name">
-                                                    <input className="search-input-name light-table-filter" type="search" data-table="classrooms_list" placeholder="Search"/>
+                                            <div className="_search_form_classrooms">
+                                                <div className="search-wrapper-name_classrooms">
+                                                    <input className="search-input-name_classrooms light-table-filter" type="search" data-table="classrooms_list" placeholder="Search"/>
                                                     <span></span>
-                                                    <div className='search-name'></div>
+                                                    <div className='search-name_classrooms'></div>
                                                 </div>
                                             </div>
                                             <div className="_filter_form">
@@ -872,8 +1147,8 @@ class Dashboard extends React.Component {
                                                             <th>Teacher</th>
                                                             <th>Subjects</th>
                                                             <th>Students</th>
-                                                            <th></th>
-                                                            <th></th>
+                                                            <th className="_empty"></th>
+                                                            <th className="_empty"></th>
                                                         </tr>
                                                     </thead>
                                                     <tbody className="data-container">
@@ -903,7 +1178,7 @@ class Dashboard extends React.Component {
                                                         })
                                                     }
                                                     </tbody>
-                                                    <tfoot id="pagination-demo1"></tfoot>
+                                                    <tfoot id="pagination_classrooms"></tfoot>
                                                 </table>
                                             </div>
                                         </div>
@@ -970,7 +1245,7 @@ class Dashboard extends React.Component {
                                                                 <div className="form-group-line"></div>
                                                             </fieldset>
                                                         </div>
-                                                        <button onClick={this.handleSubmitClassroom} className="btn btn-primary float-right">Submit</button>
+                                                        <button onClick={this.handleSubmitClassroom} className="btn btn-primary float-right">{classroomToEdit ? 'Update' : 'Submit'}</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1007,6 +1282,9 @@ class Dashboard extends React.Component {
 const mapStateToProps = state => ({
     classrooms: state.home.classrooms,
     classroomToEdit: state.home.classroomToEdit,
+
+    students: state.home.students,
+    studentToEdit: state.home.studentToEdit,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -1015,6 +1293,12 @@ const mapDispatchToProps = dispatch => ({
     onEditClassroom: data => dispatch({ type: 'EDIT_CLASSROOM', data }),
     onDeleteClassroom: id => dispatch({ type : 'DELETE_CLASSROOM', id }),
     setEditClassroom: classroom => dispatch({ type: 'SET_EDIT_CLASSROOM', classroom }),
+
+    onLoadStudent: data => dispatch({ type: 'STUDENT_PAGE_LOADED', data }),
+    onSubmitStudent: data => dispatch({ type: 'SUBMIT_STUDENT', data }),
+    onEditStudent: data => dispatch({ type: 'EDIT_STUDENT', data }),
+    onDeleteStudent: id => dispatch({ type : 'DELETE_STUDENT', id }),
+    setEditStudent: student => dispatch({ type: 'SET_EDIT_STUDENT', student }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard) 
