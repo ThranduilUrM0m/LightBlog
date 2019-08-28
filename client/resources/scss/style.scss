@@ -284,7 +284,6 @@ img {
 	max-width: 100%;
 }
 *{
-	font-smoothing: antialiased;
 	-webkit-font-smoothing: antialiased;
 }
 .input-field {
@@ -1697,17 +1696,18 @@ body, html {
 										&:focus {
 											outline: none;
 											&:before {
-											transition: all 0.7s ease;
-											content: "";
-											position: absolute;
-											background: rgba(255, 255, 255, 0.2);
-											z-index: 99;
-											left: 15%;
-											right: 15%;
-											top: -50%;
-											bottom: -50%;
-											border-radius: 200%;
-											-webkit-animation: pulse ease 1.4s infinite;
+												transition: all 0.7s ease;
+												content: "";
+												position: absolute;
+												background: rgba(255, 255, 255, 0.2);
+												z-index: 99;
+												left: 15%;
+												right: 15%;
+												top: -50%;
+												bottom: -50%;
+												border-radius: 200%;
+												-webkit-animation: pulse ease 1.4s infinite;
+												animation: pulse ease 1.4s infinite;
 											}
 										}
 										svg {
@@ -1825,6 +1825,7 @@ body, html {
 					background: white;
 					box-shadow: 1rem 0rem 2rem -1rem rgba(0, 0, 0, 0.5);
 					-webkit-clip-path: inset(0 calc(100% - 5rem) 0 0);
+					clip-path: inset(0 calc(100% - 5rem) 0 0);
 					li{
 						position: relative;
 						width: 100%;
@@ -1908,6 +1909,7 @@ body, html {
 					}
 					&:hover{
 						-webkit-clip-path: inset(0 0 0 0);
+						clip-path: inset(0 0 0 0);
 					}
 				}
 				.tab-content {
@@ -1918,6 +1920,600 @@ body, html {
 					.tab-pane{
 						padding: 5rem 1rem 1rem 6rem;
 						height: -webkit-fill-available;
+						&.attendances_pane {
+							._attendances_pane {
+								background: white;
+								height: -webkit-fill-available;
+								box-shadow: 0rem 0rem 2rem -1rem rgba(0, 0, 0, 0.25);
+								._attendances_header {
+									display: flex;
+									justify-content: space-between;
+									padding: 1rem;
+									._search_form_attendances{
+										margin-left: calc(25rem - 2.5rem);
+										position: relative;
+										transform-origin: left;
+										&._opened {
+											margin-left: 0;
+										}
+										&::before{
+											width: calc(25rem - 2.5rem);
+											position: absolute;
+											display: inline-block;
+											content: "";
+											background: black;
+											height: 0.2rem;
+											right: 2.5rem;
+											bottom: 0;
+										}
+										.search-wrapper-name_attendances {
+											position: relative;
+											transform-origin: 100% 50%;
+											width: 2.5rem;
+											height: 2.5rem;
+											cursor: pointer;
+											transition: 250ms ease;
+											&.focused {
+												width: 25rem;
+												input {
+													padding: 0 40px 0 13px;
+													width: 100%;
+													height: -webkit-fill-available;
+													transform: scale(1);
+													box-sizing: inherit;
+													margin: 0;
+												}
+												span {
+													right: 0;
+													top: 0;
+													left: unset;
+													margin: 0 !important;
+												}
+											}
+											input {
+												background: black;
+												border: 0;
+												color: $liteBg;
+												outline: none;
+												height: 40px;
+												width: 0;
+												overflow: hidden;
+												font-weight: 100;
+												transform: scale(0);
+												transform-origin: right center;
+												transition: 275ms ease;
+												&::placeholder {
+													color: #cccccc;
+												}
+											}
+											.search-name_attendances{
+												position: absolute;
+												color: white;
+												font-size: 1rem;
+												top: 50%;
+												left: 50%;
+												transform: translate(-50%, -50%);
+												display: block;
+												width: 1.5rem;
+												height: 1.5rem;
+												border-radius: 100%;
+												border: 0.2rem solid black;
+												cursor: pointer;
+												-webkit-transition: all 0.3s;
+													-moz-transition: all 0.3s;
+														-o-transition: all 0.3s;
+														transition: all 0.3s;
+												&:before,
+												&:after {
+													content: '';
+													position: absolute;
+													display: block;
+												}
+												&:before {
+													width: 1rem;
+													height: 1rem;
+													border-radius: 1rem;
+													margin: 0.25rem;
+													-webkit-transform: rotate(45deg);
+													-moz-transform: rotate(45deg);
+													-o-transform: rotate(45deg);
+													-ms-transform: rotate(45deg);
+													transform: rotate(45deg);
+													-webkit-transition: all 0.1s ease;
+													-moz-transition: all 0.1s ease;
+													-o-transition: all 0.1s ease;
+													-ms-transition: all 0.1s ease;
+													transition: all 0.1s ease;
+												}
+												&:after {
+													width: 0.25rem;
+													height: 0.5rem;
+													background: black;
+													border-radius: 1rem;
+													margin: 1rem 0 0 1.25rem;
+													-webkit-transform: rotate(-45deg);
+													-moz-transform: rotate(-45deg);
+													-o-transform: rotate(-45deg);
+													-ms-transform: rotate(-45deg);
+													transform: rotate(-45deg);
+													-webkit-transition: all 0.2s ease;
+													-moz-transition: all 0.2s ease;
+													-o-transition: all 0.2s ease;
+													-ms-transition: all 0.2s ease;
+													transition: all 0.2s ease;
+												}
+												&.active {
+													right: 0;
+													left: unset;
+													border-color: $liteBg;
+													&:before,
+													&:after {
+														margin: 0;
+														left: 50%;
+														margin-left: -0.05rem;
+													}
+												}
+												&.active:before {
+													background: $liteBg;
+													width: 0.2rem;
+													height: 1rem;
+												}
+												&.active:after {
+													background: $liteBg;
+													width: 0.2rem;
+													height: 1rem;
+												}
+											}
+											span {
+												border-radius: 0;
+												display: block;
+												height: 0;
+												left: 50%;
+												margin: 0;
+												position: absolute;
+												top: 50%;
+												-webkit-transition: all 0.3s;
+													-moz-transition: all 0.3s;
+														-o-transition: all 0.3s;
+														transition: all 0.3s;
+												width: 0;
+												background-color: $color1Faded;
+											}
+											&:hover span {
+												width: 2.6rem;
+												height: 2.6rem;
+												border-radius: 2.6rem;
+												margin: -1.3rem;
+											}
+											&:hover .search_attendances{
+												border-color: white;
+											}
+											&:hover .search_attendances:after {
+												background: white;
+											}
+										}
+									}
+									._filter_form {
+										display: flex;
+										.dropdown {
+											display: flex;
+										}
+										._filter, ._add_attendance {
+											color: black;
+											background: none;
+											border: solid 0.05rem black;
+											display: inline-block;
+											position: relative;
+											border-radius: 0;
+											overflow: hidden;
+											margin: 0.2rem;
+											i {
+												color: rgba(0, 0, 0, 0.2);
+												margin-right: 0.2rem;
+											}
+											&.dropdown-toggle::after {
+												display:none;
+											}
+											&.focus,
+											&:focus {
+												outline: none;
+												&:before {
+													transition: all 0.7s ease;
+													content: "";
+													position: absolute;
+													background: rgba(255, 255, 255, 0.2);
+													z-index: 99;
+													left: 15%;
+													right: 15%;
+													top: -50%;
+													bottom: -50%;
+													border-radius: 200%;
+													-webkit-animation: pulse ease 1.4s infinite;
+													animation: pulse ease 1.4s infinite;
+												}
+											}
+											svg {
+												position: absolute;
+												top: 0;
+												left: 0;
+												width: 100%;
+												height: 100%;
+											}
+											circle {
+												fill: rgba(255, 255, 255, 0.2);
+											}
+										}
+										.dropdown-menu {
+											position: absolute;
+											transform-origin: right;
+											will-change: transform;
+											transform: unset !important;
+											top: 100% !important;
+											left: unset !important;
+											right: 0;
+										}
+									}
+								}
+								._attendances_content {
+									padding: 1rem;
+									._attendances_data {
+										width: 100%;
+										.attendances_list {
+											display: flex;
+											.attendance_card{
+												position: relative;
+												display: flex;
+												padding: 0.5rem;
+												width: 20rem;
+												height: 55vh;
+												margin: 0;
+												.card {
+													height: calc(100% - 1.5rem);
+													border: 0;
+													-webkit-transition: all 0.3s;
+													-moz-transition: all 0.3s;
+														-o-transition: all 0.3s;
+														transition: all 0.3s;
+													box-shadow: none;
+													background: transparent;
+													.shadow_title{
+														opacity: 0.1;
+														font-size: 5rem;
+														position: absolute;
+														left: -2rem;
+													}
+													.shadow_letter{
+														opacity: 0.1;
+														font-size: 20rem;
+														position: absolute;
+													}
+													.card-body {
+														position: relative;
+														h2{
+															color:$color1;
+															letter-spacing: 2px;
+															transition: all 0.15s ease 0s; 
+															position: relative;
+															z-index: 10;
+														}
+														h1, h2, h3, h4, h5, h6{
+															text-align: -webkit-left;
+														}
+														.author{
+															text-align: -webkit-right;
+															font-size: small;
+														}
+														p{
+															transition: all 0.15s ease 0s; 
+															position: relative;
+															z-index: 10;
+														}
+														._diagrams {
+															display: flex;
+															.Monthly {
+																width: 50%;
+																margin: 0.2rem;
+																padding: 0.2rem;
+																border-right: 1px solid rgba(0, 0, 0, 0.1);
+																text-align: center;
+															}
+															.Yearly {
+																width: 50%;
+																margin: 0.2rem;
+																padding: 0.2rem;
+																border-left: 1px solid rgba(0, 0, 0, 0.1);
+																text-align: center;
+															}
+														}
+														.body{
+															border-left: 0.05rem solid black;
+															padding-left: 1rem;
+														}
+														&::after{
+															position: absolute;
+															top:0;
+															left: 0;
+															right:0;
+															bottom: 0;
+															/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#a29ca9+0,95909b+99 */
+															background: #a29ca9; /* Old browsers */
+															background: -moz-linear-gradient(-45deg, #a29ca9 0%, #95909b 99%); /* FF3.6-15 */
+															background: -webkit-linear-gradient(-45deg, #a29ca9 0%,#95909b 99%); /* Chrome10-25,Safari5.1-6 */
+															background: linear-gradient(135deg, #a29ca9 0%,#95909b 99%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+															filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a29ca9', endColorstr='#95909b',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+															content: '';
+															opacity: 0;
+															transition: opacity 0.9s ease 0s; 
+														}
+														&:hover {
+															h2 {
+																transform: translateY(-10px);
+															}
+															p{
+																transform: translateY(10px);
+															}
+															&::after{
+																opacity: 0.4;
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+									#pagination_attendance {
+										position: absolute;
+										width: 2.6rem;
+										right: calc(0.5rem + 5px);
+										top: 6rem;
+										ul {
+											display: flex;
+											flex-direction: column;
+											justify-content: center;
+											align-items: center;
+											li {
+												display: block;
+												border: 1px solid $mainColor;
+												width: 20%;
+												height: 100%;
+												overflow: hidden;    
+												opacity: 0.6;
+												text-align: center;
+												margin-bottom: 20%;
+												transition: all 0.2s ease-out;
+												a {
+													display: inline-block;
+													width: 100%;
+													line-height: 2.5rem;
+													color: transparent;
+													text-decoration: none;
+												}
+												&.active {
+													a {
+														background-color: $mainColor;
+													}
+												}
+												&:hover {
+													width: 200%;
+													transform: translateX(-45%);
+													opacity: 1;
+													a {
+														color: $mainColor;
+													}
+													&.active {
+														a {
+															color: white;
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+							._attendance_modal {
+								&.modal {
+									max-height: fit-content;
+									width: fit-content;
+									padding-right: 0 !important;
+									top: 5rem;
+									.modal-dialog {
+										max-width: 60rem;
+										margin: 0;
+										.modal-content {
+											.modal-body {
+												.modal-close {
+													color: #aaa;
+													font-size: 80%;
+													position: absolute;
+													right: 0;
+													top: 0;
+													text-align: center;
+													text-decoration: none;
+												}
+												h5 {
+													margin: 0 0 15px;
+												}
+												.wrapper_form_attendance {
+													.modal-content_attendance {
+														fieldset {
+															width: fit-content;
+															margin: 0 0 auto auto;
+															select:not(.datepicker-select) {
+																display: initial;
+																border: none;
+																width: unset;
+																min-width: 25rem;
+															}
+															label {
+																left: 0.2rem;
+																top: 50%;
+																transform: translateY(-50%);
+																background: white;
+																&.active {
+																	top: 0;
+																}
+															}
+															.form-group-line {
+																left: 0;
+																bottom: 0;
+															}
+														}
+														._attendances_data {
+															min-width: 50rem;
+															.attendances_list {
+																display: flex;
+																.attendance_card{
+																	position: relative;
+																	display: flex;
+																	padding: 0.5rem;
+																	width: 15rem;
+																	height: 55vh;
+																	margin: 0.5rem 0;
+																	.card {
+																		height: calc(100% - 1.5rem);
+																		border: 0;
+																		-webkit-transition: all 0.3s;
+																		-moz-transition: all 0.3s;
+																			-o-transition: all 0.3s;
+																			transition: all 0.3s;
+																		box-shadow: none;
+																		background: transparent;
+																		.shadow_title{
+																			opacity: 0.1;
+																			font-size: 5rem;
+																			position: absolute;
+																			left: -2rem;
+																		}
+																		.shadow_letter{
+																			opacity: 0.1;
+																			font-size: 20rem;
+																			position: absolute;
+																		}
+																		.card-body {
+																			position: relative;
+																			h2{
+																				color:$color1;
+																				letter-spacing: 2px;
+																				transition: all 0.15s ease 0s; 
+																				position: relative;
+																				z-index: 10;
+																			}
+																			h1, h2, h3, h4, h5, h6{
+																				text-align: -webkit-left;
+																			}
+																			.author{
+																				text-align: -webkit-right;
+																				font-size: small;
+																			}
+																			p{
+																				transition: all 0.15s ease 0s; 
+																				position: relative;
+																				z-index: 10;
+																			}
+																			._ATTENDANCE {
+																				display: flex;
+																				.PRESENT {
+																					width: 50%;
+																					margin: 0.2rem;
+																					padding: 0.2rem;
+																					border-right: 1px solid rgba(0, 0, 0, 0.1);
+																					text-align: center;
+																				}
+																				.ABSENT {
+																					width: 50%;
+																					margin: 0.2rem;
+																					padding: 0.2rem;
+																					border-left: 1px solid rgba(0, 0, 0, 0.1);
+																					text-align: center;
+																				}
+																			}
+																			.body{
+																				border-left: 0.05rem solid black;
+																				padding-left: 1rem;
+																			}
+																			&::after{
+																				position: absolute;
+																				top:0;
+																				left: 0;
+																				right:0;
+																				bottom: 0;
+																				/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#a29ca9+0,95909b+99 */
+																				background: #a29ca9; /* Old browsers */
+																				background: -moz-linear-gradient(-45deg, #a29ca9 0%, #95909b 99%); /* FF3.6-15 */
+																				background: -webkit-linear-gradient(-45deg, #a29ca9 0%,#95909b 99%); /* Chrome10-25,Safari5.1-6 */
+																				background: linear-gradient(135deg, #a29ca9 0%,#95909b 99%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+																				filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a29ca9', endColorstr='#95909b',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+																				content: '';
+																				opacity: 0;
+																				transition: opacity 0.9s ease 0s; 
+																			}
+																			&:hover {
+																				h2 {
+																					transform: translateY(-10px);
+																				}
+																				p{
+																					transform: translateY(10px);
+																				}
+																				&::after{
+																					opacity: 0.4;
+																				}
+																			}
+																		}
+																	}
+																}
+															}
+														}
+													}
+													button {
+														color: black;
+														background: none;
+														border: solid 0.05rem black;
+														display: inline-block;
+														position: relative;
+														border-radius: 0;
+														overflow: hidden;
+														margin: 0.2rem;
+														i {
+															color: rgba(0, 0, 0, 0.2);
+															margin-right: 0.2rem;
+														}
+														&.focus,
+														&:focus {
+															outline: none;
+															&:before {
+																transition: all 0.7s ease;
+																content: "";
+																position: absolute;
+																background: rgba(255, 255, 255, 0.2);
+																z-index: 99;
+																left: 15%;
+																right: 15%;
+																top: -50%;
+																bottom: -50%;
+																border-radius: 200%;
+																-webkit-animation: pulse ease 1.4s infinite;
+																animation: pulse ease 1.4s infinite;
+															}
+														}
+														svg {
+															position: absolute;
+															top: 0;
+															left: 0;
+															width: 100%;
+															height: 100%;
+														}
+														circle {
+															fill: rgba(255, 255, 255, 0.2);
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
 						&.students_pane {
 							._students_pane {
 								background: white;
@@ -2116,17 +2712,18 @@ body, html {
 											&:focus {
 												outline: none;
 												&:before {
-												transition: all 0.7s ease;
-												content: "";
-												position: absolute;
-												background: rgba(255, 255, 255, 0.2);
-												z-index: 99;
-												left: 15%;
-												right: 15%;
-												top: -50%;
-												bottom: -50%;
-												border-radius: 200%;
-												-webkit-animation: pulse ease 1.4s infinite;
+													transition: all 0.7s ease;
+													content: "";
+													position: absolute;
+													background: rgba(255, 255, 255, 0.2);
+													z-index: 99;
+													left: 15%;
+													right: 15%;
+													top: -50%;
+													bottom: -50%;
+													border-radius: 200%;
+													-webkit-animation: pulse ease 1.4s infinite;
+													animation: pulse ease 1.4s infinite;
 												}
 											}
 											svg {
@@ -2365,8 +2962,6 @@ body, html {
 																				}
 																				.datepicker-table-wrapper {
 																					table {
-																						//margin: 0;
-																						//width: 100%;
 																						thead {
 																							tr {
 																								th {
@@ -2374,13 +2969,6 @@ body, html {
 																										text-decoration: none;
     																									cursor: text;
 																									}
-																								}
-																							}
-																						}
-																						tbody {
-																							tr {
-																								td {
-
 																								}
 																							}
 																						}
@@ -2436,17 +3024,18 @@ body, html {
 															&:focus {
 																outline: none;
 																&:before {
-																transition: all 0.7s ease;
-																content: "";
-																position: absolute;
-																background: rgba(255, 255, 255, 0.2);
-																z-index: 99;
-																left: 15%;
-																right: 15%;
-																top: -50%;
-																bottom: -50%;
-																border-radius: 200%;
-																-webkit-animation: pulse ease 1.4s infinite;
+																	transition: all 0.7s ease;
+																	content: "";
+																	position: absolute;
+																	background: rgba(255, 255, 255, 0.2);
+																	z-index: 99;
+																	left: 15%;
+																	right: 15%;
+																	top: -50%;
+																	bottom: -50%;
+																	border-radius: 200%;
+																	-webkit-animation: pulse ease 1.4s infinite;
+																	animation: pulse ease 1.4s infinite;
 																}
 															}
 															svg {
@@ -2476,6 +3065,112 @@ body, html {
 															transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 															&:hover {
 																box-shadow: 0 5px 11px 0 rgba(0,0,0,0.18), 0 4px 15px 0 rgba(0,0,0,0.15);
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+							._attendance_modal_student {
+								&.modal {
+									height: fit-content;
+									max-height: 100%;
+									width: fit-content;
+									padding-right: 0 !important;
+									top: 50%;
+									transform: translateY(-50%);
+									overflow-x: visible;
+									overflow-y: visible;
+									.modal-dialog {
+										margin: 0;
+										max-width: 60rem;
+										.modal-content {
+											.modal-body {
+												.modal-close {
+													color: #aaa;
+													font-size: 80%;
+													position: absolute;
+													right: 0;
+													top: 0;
+													text-align: center;
+													text-decoration: none;
+												}
+												h5 {
+													margin: 0 0 15px;
+												}
+												.wrapper_form_attendance {
+													position: relative;
+													&_header {
+														position: relative;
+														display: flex;
+														flex-direction: row;
+														align-items: center;
+														.card{
+															width: 25vw;
+															height: 15vw;
+															margin: 0;
+															border: 0;
+															-webkit-transition: all 0.3s;
+															-moz-transition: all 0.3s;
+																-o-transition: all 0.3s;
+																transition: all 0.3s;
+															box-shadow: none;
+															.card-body {
+																position: relative;
+																/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#a29ca9+0,95909b+99 */
+																background: rgba(#9784ad, 0.4); /* Old browsers */
+																._inside {
+																	display: flex;
+																	justify-content: center;
+																	align-items: flex-end;
+																	flex-direction: column;
+																	border: 1px solid white;
+																	height: 100%;
+																	width: 100%;
+																	border-radius: 5% 0%;
+																	h2{
+																		color: white;
+																		font-size: larger;
+																		width: 50%;
+																	}
+																	.text-muted {
+																		color: white;
+																		width: 50%;
+																	}
+																}
+															}
+															h1, h2, h3, h4, h5, h6{
+																text-align: -webkit-left;
+																text-transform: uppercase;
+															}
+															.author{
+																text-align: -webkit-left;
+																font-size: small;
+															}
+															.shapes {
+																position: absolute;
+																top: 0;
+																left: 0;
+																width: 100%;
+																height: 100%;
+																&.shapes1 {
+																	background: url(http://www.piktab.com/piktab/media/img/shapes1.png) no-repeat center;
+																}
+																&.shapes2 {
+																	background: url(http://www.piktab.com/piktab/media/img/shapes2.png) no-repeat center;
+																}
+															}
+														}
+														._middays_total_present_absent, ._weekly_total_present_absent, ._monthly_total_present_absent, ._yearly_total_present_absent {
+															height: fit-content;
+															width: 8rem;
+															padding: 0.75rem;
+															text-align: center;
+															._title {
+																font-size: small;
 															}
 														}
 													}
@@ -2684,17 +3379,18 @@ body, html {
 											&:focus {
 												outline: none;
 												&:before {
-												transition: all 0.7s ease;
-												content: "";
-												position: absolute;
-												background: rgba(255, 255, 255, 0.2);
-												z-index: 99;
-												left: 15%;
-												right: 15%;
-												top: -50%;
-												bottom: -50%;
-												border-radius: 200%;
-												-webkit-animation: pulse ease 1.4s infinite;
+													transition: all 0.7s ease;
+													content: "";
+													position: absolute;
+													background: rgba(255, 255, 255, 0.2);
+													z-index: 99;
+													left: 15%;
+													right: 15%;
+													top: -50%;
+													bottom: -50%;
+													border-radius: 200%;
+													-webkit-animation: pulse ease 1.4s infinite;
+													animation: pulse ease 1.4s infinite;
 												}
 											}
 											svg {
@@ -2876,17 +3572,18 @@ body, html {
 														&:focus {
 															outline: none;
 															&:before {
-															transition: all 0.7s ease;
-															content: "";
-															position: absolute;
-															background: rgba(255, 255, 255, 0.2);
-															z-index: 99;
-															left: 15%;
-															right: 15%;
-															top: -50%;
-															bottom: -50%;
-															border-radius: 200%;
-															-webkit-animation: pulse ease 1.4s infinite;
+																transition: all 0.7s ease;
+																content: "";
+																position: absolute;
+																background: rgba(255, 255, 255, 0.2);
+																z-index: 99;
+																left: 15%;
+																right: 15%;
+																top: -50%;
+																bottom: -50%;
+																border-radius: 200%;
+																-webkit-animation: pulse ease 1.4s infinite;
+																animation: pulse ease 1.4s infinite;
 															}
 														}
 														svg {

@@ -286,6 +286,7 @@ class AccountProfil extends React.Component {
                         <ul>
                             <li>{ localStorage.getItem('email') }</li>
                             <li><Link to='/dashboard' className="_profil_link"><i className="far fa-user"></i> Dashboard </Link></li>
+                            <li><Link to='/inbox' className="_profil_link"><i className="fas fa-inbox"></i>Inbox</Link></li>
                             <li><Link to='/settings' className="_profil_link"><i className="fas fa-cog"></i>Settings</Link></li>
                             <li><a href="" onClick={this.disconnect}><i className="fas fa-sign-out-alt"></i>Logout</a></li>
                         </ul>

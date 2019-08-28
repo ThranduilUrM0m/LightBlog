@@ -18,7 +18,7 @@ const StudentsSchema = new Schema({
     _attendance: {
         _date: Date,
         _status: Boolean,
-        _remark: String,
+        _checked_at: Date,
     },
     _first_parent: {
         _full_name_first_parent: String,

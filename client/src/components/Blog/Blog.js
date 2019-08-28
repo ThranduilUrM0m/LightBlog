@@ -122,7 +122,7 @@ class Blog extends React.Component {
 						var container = $('#pagination-' + name);
 						var options = {
 							dataSource: res.data.articles,
-							pageSize: 5,
+							pageSize: 2,
 							autoHidePrevious: true,
 							autoHideNext: true,
 						};

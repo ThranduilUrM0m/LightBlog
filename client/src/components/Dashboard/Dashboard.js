@@ -5,7 +5,6 @@ import Footer from '../Footer/Footer';
 import { connect } from 'react-redux';
 import { FullPage, Slide } from 'react-full-page';
 import { Link } from 'react-router-dom';
-import 'whatwg-fetch';
 import { pagination } from 'paginationjs';
 import Fingerprint from 'fingerprintjs';
 import API from '../../utils/API';
@@ -22,6 +21,7 @@ class Dashboard extends React.Component {
             _second_parent: {},
             _guardian: {},
             _school: {},
+            _classroom_attendance: '',
         };
         this.handleChangeField = this.handleChangeField.bind(this);
 
@@ -45,12 +45,15 @@ class Dashboard extends React.Component {
         axios('http://localhost:8000/api/classrooms')
         .then((res) => onLoadClassroom(res.data))
         .then((res) => {
+            self.setState({
+                _classroom_attendance: _.get(_.head(res.data.classrooms), '_id', 'default')
+            })
             $(function(){
                 function createDemo(name){
                     var container = $('#pagination_' + name);
                     var options = {
                         dataSource: res.data.classrooms,
-                        pageSize: 10,
+                        pageSize: 8,
                         autoHidePrevious: true,
                         autoHideNext: true,
                     };
@@ -73,7 +76,7 @@ class Dashboard extends React.Component {
                     var container = $('#pagination_' + name);
                     var options = {
                         dataSource: res.data.students,
-                        pageSize: 10,
+                        pageSize: 8,
                         autoHidePrevious: true,
                         autoHideNext: true,
                     };
@@ -601,6 +604,11 @@ class Dashboard extends React.Component {
                 }));
             }
         }
+        if(key === "_classroom_attendance") {
+            this.setState(prevState => ({
+                _classroom_attendance: _val
+            }));
+        }
     }
     _handleTap(_class) {
         let searchWrapper_name = document.querySelector('.search-wrapper-name'+_class),
@@ -623,9 +631,10 @@ class Dashboard extends React.Component {
             }
         });
     }
+    
     render() {
         const { articles, classrooms, classroomToEdit, courses, exams, homeworks, letters, reports, schools, students, studentToEdit, subjects, user } = this.props;
-        const { _classroom, _user, _school, _student, _first_parent, _second_parent, _guardian } = this.state;
+        const { _classroom, _user, _school, _student, _first_parent, _second_parent, _guardian, _classroom_attendance } = this.state;
         return(
             <FullPage scrollMode={'normal'}>
 				<Slide>
@@ -637,8 +646,8 @@ class Dashboard extends React.Component {
                                     <span className="item"><a href="#1a" className="nav_link active" data-toggle="tab">  Dashboards </a></span>
                                 </li>
                                 <li>
-                                    <span className="_icon"><i className="fas fa-inbox"></i></span>
-                                    <span className="item"><a href="#2a" className="nav_link" data-toggle="tab">  Inbox </a></span>
+                                    <span className="_icon"><i className="far fa-calendar-check"></i></span>
+                                    <span className="item"><a href="#2a" className="nav_link" data-toggle="tab">  Attendance </a></span>
                                 </li>
                                 <li>
                                     <span className="_icon"><i className="fas fa-users"></i></span>
@@ -702,8 +711,122 @@ class Dashboard extends React.Component {
                                         </li>
                                     </ul> */}
                                 </div>
-                                <div className="inbox_pane tab-pane" id="2a">
-                                
+                                <div className="attendances_pane tab-pane" id="2a">
+                                    <div className="_attendances_pane">
+                                        <div className="_attendances_header">
+                                            <div className="_search_form_attendances">
+                                                <div className="search-wrapper-name_attendances">
+                                                    <input className="search-input-name_attendances light-table-filter" type="search" data-table="attendances_list" placeholder="Search"/>
+                                                    <span></span>
+                                                    <div className='search-name_attendances'></div>
+                                                </div>
+                                            </div>
+                                            <div className="_filter_form">
+                                                <button className="_add_attendance btn-primary" data-toggle="modal" data-target="#_attendance_modal"><i className="fas fa-plus"></i>Check Today</button>
+                                            </div>
+                                        </div>
+                                        <div className="_attendances_content">
+                                            <div className="_attendances_data data-container">
+                                                <ul className="attendances_list">
+                                                    {
+                                                        _.orderBy(students, ['createdAt'], ['desc']).map((student, index) => {
+                                                            return (
+                                                                <li className="attendance_card attendance_anchor row">
+                                                                    <div className={"col card card_" + index} data-title={_.snakeCase(student._first_name)} data-index={_.add(index,1)}>
+                                                                        <div className="shadow_title">{_.head(_.words(student._first_name))}</div>
+                                                                        <div className="shadow_letter">{_.head(_.head(_.words(student._first_name)))}</div>
+                                                                        <div className="card-body">
+                                                                            <h2>{student._first_name} {student._last_name}</h2>
+                                                                            <p className="text-muted author"><b>{moment().diff(new Date(student._dateofbirth), 'years')}</b> Yo, {_.get(_.find(classrooms, {'_id': student._classroom}), '_code')}</p>
+                                                                            <hr/>
+                                                                            <div className="_diagrams">
+                                                                                <div className="Monthly">
+                                                                                    <span className="diagram_monthly"></span>
+                                                                                    <span>Monthly</span>
+                                                                                </div>
+                                                                                <div className="Yearly">
+                                                                                    <span className="diagram_yearly"></span>
+                                                                                    <span>Yearly</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+                                                            )
+                                                        })
+                                                    }
+                                                </ul>
+                                            </div>
+                                            <div id="pagination_attendances"></div>
+                                        </div>
+                                    </div>
+                                    <div className="_attendance_modal modal fade" id="_attendance_modal" tabIndex="-1" role="dialog" aria-labelledby="_attendance_modalLabel" aria-hidden="true">
+                                        <div className="modal-dialog" role="document">
+                                            <div className="modal-content">
+                                                <div className="modal-body">
+                                                    <a title="Close" className="modal-close" data-dismiss="modal">Close</a>
+                                                    <h5 className="modal-title" id="_attendance_modalLabel">OKAY!</h5>
+                                                    <div className="wrapper_form_attendance">
+                                                        <span>{ moment().format('MMMM Do YYYY') }</span>
+                                                        <div className="modal-content_attendance">
+                                                            <fieldset className="input-field form-group">
+                                                                <select 
+                                                                onChange={(ev) => this.handleChangeField('_classroom_attendance', ev)}
+                                                                value={_classroom_attendance}
+                                                                className="validate form-group-input _classroom_attendance" 
+                                                                id="_classroom_attendance"
+                                                                name="_classroom_attendance" 
+                                                                required="required"
+                                                                >
+                                                                    {
+                                                                        _.orderBy(classrooms, ['createdAt'], ['desc']).map((classroom, index) => {
+                                                                            return (
+                                                                                <option value={classroom._id}>{classroom._code}</option>
+                                                                            )
+                                                                        })
+                                                                    }
+                                                                </select>
+                                                                <label htmlFor='_classroom_attendance' className={_classroom_attendance ? 'active' : ''}>_classroom_attendance</label>
+                                                                <div className="form-group-line"></div>
+                                                            </fieldset>
+                                                            <div className="_attendances_data data-container">
+                                                                <ul className="attendances_list">
+                                                                    {
+                                                                        _.orderBy(students, ['createdAt'], ['desc']).map((student, index) => {
+                                                                            return (
+                                                                                <li className="attendance_card attendance_anchor row">
+                                                                                    <div className={"col card card_" + index} data-title={_.snakeCase(student._first_name)} data-index={_.add(index,1)}>
+                                                                                        <div className="shadow_title">{_.head(_.words(student._first_name))}</div>
+                                                                                        <div className="shadow_letter">{_.head(_.head(_.words(student._first_name)))}</div>
+                                                                                        <div className="card-body">
+                                                                                            <h2>{student._first_name} {student._last_name}</h2>
+                                                                                            <p className="text-muted author"><b>{moment().diff(new Date(student._dateofbirth), 'years')}</b> Yo, {_.get(_.find(classrooms, {'_id': student._classroom}), '_code')}</p>
+                                                                                            <hr/>
+                                                                                            <div className="_diagrams">
+                                                                                                <div className="Monthly">
+                                                                                                    <span className="diagram_monthly"></span>
+                                                                                                    <span>Monthly</span>
+                                                                                                </div>
+                                                                                                <div className="Yearly">
+                                                                                                    <span className="diagram_yearly"></span>
+                                                                                                    <span>Yearly</span>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </li>
+                                                                            )
+                                                                        })
+                                                                    }
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                        <button onClick={this.handleSubmitStudent} className="btn btn-primary float-right">{studentToEdit ? 'Update' : 'Submit'}</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className="students_pane tab-pane" id="3a">
                                     <div className="_students_pane">
@@ -738,18 +861,18 @@ class Dashboard extends React.Component {
                                                             <th className="_empty"></th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody className="data-container">
+                                                    <tbody className="data-container students_list">
                                                     {
                                                         _.orderBy(students, ['createdAt'], ['desc']).map((student, index) => {
                                                             return (
-                                                                <tr>
+                                                                <tr className="student_card student_anchor">
                                                                     <td>{student._registration_number}</td>
                                                                     <td>{moment(student._registration_date).format('MMM DD, YYYY')}</td>
                                                                     <td>{_.get(_.find(classrooms, {'_id': student._classroom}), '_code')}</td>
                                                                     <td>{student._first_name} {student._last_name}</td>
                                                                     <td>{moment(student._dateofbirth).format('MMM DD, YYYY')}</td>
                                                                     <td>{student._gender}</td>
-                                                                    <td>{/* student._attendance */}</td>
+                                                                    <td><a href="" data-toggle="modal" data-target="#_attendance_modal_student" onClick={() => this.handleEditStudent(student)}>click</a></td>
                                                                     <td>{student._first_parent._full_name_first_parent}</td>
                                                                     <td>{student._second_parent._full_name_second_parent}</td>
                                                                     <td>{student._guardian._full_name_guardian}</td>
@@ -1113,6 +1236,49 @@ class Dashboard extends React.Component {
                                                             </div>
                                                             <button onClick={this.handleSubmitStudent} className="btn btn-primary float-right">{studentToEdit ? 'Update' : 'Submit'}</button>
                                                             <input type='button' name='previous' className='prev-button custom-button' value="Back"></input>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="_attendance_modal_student modal fade" id="_attendance_modal_student" tabIndex="-1" role="dialog" aria-labelledby="_attendance_modal_studentLabel" aria-hidden="true">
+                                        <div className="modal-dialog" role="document">
+                                            <div className="modal-content">
+                                                <div className="modal-body">
+                                                    <a title="Close" className="modal-close" data-dismiss="modal">Close</a>
+                                                    <div className="wrapper_form_attendance">
+                                                        <div className="wrapper_form_attendance_header">
+                                                            <div className={"card card_student"}>
+                                                                <div className="shapes shapes1"></div>
+                                                                <div className="shapes shapes2"></div>
+                                                                <div className="card-body">
+                                                                    <div className="_inside">
+                                                                        <h2>{_student._first_name} {_student._last_name}</h2>
+                                                                        <p className="text-muted author"><b>{moment().diff(new Date(_student._dateofbirth), 'years')}</b> Yo,</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="_middays_total_present_absent">
+                                                                <span className="_title">Middays</span>
+                                                                <span className="_percentage"></span>
+                                                                <span className="_shape"></span>
+                                                            </div>
+                                                            <div className="_weekly_total_present_absent">
+                                                                <span className="_title">Weekly</span>
+                                                                <span className="_percentage"></span>
+                                                                <span className="_shape"></span>
+                                                            </div>
+                                                            <div className="_monthly_total_present_absent">
+                                                                <span className="_title">Monthly</span>
+                                                                <span className="_percentage"></span>
+                                                                <span className="_shape"></span>
+                                                            </div>
+                                                            <div className="_yearly_total_present_absent">
+                                                                <span className="_title">Yearly</span>
+                                                                <span className="_percentage"></span>
+                                                                <span className="_shape"></span>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>

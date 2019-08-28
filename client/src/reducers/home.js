@@ -301,7 +301,7 @@ export default (state={
         case 'SUBMIT_STUDENT':
             return {
                 ...state,
-                students: ([action.data.student]).concat(state.student),
+                students: ([action.data.student]).concat(state.students),
             };
         case 'DELETE_STUDENT':
             return {
