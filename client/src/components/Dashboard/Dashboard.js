@@ -5,7 +5,6 @@ import Footer from '../Footer/Footer';
 import { connect } from 'react-redux';
 import { FullPage, Slide } from 'react-full-page';
 import { Link } from 'react-router-dom';
-import { pagination } from 'paginationjs';
 import Fingerprint from 'fingerprintjs';
 import API from '../../utils/API';
 var _ = require('lodash');
@@ -47,20 +46,6 @@ class Dashboard extends React.Component {
         .then((res) => {
             self.setState({
                 _classroom_attendance: _.get(_.head(res.data.classrooms), '_id', 'default')
-            })
-            $(function(){
-                function createDemo(name){
-                    var container = $('#pagination_' + name);
-                    var options = {
-                        dataSource: res.data.classrooms,
-                        pageSize: 8,
-                        autoHidePrevious: true,
-                        autoHideNext: true,
-                    };
-                    container.pagination(options);
-                      return container;
-                }
-                createDemo('classrooms');
             });
         })
         .catch(function (error) {
@@ -71,20 +56,7 @@ class Dashboard extends React.Component {
         axios('http://localhost:8000/api/students')
         .then((res) => onLoadStudent(res.data))
         .then((res) => {
-            $(function(){
-                function createDemo(name){
-                    var container = $('#pagination_' + name);
-                    var options = {
-                        dataSource: res.data.students,
-                        pageSize: 8,
-                        autoHidePrevious: true,
-                        autoHideNext: true,
-                    };
-                    container.pagination(options);
-                      return container;
-                }
-                createDemo('students');
-            });
+            
         })
         .catch(function (error) {
             // handle error
@@ -93,6 +65,7 @@ class Dashboard extends React.Component {
 
         this._handleTap('_students');
         this._handleTap('_classrooms');
+
         $('.nav_link').click((event) => {
             let _li_parent = $(event.target).parent().parent();
             let _li_target = $($(event.target).attr('href'));
@@ -112,7 +85,9 @@ class Dashboard extends React.Component {
 
         this._handleSort('classrooms_list');
         this._handleSort('students_list');
-        this._handleFilter()
+
+        this._handleFilter();
+
         this._handleSteps('_student_box');
 
         $('input.datepicker').datepicker({
@@ -141,7 +116,6 @@ class Dashboard extends React.Component {
                 }
             },
         });
-    
         $('.datepicker.sample').datepicker({
             dateFormat: 'yy-mm-dd',
             showButtonPanel: true,
@@ -205,8 +179,9 @@ class Dashboard extends React.Component {
     }
     _handleSort(_class) {
         // sort start
-        function sortTable(f, n, i, _class) {
-            $('._arrow').remove();
+        function sortTable(f, n, i, _class) {            
+            $('.'+_class+' ._arrow').remove();
+
             $(i).append('<div class="_arrow"></div>');
 
             var rows = $("."+_class+" tbody tr").get();
@@ -233,12 +208,14 @@ class Dashboard extends React.Component {
             });
 
             if(getVal(_.first(rows)) < getVal(_.last(rows))){
-                $('._arrow').html('<i class="fas fa-caret-down"></i>');
+                $('.'+_class+' ._arrow').html('<i class="fas fa-caret-down"></i>');
             }else {
-                $('._arrow').html('<i class="fas fa-caret-up"></i>');
+                $('.'+_class+' ._arrow').html('<i class="fas fa-caret-up"></i>');
             }
         }
+
         var f_thisTh = 1;
+
         $("."+_class+" th:not(._empty)", this.id).click(function(event) {
             if(_.startsWith(event.target.className, 'fas')){
                 f_thisTh *= -1;
@@ -253,6 +230,7 @@ class Dashboard extends React.Component {
                 sortTable(f_thisTh, n, i, _class);
             }
         });
+        
         $('.'+_class+' th:not(._empty)').append('<div class="_arrow"></div>');
         $('._arrow').html('<i class="fas fa-sort"></i>');
         // sort end 
@@ -610,6 +588,7 @@ class Dashboard extends React.Component {
             }));
         }
     }
+    
     _handleTap(_class) {
         let searchWrapper_name = document.querySelector('.search-wrapper-name'+_class),
             searchInput_name = document.querySelector('.search-input-name'+_class),
@@ -722,7 +701,7 @@ class Dashboard extends React.Component {
                                                 </div>
                                             </div>
                                             <div className="_filter_form">
-                                                <button className="_add_attendance btn-primary" data-toggle="modal" data-target="#_attendance_modal"><i className="fas fa-plus"></i>Check Today</button>
+                                                <button className="_add_attendance btn-primary" data-toggle="modal" data-target="#_attendance_modal"><i className="fas fa-plus"></i></button>
                                             </div>
                                         </div>
                                         <div className="_attendances_content">
@@ -733,7 +712,6 @@ class Dashboard extends React.Component {
                                                             return (
                                                                 <li className="attendance_card attendance_anchor row">
                                                                     <div className={"col card card_" + index} data-title={_.snakeCase(student._first_name)} data-index={_.add(index,1)}>
-                                                                        <div className="shadow_title">{_.head(_.words(student._first_name))}</div>
                                                                         <div className="shadow_letter">{_.head(_.head(_.words(student._first_name)))}</div>
                                                                         <div className="card-body">
                                                                             <h2>{student._first_name} {student._last_name}</h2>
@@ -792,25 +770,17 @@ class Dashboard extends React.Component {
                                                             <div className="_attendances_data data-container">
                                                                 <ul className="attendances_list">
                                                                     {
-                                                                        _.orderBy(students, ['createdAt'], ['desc']).map((student, index) => {
+                                                                        _.filter(_.orderBy(students, ['createdAt'], ['desc']), {'_classroom': _classroom_attendance}).map((student, index) => {
                                                                             return (
                                                                                 <li className="attendance_card attendance_anchor row">
                                                                                     <div className={"col card card_" + index} data-title={_.snakeCase(student._first_name)} data-index={_.add(index,1)}>
-                                                                                        <div className="shadow_title">{_.head(_.words(student._first_name))}</div>
                                                                                         <div className="shadow_letter">{_.head(_.head(_.words(student._first_name)))}</div>
                                                                                         <div className="card-body">
                                                                                             <h2>{student._first_name} {student._last_name}</h2>
                                                                                             <p className="text-muted author"><b>{moment().diff(new Date(student._dateofbirth), 'years')}</b> Yo, {_.get(_.find(classrooms, {'_id': student._classroom}), '_code')}</p>
                                                                                             <hr/>
-                                                                                            <div className="_diagrams">
-                                                                                                <div className="Monthly">
-                                                                                                    <span className="diagram_monthly"></span>
-                                                                                                    <span>Monthly</span>
-                                                                                                </div>
-                                                                                                <div className="Yearly">
-                                                                                                    <span className="diagram_yearly"></span>
-                                                                                                    <span>Yearly</span>
-                                                                                                </div>
+                                                                                            <div className="_CHECKINPUTS">
+                                                                                                
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
@@ -839,7 +809,7 @@ class Dashboard extends React.Component {
                                                 </div>
                                             </div>
                                             <div className="_filter_form">
-                                                <button className="_add_student btn-primary" data-toggle="modal" data-target="#_student_modal"><i className="fas fa-plus"></i>Add Student</button>
+                                                <button className="_add_student btn-primary" data-toggle="modal" data-target="#_student_modal"><i className="fas fa-plus"></i></button>
                                             </div>
                                         </div>
                                         <div className="_students_content">
@@ -861,7 +831,7 @@ class Dashboard extends React.Component {
                                                             <th className="_empty"></th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody className="data-container students_list">
+                                                    <tbody className="data-container">
                                                     {
                                                         _.orderBy(students, ['createdAt'], ['desc']).map((student, index) => {
                                                             return (
@@ -1297,7 +1267,7 @@ class Dashboard extends React.Component {
                                                 </div>
                                             </div>
                                             <div className="_filter_form">
-                                                <button className="_add_classroom btn-primary" data-toggle="modal" data-target="#_classroom_modal"><i className="fas fa-plus"></i>Add Classroom</button>
+                                                <button className="_add_classroom btn-primary" data-toggle="modal" data-target="#_classroom_modal"><i className="fas fa-plus"></i></button>
                                             </div>
                                         </div>
                                         <div className="_classrooms_content">
@@ -1328,8 +1298,8 @@ class Dashboard extends React.Component {
                                                                     <td>{classroom._section}</td>
                                                                     <td>{_school._name}</td>
                                                                     <td>{classroom._teacher === _user._id ? _user.firstname+' '+_user.lastname : ''}</td>
-                                                                    <td>{_.size(classroom._subjects)}</td>
-                                                                    <td>{_.size(classroom._students)}</td>
+                                                                    <td>{}</td>
+                                                                    <td>{_.size(_.filter(_.orderBy(students, ['createdAt'], ['desc']), {'_classroom': classroom._id}))}</td>
                                                                     <td className="dropdown">
                                                                         <span className="dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                                             <i className="fas fa-ellipsis-h"></i>

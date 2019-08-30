@@ -10,10 +10,10 @@ import {
   Switch
 } from 'react-router-dom';
 import 'whatwg-fetch';
+import Swiper from 'swiper';
 import Footer from '../Footer/Footer';
 
 var _ = require('lodash');
-import { pagination } from 'paginationjs';
 
 class ReadMoreLink extends React.Component {
 	constructor(props) {
@@ -80,6 +80,21 @@ class ArticleCards extends React.Component {
 		super(props);
 		this._FormatNumberLength = this._FormatNumberLength.bind(this);
 	}
+	componentDidMount() {
+		var swiper = new Swiper('.data-container', {
+			direction: 'vertical',
+			spaceBetween: 30,
+			effect: 'fade',
+			loop: true,
+			mousewheel: {
+				invert: false,
+			},
+			pagination: {
+				el: '#pagination-demo1',
+				clickable: true,
+			},
+		});
+	}
 	_FormatNumberLength(num, length) {
 		var r = "" + num;
 		while (r.length < length) {
@@ -89,17 +104,20 @@ class ArticleCards extends React.Component {
 	}
 	render () {
 		return (
-			<div className="data-container">
-				<ul className="articles_list">
-					{
-						_.orderBy(this.props.articles_props, ['createdAt'], ['desc']).map((article, index) => {
-							return (
-								<ArticleCard url={this.props.url} single_article={article} FormatNumberLengthIndex={this._FormatNumberLength(index+1, 2)}/>
-							)
-						})
-					}
-				</ul>
-			</div>
+			<>
+				<div className="data-container">
+					<ul className="articles_list">
+						{
+							_.orderBy(this.props.articles_props, ['createdAt'], ['desc']).map((article, index) => {
+								return (
+									<ArticleCard url={this.props.url} single_article={article} FormatNumberLengthIndex={this._FormatNumberLength(index+1, 2)}/>
+								)
+							})
+						}
+					</ul>
+					<div id="pagination-demo1"></div>
+				</div>
+			</>
 		)
 	}
 }
@@ -115,25 +133,9 @@ class Blog extends React.Component {
 	componentDidMount() {
         const {onLoad} = this.props;
 		axios('http://localhost:8000/api/articles')
-			.then((res) => onLoad(res.data))
-			.then((res) => {
-				$(function(){
-					function createDemo(name){
-						var container = $('#pagination-' + name);
-						var options = {
-							dataSource: res.data.articles,
-							pageSize: 2,
-							autoHidePrevious: true,
-							autoHideNext: true,
-						};
-						container.pagination(options);
-					  	return container;
-					}
-					createDemo('demo1');
-				});
-			});
-		document.getElementById('articles_blog').parentElement.style.height = 'initial';
+			.then((res) => onLoad(res.data));
 
+		document.getElementById('articles_blog').parentElement.style.height = 'initial';
 		this._handleTimeLine();
 	}
 	handleDelete(id) {
@@ -333,7 +335,6 @@ class Blog extends React.Component {
 							<li className="bar"></li>
 						</ul>
         				<ArticleCards url={match.url} articles_props={articles}/>
-						<div id="pagination-demo1"></div>
 					</section>
 				</Slide>
 				<Slide>

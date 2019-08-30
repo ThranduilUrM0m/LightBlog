@@ -9,6 +9,7 @@ const CoursesSchema = new Schema({
     _sessions: [{
         _name: String,
         _rang: Number,
+        _date: Date,
         _activities: [{
             _name: String,
             _content: String,

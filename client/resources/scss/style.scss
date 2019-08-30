@@ -57,6 +57,9 @@ $duration: 2s;
 $dot-diameter: 0.25rem;
 $slack-angle: 15deg;
 
+$textColor--active: #f1f1f1;
+$textColor--inactive: #333;
+
 @-webkit-keyframes pulse {
 	from {
 	  	box-shadow: 0 0 0 0 rgba($color1, 0.4);
@@ -73,7 +76,26 @@ $slack-angle: 15deg;
 	  	box-shadow: 0 0 0 45px rgba($color1, 0);
 	}
 }
-
+@keyframes neon {
+	0% {
+	  	text-shadow: 0 0 10px #fff,
+				 0 0 15px  #fff,
+				 0 0 25px  #fff,
+				 0 0 40px  #FF9900,
+				 0 0 70px  #FF9900,
+				 0 0 90px  #FF9900,
+				 0 0 90px  #FF9900;
+	}
+	100% {
+	  	text-shadow: 0 0 5px #fff,
+				 0 0 10px #fff,
+				 0 0 15px #fff,
+				 0 0 20px #FF9900,
+				 0 0 35px #FF9900,
+				 0 0 40px #FF9900,
+				 0 0 50px #FF9900;
+	}
+}
 @keyframes icon {
 	0% {
 		font-size: 1rem;
@@ -2107,9 +2129,10 @@ body, html {
 											border-radius: 0;
 											overflow: hidden;
 											margin: 0.2rem;
+											width: 2rem;
+											height: 2rem;
 											i {
 												color: rgba(0, 0, 0, 0.2);
-												margin-right: 0.2rem;
 											}
 											&.dropdown-toggle::after {
 												display:none;
@@ -2160,12 +2183,18 @@ body, html {
 										width: 100%;
 										.attendances_list {
 											display: flex;
+											flex-wrap: wrap;
+											list-style: none;
+											margin: 0;
+											padding: 0;
+											height: -webkit-fill-available;
 											.attendance_card{
+												display: flex;
 												position: relative;
 												display: flex;
 												padding: 0.5rem;
 												width: 20rem;
-												height: 55vh;
+												height: 20rem;
 												margin: 0;
 												.card {
 													height: calc(100% - 1.5rem);
@@ -2188,7 +2217,10 @@ body, html {
 														position: absolute;
 													}
 													.card-body {
+														border-top: 0.25rem solid $mainColor;
 														position: relative;
+														display: flex;
+														flex-direction: column;
 														h2{
 															color:$color1;
 															letter-spacing: 2px;
@@ -2209,7 +2241,10 @@ body, html {
 															z-index: 10;
 														}
 														._diagrams {
+															width: 100%;
 															display: flex;
+															flex: 1;
+															align-items: flex-end;
 															.Monthly {
 																width: 50%;
 																margin: 0.2rem;
@@ -2242,7 +2277,7 @@ body, html {
 															background: linear-gradient(135deg, #a29ca9 0%,#95909b 99%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 															filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a29ca9', endColorstr='#95909b',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
 															content: '';
-															opacity: 0;
+															opacity: 0.05;
 															transition: opacity 0.9s ease 0s; 
 														}
 														&:hover {
@@ -2318,10 +2353,11 @@ body, html {
 									padding-right: 0 !important;
 									top: 5rem;
 									.modal-dialog {
-										max-width: 60rem;
+										max-width: 65rem;
 										margin: 0;
 										.modal-content {
 											.modal-body {
+												padding: 0;
 												.modal-close {
 													color: #aaa;
 													font-size: 80%;
@@ -2360,16 +2396,22 @@ body, html {
 															}
 														}
 														._attendances_data {
-															min-width: 50rem;
+															width: 100%;
 															.attendances_list {
 																display: flex;
+																flex-wrap: wrap;
+																list-style: none;
+																margin: 0;
+																padding: 0;
+																height: -webkit-fill-available;
 																.attendance_card{
+																	display: flex;
 																	position: relative;
 																	display: flex;
 																	padding: 0.5rem;
-																	width: 15rem;
-																	height: 55vh;
-																	margin: 0.5rem 0;
+																	width: 20rem;
+																	height: 20rem;
+																	margin: 0;
 																	.card {
 																		height: calc(100% - 1.5rem);
 																		border: 0;
@@ -2391,7 +2433,10 @@ body, html {
 																			position: absolute;
 																		}
 																		.card-body {
+																			border-top: 0.25rem solid $mainColor;
 																			position: relative;
+																			display: flex;
+																			flex-direction: column;
 																			h2{
 																				color:$color1;
 																				letter-spacing: 2px;
@@ -2411,22 +2456,11 @@ body, html {
 																				position: relative;
 																				z-index: 10;
 																			}
-																			._ATTENDANCE {
+																			._CHECKINPUTS {
+																				width: 100%;
 																				display: flex;
-																				.PRESENT {
-																					width: 50%;
-																					margin: 0.2rem;
-																					padding: 0.2rem;
-																					border-right: 1px solid rgba(0, 0, 0, 0.1);
-																					text-align: center;
-																				}
-																				.ABSENT {
-																					width: 50%;
-																					margin: 0.2rem;
-																					padding: 0.2rem;
-																					border-left: 1px solid rgba(0, 0, 0, 0.1);
-																					text-align: center;
-																				}
+																				flex: 1;
+																				align-items: flex-end;
 																			}
 																			.body{
 																				border-left: 0.05rem solid black;
@@ -2445,7 +2479,7 @@ body, html {
 																				background: linear-gradient(135deg, #a29ca9 0%,#95909b 99%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 																				filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a29ca9', endColorstr='#95909b',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
 																				content: '';
-																				opacity: 0;
+																				opacity: 0.05;
 																				transition: opacity 0.9s ease 0s; 
 																			}
 																			&:hover {
@@ -2701,9 +2735,10 @@ body, html {
 											border-radius: 0;
 											overflow: hidden;
 											margin: 0.2rem;
+											width: 2rem;
+											height: 2rem;
 											i {
-												color: rgba(0, 0, 0, 0.2);
-												margin-right: 0.2rem;
+												color: rgba(0, 0, 0, 0.5);
 											}
 											&.dropdown-toggle::after {
 												display:none;
@@ -3368,9 +3403,10 @@ body, html {
 											border-radius: 0;
 											overflow: hidden;
 											margin: 0.2rem;
+											width: 2rem;
+											height: 2rem;
 											i {
-												color: rgba(0, 0, 0, 0.2);
-												margin-right: 0.2rem;
+												color: rgba(0, 0, 0, 0.5);
 											}
 											&.dropdown-toggle::after {
 												display:none;

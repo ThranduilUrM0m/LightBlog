@@ -42,6 +42,7 @@ require('./models/Courses');
 require('./models/Subjects');
 require('./models/Classrooms');
 require('./models/Schools');
+require('./models/Events');
 
 // Add routes
 const router = express.Router();
