@@ -40,6 +40,7 @@ require('./models/Homeworks');
 require('./models/Exams');
 require('./models/Courses');
 require('./models/Subjects');
+require('./models/Modules');
 require('./models/Classrooms');
 require('./models/Schools');
 require('./models/Events');

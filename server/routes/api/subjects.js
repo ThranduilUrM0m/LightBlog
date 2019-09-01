@@ -8,19 +8,19 @@ router.post('/', (req, res, next) => {
   if(!body._name) {
     return res.status(422).json({
       errors: {
-        title: 'is required',
+        _name: 'is required',
       },
     });
   }
-
-  if(!body._courses) {
+  
+  if(!body._classroom) {
     return res.status(422).json({
       errors: {
-        title: 'is required',
+        _classroom: 'is required',
       },
     });
   }
-
+  
   const finalSubject = new Subjects(body);
   return finalSubject.save()
     .then(() => res.json({ subject: finalSubject.toJSON() }))
@@ -58,8 +58,8 @@ router.patch('/:id', (req, res, next) => {
     req.subject._name = body._name;
   }
 
-  if(typeof body._courses !== 'undefined') {
-    req.subject._courses = body._courses;
+  if(typeof body._classroom !== 'undefined') {
+    req.subject._classroom = body._classroom;
   }
 
   return req.subject.save()

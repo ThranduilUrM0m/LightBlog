@@ -21,6 +21,10 @@ class Dashboard extends React.Component {
             _guardian: {},
             _school: {},
             _classroom_attendance: '',
+            _subject: {},
+            _module: {},
+            _session: {},
+            _course: {},
         };
         this.handleChangeField = this.handleChangeField.bind(this);
 
@@ -33,11 +37,27 @@ class Dashboard extends React.Component {
         this.handleSubmitStudent = this.handleSubmitStudent.bind(this);
         this.handleDeleteStudent = this.handleDeleteStudent.bind(this);
         this.handleEditStudent = this.handleEditStudent.bind(this);
+
+        /* SUBJECT */
+        this.handleSubmitSubject = this.handleSubmitSubject.bind(this);
+        this.handleDeleteSubject = this.handleDeleteSubject.bind(this);
+        this.handleEditSubject = this.handleEditSubject.bind(this);
+
+        /* MODULE */
+        this.handleSubmitModule = this.handleSubmitModule.bind(this);
+        this.handleDeleteModule = this.handleDeleteModule.bind(this);
+        this.handleEditModule = this.handleEditModule.bind(this);
+
+        /* COURSE */
+        this.handleSubmitCourse = this.handleSubmitCourse.bind(this);
+        this.handleDeleteCourse = this.handleDeleteCourse.bind(this);
+        this.handleEditCourse = this.handleEditCourse.bind(this);
         
         this.get_user = this.get_user.bind(this);
     }
+
     componentDidMount() {
-        const {onLoadClassroom, onLoadStudent} = this.props;
+        const {onLoadClassroom, onLoadStudent, onLoadSubject, onLoadModule, onLoadCourse} = this.props;
         const self = this;
         this.get_user();
 
@@ -63,8 +83,41 @@ class Dashboard extends React.Component {
             console.log(error);
         });
 
+        axios('http://localhost:8000/api/subjects')
+        .then((res) => onLoadSubject(res.data))
+        .then((res) => {
+            
+        })
+        .catch(function (error) {
+            // handle error
+            console.log(error);
+        });
+
+        axios('http://localhost:8000/api/modules')
+        .then((res) => onLoadModule(res.data))
+        .then((res) => {
+            
+        })
+        .catch(function (error) {
+            // handle error
+            console.log(error);
+        });
+
+        axios('http://localhost:8000/api/courses')
+        .then((res) => onLoadCourse(res.data))
+        .then((res) => {
+            
+        })
+        .catch(function (error) {
+            // handle error
+            console.log(error);
+        });
+
         this._handleTap('_students');
         this._handleTap('_classrooms');
+        this._handleTap('_subjects');
+        this._handleTap('_modules');
+        this._handleTap('_courses');
 
         $('.nav_link').click((event) => {
             let _li_parent = $(event.target).parent().parent();
@@ -85,10 +138,14 @@ class Dashboard extends React.Component {
 
         this._handleSort('classrooms_list');
         this._handleSort('students_list');
+        this._handleSort('subjects_list');
+        this._handleSort('modules_list');
+        this._handleSort('courses_list');
 
         this._handleFilter();
 
         this._handleSteps('_student_box');
+        this._handleSteps('_course_box');
 
         $('input.datepicker').datepicker({
             dateFormat: 'yy-mm-dd',
@@ -125,6 +182,7 @@ class Dashboard extends React.Component {
             showAnim: "fold"
         });
     }
+
     _handleSteps(_class) {
         $('.next-button').click(function(){
             var current = $(this).parent();
@@ -235,6 +293,7 @@ class Dashboard extends React.Component {
         $('._arrow').html('<i class="fas fa-sort"></i>');
         // sort end 
     }
+
     async get_user() {
         const self = this;
         try {
@@ -258,6 +317,7 @@ class Dashboard extends React.Component {
             console.error(error);
         }
     }
+
     componentWillReceiveProps(nextProps) {
         if(nextProps.classroomToEdit) {
             this.setState({
@@ -267,6 +327,21 @@ class Dashboard extends React.Component {
         if(nextProps.studentToEdit) {
             this.setState({
                 _student: nextProps.studentToEdit,
+            })
+        }
+        if(nextProps.subjectToEdit) {
+            this.setState({
+                _subject: nextProps.subjectToEdit,
+            })
+        }
+        if(nextProps.moduleToEdit) {
+            this.setState({
+                _module: nextProps.moduleToEdit,
+            })
+        }
+        if(nextProps.courseToEdit) {
+            this.setState({
+                _course: nextProps.courseToEdit,
             })
         }
     }
@@ -297,9 +372,19 @@ class Dashboard extends React.Component {
                 })
                     .then((res) => onSubmitClassroom(res.data))
                     .then(function() {
-                        self.setState({ 
-                            _classroom: {}
-                        });
+                        self.setState(prevState => ({ 
+                            _classroom: {
+                                ...prevState._classroom,
+                                _code: '',
+                                _name: '',
+                                _grade: '',
+                                _section: '',
+                                _school: '',
+                                _teacher: '',
+                                _subjects: [],
+                                _students: [],
+                            }
+                        }));
                         $('#_classroom_modal').modal('toggle');
                     });
             } else {
@@ -315,9 +400,19 @@ class Dashboard extends React.Component {
                 })
                     .then((res) => onEditClassroom(res.data))
                     .then(function() {
-                        self.setState({ 
-                            _classroom: {}
-                        });
+                        self.setState(prevState => ({ 
+                            _classroom: {
+                                ...prevState._classroom,
+                                _code: '',
+                                _name: '',
+                                _grade: '',
+                                _section: '',
+                                _school: '',
+                                _teacher: '',
+                                _subjects: [],
+                                _students: [],
+                            }
+                        }));
                         $('#_classroom_modal').modal('toggle');
                     });
             }
@@ -364,9 +459,22 @@ class Dashboard extends React.Component {
                 })
                     .then((res) => onSubmitStudent(res.data))
                     .then(function() {
-                        self.setState({ 
-                            _student: {}
-                        });
+                        self.setState(prevState => ({ 
+                            _student: {
+                                ...prevState._student,
+                                _registration_number: '',
+                                _first_name: '',
+                                _last_name: '',
+                                _classroom: '',
+                                _gender: '',
+                                _dateofbirth: '',
+                                _registration_date: '',
+                                _attendance: {},
+                                _first_parent: {},
+                                _second_parent: {},
+                                _guardian: {},
+                            }
+                        }));
                         $('#_student_modal').modal('toggle');
                     });
             } else {
@@ -385,9 +493,22 @@ class Dashboard extends React.Component {
                 })
                     .then((res) => onEditStudent(res.data))
                     .then(function() {
-                        self.setState({ 
-                            _student: {}
-                        });
+                        self.setState(prevState => ({ 
+                            _student: {
+                                ...prevState._student,
+                                _registration_number: '',
+                                _first_name: '',
+                                _last_name: '',
+                                _classroom: '',
+                                _gender: '',
+                                _dateofbirth: '',
+                                _registration_date: '',
+                                _attendance: {},
+                                _first_parent: {},
+                                _second_parent: {},
+                                _guardian: {},
+                            }
+                        }));
                         $('#_student_modal').modal('toggle');
                     });
             }
@@ -401,6 +522,183 @@ class Dashboard extends React.Component {
     handleEditStudent(student) {
         const { setEditStudent } = this.props;
         setEditStudent(student);
+    }
+    
+    /* SUBJECT */
+    handleSubmitSubject(){
+        const { onSubmitSubject, subjectToEdit, onEditSubject } = this.props;
+        const { _name, _classroom} = this.state._subject;
+        const self = this;
+
+        if(!subjectToEdit) {
+            return axios.post('http://localhost:8000/api/subjects', {
+                _name,
+                _classroom,
+            })
+                .then((res) => onSubmitSubject(res.data))
+                .then(function() {
+                    self.setState(prevState => ({ 
+                        _subject: {
+                            ...prevState._subject,
+                            _name: '',
+                            _classroom: '',
+                        }
+                    }));
+                    $('#_subject_modal').modal('toggle');
+                });
+        } else {
+            return axios.patch(`http://localhost:8000/api/subjects/${subjectToEdit._id}`, {
+                _name,
+                _classroom,
+            })
+                .then((res) => onEditSubject(res.data))
+                .then(function() {
+                    self.setState(prevState => ({ 
+                        _subject: {
+                            ...prevState._subject,
+                            _name: '',
+                            _classroom: '',
+                        }
+                    }));
+                    $('#_subject_modal').modal('toggle');
+                });
+        }
+    }
+    handleDeleteSubject(id) {
+        const { onDeleteSubject } = this.props;
+        return axios.delete(`http://localhost:8000/api/subjects/${id}`)
+            .then(() => onDeleteSubject(id));
+    }
+    handleEditSubject(subject) {
+        const { setEditSubject } = this.props;
+        setEditSubject(subject);
+    }
+    
+    /* MODULE */
+    handleSubmitModule(){
+        const { onSubmitModule, moduleToEdit, onEditModule } = this.props;
+        const self = this;
+
+        if(!moduleToEdit) {
+            const { _name, _sessions, _subject } = this.state._module;
+            return axios.post('http://localhost:8000/api/modules', {
+                _name,
+                _sessions,
+                _subject,
+            })
+                .then((res) => onSubmitModule(res.data))
+                .then(function() {
+                    self.setState(prevState => ({ 
+                        _module: {
+                            ...prevState._module,
+                            _name: '',
+                            _sessions: '',
+                            _subject: '',
+                        }
+                    }));
+                    $('#_module_modal').modal('toggle');
+                });
+        } else {
+            const { _session } = this.state;
+            this.setState(prevState => ({
+                _module: {
+                    ...prevState._module,
+                    _sessions: [...prevState._module._sessions, _session],
+                }
+            }), () => {
+                const { _name, _sessions, _subject } = this.state._module;
+                return axios.patch(`http://localhost:8000/api/modules/${moduleToEdit._id}`, {
+                    _name,
+                    _sessions,
+                    _subject,
+                })
+                    .then((res) => onEditModule(res.data))
+                    .then(function() {
+                        self.setState(prevState => ({
+                            _module: {
+                                ...prevState._module,
+                                _name: '',
+                                _sessions: '',
+                                _subject: '',
+                            },
+                            _session: {
+                                ...prevState._session,
+                                _period_in_minutes: '',
+                            },
+                        }));
+                        $('#_module_modal').modal('toggle');
+                    });
+            });
+            
+        }
+    }
+    handleDeleteModule(id) {
+        const { onDeleteModule } = this.props;
+        return axios.delete(`http://localhost:8000/api/modules/${id}`)
+            .then(() => onDeleteModule(id));
+    }
+    handleEditModule(module) {
+        const { setEditModule } = this.props;
+        setEditModule(module);
+    }
+    
+    /* COURSE */
+    handleSubmitCourse(){
+        const { _user } = this.state;
+        const { onSubmitCourse, courseToEdit, onEditCourse } = this.props;
+        const { _name, _abilities_inview, _sessions, _subject} = this.state._course;
+        const self = this;
+
+        if(!subjectToEdit) {
+            return axios.post('http://localhost:8000/api/subjects', {
+                _name,
+                _abilities_inview,
+                _sessions,
+                _subject,
+            })
+                .then((res) => onSubmitCourse(res.data))
+                .then(function() {
+                    self.setState(prevState => ({ 
+                        _course: {
+                            ...prevState._course,
+                            _name: '',
+                            _abilities_inview: '',
+                            _sessions: '',
+                            _subject: '',
+                        }
+                    }));
+                    $('#_course_modal').modal('toggle');
+                });
+        } else {
+            return axios.patch(`http://localhost:8000/api/subjects/${courseToEdit._id}`, {
+                _name,
+                _abilities_inview,
+                _sessions,
+                _subject,
+            })
+                .then((res) => onEditCourse(res.data))
+                .then(function() {
+                    self.setState(prevState => ({ 
+                        _course: {
+                            ...prevState._course,
+                            _name: '',
+                            _abilities_inview: '',
+                            _sessions: '',
+                            _subject: '',
+                        }
+                    }));
+                    $('#_course_modal').modal('toggle');
+                });
+        }
+    }
+    handleDeleteCourse(id) {
+        const { onDeleteCourse } = this.props;
+        return axios.delete(`http://localhost:8000/api/courses/${id}`)
+            .then(() => onDeleteCourse(id));
+    }
+    handleEditCourse(course) {
+        const { setEditCourse } = this.props;
+        setEditCourse(course);
     }
 
     handleChangeField(key, event) {
@@ -587,6 +885,58 @@ class Dashboard extends React.Component {
                 _classroom_attendance: _val
             }));
         }
+        if(key === "_name_subject" || key === "_classroom_subject") {
+            if(key === "_name_subject") {
+                this.setState(prevState => ({
+                    _subject: {                   // object that we want to update
+                        ...prevState._subject,    // keep all other key-value pairs
+                        _name: _val       // update the value of specific key
+                    }
+                }));
+            }
+            if(key === "_classroom_subject") {
+                this.setState(prevState => ({
+                    _subject: {                   // object that we want to update
+                        ...prevState._subject,    // keep all other key-value pairs
+                        _classroom: _val       // update the value of specific key
+                    }
+                }));
+            }
+        }
+        if(key === "_name_module" || key === "_subject_module") {
+            if(key === "_name_module") {
+                this.setState(prevState => ({
+                    _module: {                   // object that we want to update
+                        ...prevState._module,    // keep all other key-value pairs
+                        _name: _val       // update the value of specific key
+                    }
+                }));
+            }
+            if(key === "_subject_module") {
+                this.setState(prevState => ({
+                    _module: {                   // object that we want to update
+                        ...prevState._module,    // keep all other key-value pairs
+                        _subject: _val       // update the value of specific key
+                    }
+                }));
+            }
+        }
+        if(key === "_period_in_minutes") {
+            this.setState(prevState => ({
+                _session: {                   // object that we want to update
+                    ...prevState._session,    // keep all other key-value pairs
+                    _period_in_minutes: _val       // update the value of specific key
+                }
+            }));
+        }
+        if(key === "_name_course") {
+            this.setState(prevState => ({
+                _course: {                   // object that we want to update
+                    ...prevState._course,    // keep all other key-value pairs
+                    _name: _val       // update the value of specific key
+                }
+            }));
+        }
     }
     
     _handleTap(_class) {
@@ -612,8 +962,8 @@ class Dashboard extends React.Component {
     }
     
     render() {
-        const { articles, classrooms, classroomToEdit, courses, exams, homeworks, letters, reports, schools, students, studentToEdit, subjects, user } = this.props;
-        const { _classroom, _user, _school, _student, _first_parent, _second_parent, _guardian, _classroom_attendance } = this.state;
+        const { articles, classrooms, classroomToEdit, courses, courseToEdit, exams, homeworks, letters, reports, schools, students, studentToEdit, subjects, subjectToEdit, modules, moduleToEdit, user } = this.props;
+        const { _classroom, _classroom_attendance, _user, _school, _student, _first_parent, _second_parent, _guardian, _subject, _module, _session, _course } = this.state;
         return(
             <FullPage scrollMode={'normal'}>
 				<Slide>
@@ -1389,10 +1739,322 @@ class Dashboard extends React.Component {
                                     </div>
                                 </div>
                                 <div className="subjects_pane tab-pane" id="5a">
-                                
+                                    <div className="_subjects_pane">
+                                        <div className="_subjects_header">
+                                            <div className="_search_form_subjects">
+                                                <div className="search-wrapper-name_subjects">
+                                                    <input className="search-input-name_subjects light-table-filter" type="search" data-table="subjects_list" placeholder="Search"/>
+                                                    <span></span>
+                                                    <div className='search-name_subjects'></div>
+                                                </div>
+                                            </div>
+                                            <div className="_filter_form">
+                                                <button className="_add_subject btn-primary" data-toggle="modal" data-target="#_subject_modal"><i className="fas fa-plus"></i></button>
+                                            </div>
+                                        </div>
+                                        <div className="_subjects_content">
+                                            <div className="_subjects_data data-container">
+                                                <ul className="subjects_list">
+                                                    {
+                                                        _.orderBy(subjects, ['createdAt'], ['desc']).map((subject, index) => {
+                                                            return (
+                                                                <li className="subject_card subject_anchor row">
+                                                                    <div className={"col card card_" + index} data-title={_.snakeCase(subject._name)} data-index={_.add(index,1)}>
+                                                                        <div className="shadow_letter">{_.head(_.head(_.words(_.get(_.find(classrooms, {'_id': subject._classroom}), '_code'))))}</div>
+                                                                        <div className="card-body">
+                                                                            <h2>{subject._name}</h2>
+                                                                            <p className="text-muted author">{_.get(_.find(classrooms, {'_id': subject._classroom}), '_code')}</p>
+                                                                            <hr/>
+                                                                            <ul className="text-muted">
+                                                                                {
+                                                                                    _.filter(_.orderBy(modules, ['createdAt'], ['desc']), {'_subject': subject._id}).map((mod, index) => {
+                                                                                        return (
+                                                                                            <li className="tag_item">
+                                                                                                <button className="_add_session btn-primary" data-toggle="modal" data-target="#_session_modal" onClick={() => this.handleEditModule(mod)}>
+                                                                                                    { _.size(mod._sessions) }":
+                                                                                                    { _.reduce(mod._sessions.map(a => a._period_in_minutes), function(sum, n) { return sum + n; }, 0) }min
+                                                                                                </button>
+                                                                                                <button className="_add_module btn-primary" data-toggle="modal" data-target="#_module_modal" onClick={() => this.handleEditModule(mod)}>
+                                                                                                    { mod._name }
+                                                                                                </button>
+                                                                                            </li>
+                                                                                        )
+                                                                                    })
+                                                                                }
+                                                                            </ul>
+                                                                            <div className="_filter_form">
+                                                                                <button className="_add_module btn-primary" data-toggle="modal" data-target="#_module_modal"><i className="fas fa-plus"></i></button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+                                                            )
+                                                        })
+                                                    }
+                                                </ul>
+                                            </div>
+                                            <div id="pagination_subjects"></div>
+                                        </div>
+                                    </div>
+                                    <div className="_subject_modal modal fade" id="_subject_modal" tabIndex="-1" role="dialog" aria-labelledby="_subject_modalLabel" aria-hidden="true">
+                                        <div className="modal-dialog" role="document">
+                                            <div className="modal-content">
+                                                <div className="modal-body">
+                                                    <a title="Close" className="modal-close" data-dismiss="modal">Close</a>
+                                                    <h5 className="modal-title" id="_subject_modalLabel">OKAY!</h5>
+                                                    <div className="wrapper_form_subject">
+                                                        <span>Subject Information : </span>
+                                                        <div className="modal-content_subject">
+                                                            <fieldset className="input-field form-group">
+                                                                <input
+                                                                onChange={(ev) => this.handleChangeField('_name_subject', ev)}
+                                                                value={_subject._name}
+                                                                className="validate form-group-input _name" 
+                                                                id="_name"
+                                                                type="text" 
+                                                                name="_name" 
+                                                                required="required"
+                                                                />
+                                                                <label htmlFor='_code' className={_subject._name ? 'active' : ''}>Subject Name</label>
+                                                                <div className="form-group-line"></div>
+                                                            </fieldset>
+                                                            <fieldset className="input-field form-group">
+                                                                <select 
+                                                                onChange={(ev) => this.handleChangeField('_classroom_subject', ev)}
+                                                                value={_subject._classroom}
+                                                                className="validate form-group-input _classroom" 
+                                                                id="_classroom"
+                                                                name="_classroom" 
+                                                                required="required"
+                                                                >
+                                                                    <option hidden disabled selected value></option>
+                                                                    {
+                                                                        _.orderBy(classrooms, ['createdAt'], ['desc']).map((classroom, index) => {
+                                                                            return (
+                                                                                <option value={classroom._id}>{classroom._code}</option>
+                                                                            )
+                                                                        })
+                                                                    }
+                                                                </select>
+                                                                <label htmlFor='_classroom' className={_subject._classroom ? 'active' : ''}>_classroom</label>
+                                                                <div className="form-group-line"></div>
+                                                            </fieldset>
+                                                        </div>
+                                                        <button onClick={this.handleSubmitSubject} className="btn btn-primary float-right">{subjectToEdit ? 'Update' : 'Submit'}</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="_module_modal modal fade" id="_module_modal" tabIndex="-1" role="dialog" aria-labelledby="_module_modalLabel" aria-hidden="true">
+                                        <div className="modal-dialog" role="document">
+                                            <div className="modal-content">
+                                                <div className="modal-body">
+                                                    <a title="Close" className="modal-close" data-dismiss="modal">Close</a>
+                                                    <h5 className="modal-title" id="_module_modalLabel">OKAY!</h5>
+                                                    <div className="wrapper_form_module">
+                                                        <span>Modules Information : </span>
+                                                        <div className="modal-content_module">
+                                                            <fieldset className="input-field form-group">
+                                                                <input
+                                                                onChange={(ev) => this.handleChangeField('_name_module', ev)}
+                                                                value={_module._name}
+                                                                className="validate form-group-input _name" 
+                                                                id="_name"
+                                                                type="text" 
+                                                                name="_name" 
+                                                                required="required"
+                                                                />
+                                                                <label htmlFor='_code' className={_module._name ? 'active' : ''}>Subject Name</label>
+                                                                <div className="form-group-line"></div>
+                                                            </fieldset>
+                                                            <fieldset className="input-field form-group">
+                                                                <select 
+                                                                onChange={(ev) => this.handleChangeField('_subject_module', ev)}
+                                                                value={_module._subject}
+                                                                className="validate form-group-input _subject" 
+                                                                id="_subject"
+                                                                name="_subject" 
+                                                                required="required"
+                                                                >
+                                                                    <option hidden disabled selected value></option>
+                                                                    {
+                                                                        _.orderBy(subjects, ['createdAt'], ['desc']).map((subject, index) => {
+                                                                            return (
+                                                                                <option value={subject._id}>{subject._name} {_.get(_.find(classrooms, {'_id': subject._classroom}), '_code')}</option>
+                                                                            )
+                                                                        })
+                                                                    }
+                                                                </select>
+                                                                <label htmlFor='_subject' className={_module._subject ? 'active' : ''}>_subject</label>
+                                                                <div className="form-group-line"></div>
+                                                            </fieldset>
+                                                        </div>
+                                                        <button onClick={this.handleSubmitModule} className="btn btn-primary float-right">{moduleToEdit ? 'Update' : 'Submit'}</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="_session_modal modal fade" id="_session_modal" tabIndex="-1" role="dialog" aria-labelledby="_module_modalLabel" aria-hidden="true">
+                                        <div className="modal-dialog" role="document">
+                                            <div className="modal-content">
+                                                <div className="modal-body">
+                                                    <a title="Close" className="modal-close" data-dismiss="modal">Close</a>
+                                                    <h5 className="modal-title" id="_session_modalLabel">OKAY!</h5>
+                                                    <div className="wrapper_form_session">
+                                                        <span>Session Information : </span>
+                                                        <div className="modal-content_session">
+                                                            <fieldset className="input-field form-group">
+                                                                <input
+                                                                    onChange={(ev) => this.handleChangeField('_period_in_minutes', ev)}
+                                                                    value={_session._period_in_minutes}
+                                                                    className="validate form-group-input _period_in_minutes" 
+                                                                    id="_period_in_minutes"
+                                                                    type="text" 
+                                                                    name="_period_in_minutes" 
+                                                                    required="required"
+                                                                />
+                                                                <label htmlFor='_period_in_minutes' className={_session._period_in_minutes ? 'active' : ''}>_period_in_minutes</label>
+                                                                <div className="form-group-line"></div>
+                                                            </fieldset>
+                                                        </div>
+                                                        <button onClick={this.handleSubmitModule} className="btn btn-primary float-right">{moduleToEdit ? 'Update' : 'Submit'}</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className="courses_pane tab-pane" id="6a">
-                                
+                                    <div className="_courses_pane">
+                                        <div className="_courses_header">
+                                            <div className="_search_form_courses">
+                                                <div className="search-wrapper-name_courses">
+                                                    <input className="search-input-name_courses light-table-filter" type="search" data-table="courses_list" placeholder="Search"/>
+                                                    <span></span>
+                                                    <div className='search-name_courses'></div>
+                                                </div>
+                                            </div>
+                                            <div className="_filter_form">
+                                                <button className="_add_course btn-primary" data-toggle="modal" data-target="#_course_modal"><i className="fas fa-plus"></i></button>
+                                            </div>
+                                        </div>
+                                        <div className="_courses_content">
+                                            <div className="_courses_data data-container">
+                                                <ul className="courses_list">
+                                                    {
+                                                        _.orderBy(courses, ['createdAt'], ['desc']).map((course, index) => {
+                                                            return (
+                                                                <li className="course_card course_anchor row">
+                                                                    <div className={"col card card_" + index} data-title={_.snakeCase(course._name)} data-index={_.add(index,1)}>
+                                                                        <div className="shadow_letter">{_.head(_.head(_.words(course._name)))}</div>
+                                                                        <div className="card-body">
+                                                                            <h2>{course._name}</h2>
+                                                                            <hr/>
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+                                                            )
+                                                        })
+                                                    }
+                                                </ul>
+                                            </div>
+                                            <div id="pagination_courses"></div>
+                                        </div>
+                                    </div>
+                                    <div className="_course_modal modal fade" id="_course_modal" tabIndex="-1" role="dialog" aria-labelledby="_course_modalLabel" aria-hidden="true">
+                                        <div className="modal-dialog" role="document">
+                                            <div className="modal-content">
+                                                <div className="modal-body">
+                                                    <div className="_top_shelf">
+                                                        <ul className='progress'>
+                                                            <li className="active"></li>
+                                                            <li></li>
+                                                        </ul>
+                                                        <a title="Close" className="modal-close" data-dismiss="modal">Close</a>
+                                                    </div>
+                                                    <h5 className="modal-title" id="_course_modalLabel">OKAY!</h5>
+                                                    <div className="wrapper_form_course">
+                                                        <div className="_course_box modal-body-step-1 is-showing">
+                                                            <span>Course Information : </span>
+                                                            <div className="modal-content_course">
+                                                                <fieldset className="input-field form-group">
+                                                                    <input
+                                                                    onChange={(ev) => this.handleChangeField('_name_course', ev)}
+                                                                    value={_course._name}
+                                                                    className="validate form-group-input _name" 
+                                                                    id="_name"
+                                                                    type="text" 
+                                                                    name="_name" 
+                                                                    required="required"
+                                                                    />
+                                                                    <label htmlFor='_name' className={_course._name ? 'active' : ''}>Course _name</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
+                                                                <fieldset className="input-field form-group">
+                                                                    <input
+                                                                    onChange={(ev) => this.handleChangeField('_abilities_inview', ev)}
+                                                                    value={_course._abilities_inview}
+                                                                    className="validate form-group-input _abilities_inview" 
+                                                                    id="_abilities_inview"
+                                                                    type="text" 
+                                                                    name="_abilities_inview" 
+                                                                    required="required"
+                                                                    />
+                                                                    <label htmlFor='_abilities_inview' className={_course._abilities_inview ? 'active' : ''}>Course _abilities_inview</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
+                                                                <fieldset className="input-field form-group">
+                                                                    <select 
+                                                                    onChange={(ev) => this.handleChangeField('_subject_course', ev)}
+                                                                    value={_course._subject}
+                                                                    className="validate form-group-input _subject" 
+                                                                    id="_subject"
+                                                                    name="_subject" 
+                                                                    required="required"
+                                                                    >
+                                                                        <option hidden disabled selected value></option>
+                                                                        {
+                                                                            _.orderBy(subjects, ['createdAt'], ['desc']).map((subject, index) => {
+                                                                                return (
+                                                                                    <option value={subject._id}>{subject._name} {_.get(_.find(classrooms, {'_id': subject._classroom}), '_code')}</option>
+                                                                                )
+                                                                            })
+                                                                        }
+                                                                    </select>
+                                                                    <label htmlFor='_subject' className={_course._subject ? 'active' : ''}>_subject</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
+                                                            </div>
+                                                            <input type='button' name='next' className='next-button custom-button' value="Next"></input>
+                                                        </div>
+
+                                                        <div className="_course_box modal-body-step-2">
+                                                            <span>Session Information : </span>
+                                                            <div className="modal-content_course">
+                                                                <fieldset className="input-field form-group">
+                                                                    <input
+                                                                    onChange={(ev) => this.handleChangeField('_sessions', ev)}
+                                                                    value={_course._sessions}
+                                                                    className="validate form-group-input _sessions" 
+                                                                    id="_sessions"
+                                                                    type="text" 
+                                                                    name="_sessions" 
+                                                                    required="required"
+                                                                    />
+                                                                    <label htmlFor='_sessions' className={_course._sessions ? 'active' : ''}>_sessions</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
+                                                            </div>
+                                                            <button onClick={this.handleSubmitCourse} className="btn btn-primary float-right">{courseToEdit ? 'Update' : 'Submit'}</button>
+                                                            <input type='button' name='previous' className='prev-button custom-button' value="Back"></input>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className="homeworks_pane tab-pane" id="7a">
                                 
@@ -1421,6 +2083,15 @@ const mapStateToProps = state => ({
 
     students: state.home.students,
     studentToEdit: state.home.studentToEdit,
+
+    subjects: state.home.subjects,
+    subjectToEdit: state.home.subjectToEdit,
+    
+    modules: state.home.modules,
+    moduleToEdit: state.home.moduleToEdit,
+    
+    courses: state.home.courses,
+    courseToEdit: state.home.courseToEdit,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -1435,6 +2106,24 @@ const mapDispatchToProps = dispatch => ({
     onEditStudent: data => dispatch({ type: 'EDIT_STUDENT', data }),
     onDeleteStudent: id => dispatch({ type : 'DELETE_STUDENT', id }),
     setEditStudent: student => dispatch({ type: 'SET_EDIT_STUDENT', student }),
+
+    onLoadSubject: data => dispatch({ type: 'SUBJECT_PAGE_LOADED', data }),
+    onSubmitSubject: data => dispatch({ type: 'SUBMIT_SUBJECT', data }),
+    onEditSubject: data => dispatch({ type: 'EDIT_SUBJECT', data }),
+    onDeleteSubject: id => dispatch({ type : 'DELETE_SUBJECT', id }),
+    setEditSubject: subject => dispatch({ type: 'SET_EDIT_SUBJECT', subject }),
+
+    onLoadModule: data => dispatch({ type: 'MODULE_PAGE_LOADED', data }),
+    onSubmitModule: data => dispatch({ type: 'SUBMIT_MODULE', data }),
+    onEditModule: data => dispatch({ type: 'EDIT_MODULE', data }),
+    onDeleteModule: id => dispatch({ type : 'DELETE_MODULE', id }),
+    setEditModule: module => dispatch({ type: 'SET_EDIT_MODULE', module }),
+
+    onLoadCourse: data => dispatch({ type: 'COURSE_PAGE_LOADED', data }),
+    onSubmitCourse: data => dispatch({ type: 'SUBMIT_COURSE', data }),
+    onEditCourse: data => dispatch({ type: 'EDIT_COURSE', data }),
+    onDeleteCourse: id => dispatch({ type : 'DELETE_COURSE', id }),
+    setEditCourse: course => dispatch({ type: 'SET_EDIT_COURSE', course }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard) 

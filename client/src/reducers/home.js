@@ -9,6 +9,8 @@ export default (state={
         schools: [],
         students: [],
         subjects: [],
+        modules: [],
+        events: [],
         user: {},
     }, action) => {
     switch(action.type) {
@@ -336,7 +338,7 @@ export default (state={
         case 'SUBMIT_SUBJECT':
             return {
                 ...state,
-                subjects: ([action.data.subject]).concat(state.subject),
+                subjects: ([action.data.subject]).concat(state.subjects),
             };
         case 'DELETE_SUBJECT':
             return {
@@ -360,6 +362,76 @@ export default (state={
                     return subject;
                 }),
                 subjectToEdit: undefined,
+            };
+
+        //MODULE
+        case 'MODULE_PAGE_LOADED':
+            return {
+                ...state,
+                modules: action.data.modules,
+            };
+        case 'SUBMIT_MODULE':
+            return {
+                ...state,
+                modules: ([action.data.module]).concat(state.modules),
+            };
+        case 'DELETE_MODULE':
+            return {
+                ...state,
+                modules: state.modules.filter((module) => module._id !== action.id),
+            };
+        case 'SET_EDIT_MODULE':
+            return {
+                ...state,
+                moduleToEdit: action.module,
+            };
+        case 'EDIT_MODULE':
+            return {
+                ...state,
+                modules: state.modules.map((module) => {
+                    if(module._id === action.data.module._id) {
+                        return {
+                            ...action.data.module,
+                        }
+                    }
+                    return module;
+                }),
+                moduleToEdit: undefined,
+            };
+
+        //EVENT
+        case 'EVENT_PAGE_LOADED':
+            return {
+                ...state,
+                events: action.data.events,
+            };
+        case 'SUBMIT_EVENT':
+            return {
+                ...state,
+                events: ([action.data.event]).concat(state.event),
+            };
+        case 'DELETE_EVENT':
+            return {
+                ...state,
+                events: state.events.filter((event) => event._id !== action.id),
+            };
+        case 'SET_EDIT_EVENT':
+            return {
+                ...state,
+                eventToEdit: action.event,
+            };
+        case 'EDIT_EVENT':
+            return {
+                ...state,
+                events: state.events.map((event) => {
+                    if(event._id === action.data.event._id) {
+                        return {
+                            ...action.data.event,
+                        }
+                    }
+                    return event;
+                }),
+                eventToEdit: undefined,
             };
 
         //USER
