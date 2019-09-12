@@ -181,6 +181,8 @@ class Dashboard extends React.Component {
             defaultDate: +0,
             showAnim: "fold"
         });
+        
+		document.getElementById('dashboard_page').parentElement.style.height = 'initial';
     }
 
     _handleSteps(_class) {
@@ -967,7 +969,7 @@ class Dashboard extends React.Component {
         return(
             <FullPage scrollMode={'normal'}>
 				<Slide>
-					<section className="first_section_dashboard">
+					<section id="dashboard_page" className="first_section_dashboard">
                         <div className="wrapper_full">
                             <ul className="nav nav-pills flex-column">
                                 <li>

@@ -478,7 +478,7 @@ body, html {
 								input {
 									padding: 0 40px 0 13px;
 									width: 100%;
-									height: -webkit-fill-available;
+									height: 100%;
 									transform: scale(1);
 									box-sizing: inherit;
 									margin: 0;
@@ -636,7 +636,6 @@ body, html {
 							-ms-user-select: none;
 								user-select: none;
 						width: 2.6rem;
-						transform: scale(0.8);
 						i {
 							background: none;
 							color: black;
@@ -651,6 +650,7 @@ body, html {
 									transition: all 0.3s;
 							width: 2.6rem;
 							z-index: 10;
+							transform: scale(0.8);
 							cursor: pointer;
 						}
 						.hover_effect {
@@ -687,6 +687,9 @@ body, html {
 							box-shadow: 0rem 0rem 3rem 0.1rem rgba(0, 0, 0, 0.5);
 							*{
 								transition: all 0.3s ease;
+							}
+							.input-field {
+								margin-bottom: 0;
 							}
 							&::after {
 								content: "";
@@ -1258,7 +1261,7 @@ body, html {
 					cursor: pointer;
 					.nav-link{
 						height: fit-content;
-						width: -webkit-fill-available;
+						width: 100%;
 						text-align: -webkit-auto;
 						margin: 0;
 						padding: 0;
@@ -1540,7 +1543,7 @@ body, html {
 							margin: 0;
 							max-width: unset;
 							.modal-content {
-								min-height: -webkit-fill-available;
+								min-height: 100%;
 							}
 						}
 						&-close {
@@ -1643,7 +1646,7 @@ body, html {
 											display: flex;
 											align-items: center;
 											height: fit-content;
-											width: -webkit-fill-available;
+											width: 100%;
 											text-align: -webkit-auto;
 											margin: 0;
 											padding: 0.25rem;
@@ -1824,16 +1827,14 @@ body, html {
 		.first_section_dashboard {
 			position: relative;
 			width: 100%;
-			height: 100%;
+			height: fit-content;
 			padding: 0;
 			margin: 0 auto;
-			display: flex;
-			flex-wrap: wrap;
 			background: #f0f0f0;
 			.wrapper_full {
 				position: relative;
 				width: 100%;
-				height: 100%;
+				height: fit-content;
 				.nav {
 					position: absolute;
 					justify-content: center;
@@ -1843,7 +1844,7 @@ body, html {
 					transition: all .1s ease;
 					z-index: 10000;
 					width: 25%;
-					height: 100%;
+					height: 100vh;
 					background: white;
 					box-shadow: 1rem 0rem 2rem -1rem rgba(0, 0, 0, 0.5);
 					-webkit-clip-path: inset(0 calc(100% - 5rem) 0 0);
@@ -1875,7 +1876,7 @@ body, html {
 							cursor: pointer;
 							.nav_link{
 								height: fit-content;
-								width: -webkit-fill-available;
+								width: 100%;
 								text-align: -webkit-auto;
 								margin: 0;
 								padding: 0;
@@ -1936,16 +1937,16 @@ body, html {
 				}
 				.tab-content {
 					width: 100%;
-					height: 100%;
+					height: fit-content;
 					top: 0;
 					left: 0;
 					.tab-pane{
 						padding: 5rem 1rem 1rem 6rem;
-						height: -webkit-fill-available;
+						min-height: 100vh;
 						&.attendances_pane {
 							._attendances_pane {
 								background: white;
-								height: -webkit-fill-available;
+								height: 100%;
 								box-shadow: 0rem 0rem 2rem -1rem rgba(0, 0, 0, 0.25);
 								._attendances_header {
 									display: flex;
@@ -1980,7 +1981,7 @@ body, html {
 												input {
 													padding: 0 40px 0 13px;
 													width: 100%;
-													height: -webkit-fill-available;
+													height: 100%;
 													transform: scale(1);
 													box-sizing: inherit;
 													margin: 0;
@@ -2187,7 +2188,7 @@ body, html {
 											list-style: none;
 											margin: 0;
 											padding: 0;
-											height: -webkit-fill-available;
+											height: 100%;
 											.attendance_card{
 												display: flex;
 												position: relative;
@@ -2403,7 +2404,7 @@ body, html {
 																list-style: none;
 																margin: 0;
 																padding: 0;
-																height: -webkit-fill-available;
+																height: 100%;
 																.attendance_card{
 																	display: flex;
 																	position: relative;
@@ -2551,7 +2552,7 @@ body, html {
 						&.students_pane {
 							._students_pane {
 								background: white;
-								height: -webkit-fill-available;
+								height: 100%;
 								box-shadow: 0rem 0rem 2rem -1rem rgba(0, 0, 0, 0.25);
 								._students_header {
 									display: flex;
@@ -2586,7 +2587,7 @@ body, html {
 												input {
 													padding: 0 40px 0 13px;
 													width: 100%;
-													height: -webkit-fill-available;
+													height: 100%;
 													transform: scale(1);
 													box-sizing: inherit;
 													margin: 0;
@@ -3219,7 +3220,7 @@ body, html {
 						&.classrooms_pane {
 							._classrooms_pane {
 								background: white;
-								height: -webkit-fill-available;
+								height: 100%;
 								box-shadow: 0rem 0rem 2rem -1rem rgba(0, 0, 0, 0.25);
 								._classrooms_header {
 									display: flex;
@@ -3254,7 +3255,7 @@ body, html {
 												input {
 													padding: 0 40px 0 13px;
 													width: 100%;
-													height: -webkit-fill-available;
+													height: 100%;
 													transform: scale(1);
 													box-sizing: inherit;
 													margin: 0;
@@ -3643,8 +3644,9 @@ body, html {
 						&.subjects_pane {
 							._subjects_pane {
 								background: white;
-								height: -webkit-fill-available;
+								height: 100%;
 								box-shadow: 0rem 0rem 2rem -1rem rgba(0, 0, 0, 0.25);
+								overflow: hidden;
 								._subjects_header {
 									display: flex;
 									justify-content: space-between;
@@ -3678,7 +3680,7 @@ body, html {
 												input {
 													padding: 0 40px 0 13px;
 													width: 100%;
-													height: -webkit-fill-available;
+													height: 100%;
 													transform: scale(1);
 													box-sizing: inherit;
 													margin: 0;
@@ -3885,7 +3887,20 @@ body, html {
 											list-style: none;
 											margin: 0;
 											padding: 0;
-											height: -webkit-fill-available;
+											height: 100%;
+											overflow: scroll;
+											&::-webkit-scrollbar {
+												width: 0px;  /* Remove scrollbar space */
+												background: transparent;  /* Optional: just make scrollbar invisible */
+												-webkit-transition: all 0.3s;
+													-moz-transition: all 0.3s;
+														-o-transition: all 0.3s;
+														transition: all 0.3s;
+											}
+											/* Optional: show position indicator in red */
+											&::-webkit-scrollbar-thumb {
+												background: $color1Faded;
+											}
 											.subject_card{
 												display: flex;
 												position: relative;
@@ -4472,7 +4487,7 @@ body, html {
 						&.courses_pane {
 							._courses_pane {
 								background: white;
-								height: -webkit-fill-available;
+								height: 100%;
 								box-shadow: 0rem 0rem 2rem -1rem rgba(0, 0, 0, 0.25);
 								._courses_header {
 									display: flex;
@@ -4507,7 +4522,7 @@ body, html {
 												input {
 													padding: 0 40px 0 13px;
 													width: 100%;
-													height: -webkit-fill-available;
+													height: 100%;
 													transform: scale(1);
 													box-sizing: inherit;
 													margin: 0;
@@ -4714,7 +4729,7 @@ body, html {
 											list-style: none;
 											margin: 0;
 											padding: 0;
-											height: -webkit-fill-available;
+											height: 100%;
 											.course_card{
 												display: flex;
 												position: relative;
@@ -5110,7 +5125,7 @@ body, html {
 							list-style: none;
 							margin: 0;
 							padding: 0;
-							height: -webkit-fill-available;
+							height: 100%;
 							&__item {
 								display: flex;
 								padding: 1rem;
@@ -5799,7 +5814,7 @@ body, html {
 					position:relative;
 					overflow:hidden;
 					width: 100%;
-					height: -webkit-fill-available;
+					height: 100%;
 					.shadow_title{
 						opacity: 0.1;
 						font-size: 5rem;
@@ -6383,7 +6398,7 @@ body, html {
 		.first_section_blog{
 			position: relative;
 			width: 100%;
-			height: -webkit-fill-available;
+			height: 100%;
 			padding: 0;
 			margin: 0 auto;
 			display:flex;
@@ -6724,24 +6739,24 @@ body, html {
 		.first_section{
 			position: relative;
 			width: 100%;
-			height: -webkit-fill-available;
+			height: 100%;
 			padding: 0;
 			margin: 0 auto;
-			display:flex;
+			display: flex;
 			flex-wrap: wrap;
 			border: 0.5rem solid $color1;
 			.wrapper{
 				overflow: hidden;
 				position: relative;
 				width: 50%;
-				height: -webkit-fill-available;
+				height: 100%;
 				line-height: 0;
 				#slider{
 					margin:0 auto;
 					position:relative;
 					overflow:hidden;
 					width: 100%;
-					height: -webkit-fill-available;
+					height: 100%;
 					.shadow_title{
 						opacity: 0.1;
 						font-size: 5rem;
@@ -7043,7 +7058,7 @@ body, html {
 				}
 				&.left_part{
 					#image{
-						height: -webkit-fill-available;
+						height: 100%;
 						background: url('../media/Ghofrane.jpg') no-repeat;
 						background-size: cover;
 						transition:0.5s;
@@ -7230,7 +7245,7 @@ body, html {
 		.second_section_post{
 			position: relative;
 			width: 100%;
-			height: -webkit-fill-available;
+			height: 100%;
 			padding: 0;
 			margin: 0 auto;
 			display: flex;
@@ -7240,7 +7255,7 @@ body, html {
 				overflow: hidden;
 				position: relative;
 				width: 100%;
-				height: -webkit-fill-available;
+				height: 100%;
 				.other_posts {
 					max-width: 90%;
 					margin: 2rem auto;
@@ -8082,7 +8097,7 @@ body, html {
 		.second_section{
 			position: relative;
 			width: 100%;
-			height: -webkit-fill-available;
+			height: 100%;
 			padding: 0;
 			margin: 0 auto;
 			display: flex;
@@ -8106,7 +8121,7 @@ body, html {
 				overflow: hidden;
 				position: relative;
 				width: 50%;
-				height: -webkit-fill-available;
+				height: 100%;
 				&.left_part{
 					display: flex;
 					align-items: center;
@@ -8188,7 +8203,7 @@ body, html {
 		.third_section {
 			position: relative;
 			width: 100%;
-			height: -webkit-fill-available;
+			height: 100%;
 			padding: 0;
 			margin: 0 auto;
 			display: flex;
