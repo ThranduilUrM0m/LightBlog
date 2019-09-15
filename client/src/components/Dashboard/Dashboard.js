@@ -21,6 +21,7 @@ class Dashboard extends React.Component {
             _guardian: {},
             _school: {},
             _classroom_attendance: '',
+            _classroom_subject: '',
             _subject: {},
             _module: {},
             _session: {},
@@ -65,7 +66,8 @@ class Dashboard extends React.Component {
         .then((res) => onLoadClassroom(res.data))
         .then((res) => {
             self.setState({
-                _classroom_attendance: _.get(_.head(res.data.classrooms), '_id', 'default')
+                _classroom_attendance: _.get(_.head(res.data.classrooms), '_id', 'default'),
+                _classroom_subject: _.get(_.head(res.data.classrooms), '_id', 'default'),
             });
         })
         .catch(function (error) {
@@ -594,7 +596,7 @@ class Dashboard extends React.Component {
                         _module: {
                             ...prevState._module,
                             _name: '',
-                            _sessions: '',
+                            _sessions: [],
                             _subject: '',
                         }
                     }));
@@ -620,7 +622,7 @@ class Dashboard extends React.Component {
                             _module: {
                                 ...prevState._module,
                                 _name: '',
-                                _sessions: '',
+                                _sessions: [],
                                 _subject: '',
                             },
                             _session: {
@@ -642,6 +644,14 @@ class Dashboard extends React.Component {
     handleEditModule(module) {
         const { setEditModule } = this.props;
         setEditModule(module);
+    }
+    handleAddModule(subject) {
+        this.setState(prevState => ({
+            _module: {                   // object that we want to update
+                ...prevState._module,    // keep all other key-value pairs
+                _subject: subject._id       // update the value of specific key
+            }
+        }));
     }
     
     /* COURSE */
@@ -887,6 +897,11 @@ class Dashboard extends React.Component {
                 _classroom_attendance: _val
             }));
         }
+        if(key === "_classroom_subject") {
+            this.setState(prevState => ({
+                _classroom_subject: _val
+            }));
+        }
         if(key === "_name_subject" || key === "_classroom_subject") {
             if(key === "_name_subject") {
                 this.setState(prevState => ({
@@ -965,7 +980,7 @@ class Dashboard extends React.Component {
     
     render() {
         const { articles, classrooms, classroomToEdit, courses, courseToEdit, exams, homeworks, letters, reports, schools, students, studentToEdit, subjects, subjectToEdit, modules, moduleToEdit, user } = this.props;
-        const { _classroom, _classroom_attendance, _user, _school, _student, _first_parent, _second_parent, _guardian, _subject, _module, _session, _course } = this.state;
+        const { _classroom, _classroom_attendance, _user, _school, _student, _first_parent, _second_parent, _guardian, _subject, _classroom_subject, _module, _session, _course } = this.state;
         return(
             <FullPage scrollMode={'normal'}>
 				<Slide>
@@ -1751,6 +1766,26 @@ class Dashboard extends React.Component {
                                                 </div>
                                             </div>
                                             <div className="_filter_form">
+                                                <fieldset className="input-field form-group">
+                                                    <select 
+                                                    onChange={(ev) => this.handleChangeField('_classroom_subject', ev)}
+                                                    value={_classroom_subject}
+                                                    className="validate form-group-input _classroom_subject" 
+                                                    id="_classroom_subject"
+                                                    name="_classroom_subject" 
+                                                    required="required"
+                                                    >
+                                                        {
+                                                            _.orderBy(classrooms, ['createdAt'], ['desc']).map((classroom, index) => {
+                                                                return (
+                                                                    <option value={classroom._id}>{classroom._code}</option>
+                                                                )
+                                                            })
+                                                        }
+                                                    </select>
+                                                    <label htmlFor='_classroom_subject' className={_classroom_subject ? 'active' : ''}>_classroom_subject</label>
+                                                    <div className="form-group-line"></div>
+                                                </fieldset>
                                                 <button className="_add_subject btn-primary" data-toggle="modal" data-target="#_subject_modal"><i className="fas fa-plus"></i></button>
                                             </div>
                                         </div>
@@ -1758,13 +1793,22 @@ class Dashboard extends React.Component {
                                             <div className="_subjects_data data-container">
                                                 <ul className="subjects_list">
                                                     {
-                                                        _.orderBy(subjects, ['createdAt'], ['desc']).map((subject, index) => {
+                                                        _.filter(_.orderBy(subjects, ['createdAt'], ['desc']), {'_classroom': _classroom_subject}).map((subject, index) => {
                                                             return (
                                                                 <li className="subject_card subject_anchor row">
                                                                     <div className={"col card card_" + index} data-title={_.snakeCase(subject._name)} data-index={_.add(index,1)}>
                                                                         <div className="shadow_letter">{_.head(_.head(_.words(_.get(_.find(classrooms, {'_id': subject._classroom}), '_code'))))}</div>
                                                                         <div className="card-body">
-                                                                            <h2>{subject._name}</h2>
+                                                                            <h2>
+                                                                                {subject._name}
+                                                                                <button onClick={() => this.handleEditSubject(subject)} className="btn btn-primary" data-toggle="modal" data-target="#_subject_modal">
+                                                                                    <i className="fas fa-pencil-alt"></i>
+                                                                                </button>
+                                                                                <button onClick={() => this.handleDeleteSubject(subject._id)} className="btn btn-primary" data-toggle="modal" data-target="#_subject_modal">
+                                                                                    <i className="far fa-trash-alt"></i>
+                                                                                </button>
+                                                                            </h2>
+
                                                                             <p className="text-muted author">{_.get(_.find(classrooms, {'_id': subject._classroom}), '_code')}</p>
                                                                             <hr/>
                                                                             <ul className="text-muted">
@@ -1785,7 +1829,7 @@ class Dashboard extends React.Component {
                                                                                 }
                                                                             </ul>
                                                                             <div className="_filter_form">
-                                                                                <button className="_add_module btn-primary" data-toggle="modal" data-target="#_module_modal"><i className="fas fa-plus"></i></button>
+                                                                                <button onClick={() => this.handleAddModule(subject)} className="_add_module btn-primary" data-toggle="modal" data-target="#_module_modal"><i className="fas fa-plus"></i></button>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -1842,6 +1886,7 @@ class Dashboard extends React.Component {
                                                                 <div className="form-group-line"></div>
                                                             </fieldset>
                                                         </div>
+                                                        <label>In case of a subject that has no modules, just add a module of the same name of the subject to put up the general period and sessions</label>
                                                         <button onClick={this.handleSubmitSubject} className="btn btn-primary float-right">{subjectToEdit ? 'Update' : 'Submit'}</button>
                                                     </div>
                                                 </div>
@@ -1867,7 +1912,7 @@ class Dashboard extends React.Component {
                                                                 name="_name" 
                                                                 required="required"
                                                                 />
-                                                                <label htmlFor='_code' className={_module._name ? 'active' : ''}>Subject Name</label>
+                                                                <label htmlFor='_code' className={_module._name ? 'active' : ''}>Module Name</label>
                                                                 <div className="form-group-line"></div>
                                                             </fieldset>
                                                             <fieldset className="input-field form-group">
@@ -1892,6 +1937,7 @@ class Dashboard extends React.Component {
                                                                 <div className="form-group-line"></div>
                                                             </fieldset>
                                                         </div>
+                                                        <label>To Modify sessions periods and recurrence, just tap on the minutes and recurrence of the module</label>
                                                         <button onClick={this.handleSubmitModule} className="btn btn-primary float-right">{moduleToEdit ? 'Update' : 'Submit'}</button>
                                                     </div>
                                                 </div>

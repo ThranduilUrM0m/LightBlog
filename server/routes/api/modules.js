@@ -12,15 +12,7 @@ router.post('/', (req, res, next) => {
             },
         });
     }
-
-    if(!body._sessions) {
-        return res.status(422).json({
-            errors: {
-                _subject: 'is required',
-            },
-        });
-    }
-
+    
     if(!body._subject) {
         return res.status(422).json({
             errors: {
