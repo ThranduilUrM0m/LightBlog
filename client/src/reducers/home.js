@@ -408,7 +408,7 @@ export default (state={
         case 'SUBMIT_EVENT':
             return {
                 ...state,
-                events: ([action.data.event]).concat(state.event),
+                events: ([action.data.event]).concat(state.events),
             };
         case 'DELETE_EVENT':
             return {

@@ -7,6 +7,7 @@ import { FullPage, Slide } from 'react-full-page';
 import { Link } from 'react-router-dom';
 import Fingerprint from 'fingerprintjs';
 import API from '../../utils/API';
+import Clock from 'react-live-clock';
 var _ = require('lodash');
 
 class Dashboard extends React.Component {
@@ -20,13 +21,19 @@ class Dashboard extends React.Component {
             _second_parent: {},
             _guardian: {},
             _school: {},
-            _classroom_attendance: '',
             _classroom_subject: '',
+            _attendance_by_classrooms: '',
+            _attendance_by_options: '',
+            _attendance_by_classrooms_modal: '',
+            _attendance_by_options_modal: '',
             _subject: {},
             _module: {},
             _session: {},
             _course: {},
+            _event: {},
+            _events: [],
         };
+
         this.handleChangeField = this.handleChangeField.bind(this);
 
         /* CLASSROOM */
@@ -53,21 +60,28 @@ class Dashboard extends React.Component {
         this.handleSubmitCourse = this.handleSubmitCourse.bind(this);
         this.handleDeleteCourse = this.handleDeleteCourse.bind(this);
         this.handleEditCourse = this.handleEditCourse.bind(this);
+
+        /* EVENT */
+        this.handleSubmitEvent = this.handleSubmitEvent.bind(this);
+        this.handleDeleteEvent = this.handleDeleteEvent.bind(this);
+        this.handleEditEvent = this.handleEditEvent.bind(this);
         
         this.get_user = this.get_user.bind(this);
     }
 
     componentDidMount() {
-        const {onLoadClassroom, onLoadStudent, onLoadSubject, onLoadModule, onLoadCourse} = this.props;
+        const { onLoadClassroom, onLoadStudent, onLoadSubject, onLoadModule, onLoadCourse, onLoadEvent } = this.props;
         const self = this;
+
         this.get_user();
 
         axios('http://localhost:8000/api/classrooms')
         .then((res) => onLoadClassroom(res.data))
         .then((res) => {
             self.setState({
-                _classroom_attendance: _.get(_.head(res.data.classrooms), '_id', 'default'),
+                _attendance_by_classrooms_modal: _.get(_.head(res.data.classrooms), '_id', 'default'),
                 _classroom_subject: _.get(_.head(res.data.classrooms), '_id', 'default'),
+                _attendance_by_classrooms: _.get(_.head(res.data.classrooms), '_id', 'default'),
             });
         })
         .catch(function (error) {
@@ -78,7 +92,18 @@ class Dashboard extends React.Component {
         axios('http://localhost:8000/api/students')
         .then((res) => onLoadStudent(res.data))
         .then((res) => {
-            
+            res.data.students.map((S, I) => {
+                return (
+                    self.setState(prevState => ({
+                        _events: {                   // object that we want to update
+                            ...prevState._events,    // keep all other key-value pairs
+                            start: S._dateofbirth,
+                            end: S._dateofbirth,
+                            title: 'Birthday',
+                        }
+                    }))
+                )
+            })
         })
         .catch(function (error) {
             // handle error
@@ -115,27 +140,45 @@ class Dashboard extends React.Component {
             console.log(error);
         });
 
+        axios('http://localhost:8000/api/events')
+        .then((res) => onLoadEvent(res.data))
+        .then((res) => {
+        })
+        .catch(function (error) {
+            // handle error
+            console.log(error);
+        });
+
         this._handleTap('_students');
         this._handleTap('_classrooms');
         this._handleTap('_subjects');
         this._handleTap('_modules');
         this._handleTap('_courses');
 
+        $('.tab-pane').addClass('animated');
+        $('.tab-pane').addClass('faster');
         $('.nav_link').click((event) => {
+
             let _li_parent = $(event.target).parent().parent();
             let _li_target = $($(event.target).attr('href'));
             let _link_target = $(event.target);
 
-            $(_li_parent).addClass('active');
-            $(_li_target).addClass('active');
-            $(_li_target).addClass('show');
-            $(_link_target).addClass('active');
-            $(_link_target).addClass('show');
+            //$('.tab-pane').not(_li_target).addClass('zoomOut');
+            //$('.tab-pane').not(_li_target).removeClass('zoomIn');
             $(".nav li").not(_li_parent).removeClass('active');
             $('.tab-pane').not(_li_target).removeClass('active');
             $('.tab-pane').not(_li_target).removeClass('show');
             $(".nav_link").not(_link_target).removeClass('active');
             $('.nav_link').not(_link_target).removeClass('show');
+
+            //$(_li_target).removeClass('zoomOut');
+            //$(_li_target).addClass('zoomIn');
+            $(_li_parent).addClass('active');
+            $(_li_target).addClass('active');
+            $(_li_target).addClass('show');
+            $(_link_target).addClass('active');
+            $(_link_target).addClass('show');
+
         });
 
         this._handleSort('classrooms_list');
@@ -170,6 +213,14 @@ class Dashboard extends React.Component {
                         _student: {                   // object that we want to update
                             ...prevState._student,    // keep all other key-value pairs
                             _registration_date: moment(dateText).format('MMM DD, YYYY')       // update the value of specific key
+                        }
+                    }));
+                }
+                if(($(this)[0].$el)[0].id === "_date_start_event"){
+                    self.setState(prevState => ({
+                        _event: {                   // object that we want to update
+                            ...prevState._event,    // keep all other key-value pairs
+                            _date_start: moment(dateText).format('MMM DD, YYYY')       // update the value of specific key
                         }
                     }));
                 }
@@ -346,6 +397,11 @@ class Dashboard extends React.Component {
         if(nextProps.courseToEdit) {
             this.setState({
                 _course: nextProps.courseToEdit,
+            })
+        }
+        if(nextProps.eventToEdit) {
+            this.setState({
+                _event: nextProps.eventToEdit,
             })
         }
     }
@@ -712,6 +768,65 @@ class Dashboard extends React.Component {
         const { setEditCourse } = this.props;
         setEditCourse(course);
     }
+    
+    /* EVENT */
+    handleSubmitEvent(){
+        const { _user } = this.state;
+        const { onSubmitEvent, eventToEdit, onEditEvent } = this.props;
+        const { _name, _date_start, _days, _type } = this.state._event;
+        const self = this;
+
+        if(!eventToEdit) {
+            return axios.post('http://localhost:8000/api/events', {
+                _name,
+                _date_start,
+                _days,
+                _type,
+            })
+                .then((res) => onSubmitEvent(res.data))
+                .then(function() {
+                    self.setState(prevState => ({ 
+                        _event: {
+                            ...prevState._event,
+                            _name: '',
+                            _date_start: '',
+                            _days: '',
+                            _type: '',
+                        }
+                    }));
+                    $('#_event_modal').modal('toggle');
+                });
+        } else {
+            return axios.patch(`http://localhost:8000/api/events/${eventToEdit._id}`, {
+                _name,
+                _date_start,
+                _days,
+                _type,
+            })
+                .then((res) => onEditEvent(res.data))
+                .then(function() {
+                    self.setState(prevState => ({ 
+                        _event: {
+                            ...prevState._event,
+                            _name: '',
+                            _date_start: '',
+                            _days: '',
+                            _type: '',
+                        }
+                    }));
+                    $('#_event_modal').modal('toggle');
+                });
+        }
+    }
+    handleDeleteEvent(id) {
+        const { onDeleteEvent } = this.props;
+        return axios.delete(`http://localhost:8000/api/events/${id}`)
+            .then(() => onDeleteEvent(id));
+    }
+    handleEditEvent(event) {
+        const { setEditEvent } = this.props;
+        setEditEvent(event);
+    }
 
     handleChangeField(key, event) {
         const _val = event.target.value;
@@ -892,9 +1007,24 @@ class Dashboard extends React.Component {
                 }));
             }
         }
-        if(key === "_classroom_attendance") {
+        if(key === "_attendance_by_classrooms_modal") {
             this.setState(prevState => ({
-                _classroom_attendance: _val
+                _attendance_by_classrooms_modal: _val
+            }));
+        }
+        if(key === "_attendance_by_classrooms") {
+            this.setState(prevState => ({
+                _attendance_by_classrooms: _val
+            }));
+        }
+        if(key === "_attendance_by_options_modal") {
+            this.setState(prevState => ({
+                _attendance_by_options_modal: _val
+            }));
+        }
+        if(key === "_attendance_by_options") {
+            this.setState(prevState => ({
+                _attendance_by_options: _val
             }));
         }
         if(key === "_classroom_subject") {
@@ -954,6 +1084,40 @@ class Dashboard extends React.Component {
                 }
             }));
         }
+        if(key === "_name_event" || key === '_date_start_event' || key === '_days_event' || key === '_type_event') {
+            if(key === "_name_event") {
+                this.setState(prevState => ({
+                    _event: {                   // object that we want to update
+                        ...prevState._event,    // keep all other key-value pairs
+                        _name: _val       // update the value of specific key
+                    }
+                }));
+            }
+            if(key === "_date_start_event") {
+                this.setState(prevState => ({
+                    _event: {                   // object that we want to update
+                        ...prevState._event,    // keep all other key-value pairs
+                        _date_start: _val       // update the value of specific key
+                    }
+                }));
+            }
+            if(key === "_days_event") {
+                this.setState(prevState => ({
+                    _event: {                   // object that we want to update
+                        ...prevState._event,    // keep all other key-value pairs
+                        _days: _val       // update the value of specific key
+                    }
+                }));
+            }
+            if(key === "_type_event") {
+                this.setState(prevState => ({
+                    _event: {                   // object that we want to update
+                        ...prevState._event,    // keep all other key-value pairs
+                        _type: _val       // update the value of specific key
+                    }
+                }));
+            }
+        }
     }
     
     _handleTap(_class) {
@@ -979,8 +1143,8 @@ class Dashboard extends React.Component {
     }
     
     render() {
-        const { articles, classrooms, classroomToEdit, courses, courseToEdit, exams, homeworks, letters, reports, schools, students, studentToEdit, subjects, subjectToEdit, modules, moduleToEdit, user } = this.props;
-        const { _classroom, _classroom_attendance, _user, _school, _student, _first_parent, _second_parent, _guardian, _subject, _classroom_subject, _module, _session, _course } = this.state;
+        const { articles, classrooms, classroomToEdit, courses, courseToEdit, exams, homeworks, letters, reports, schools, students, studentToEdit, subjects, subjectToEdit, modules, moduleToEdit, user, events, eventToEdit } = this.props;
+        const { _classroom, _attendance_by_options, _attendance_by_options_modal, _attendance_by_classrooms, _attendance_by_classrooms_modal, _user, _school, _student, _first_parent, _second_parent, _guardian, _subject, _classroom_subject, _module, _session, _course, _event, _events } = this.state;
         return(
             <FullPage scrollMode={'normal'}>
 				<Slide>
@@ -1026,36 +1190,174 @@ class Dashboard extends React.Component {
                             </ul>
                             <div className="tab-content clearfix">
                                 <div className="dashboard_pane tab-pane active" id="1a">
-                                    {/* <ul className="cards">
+                                    <div className="timeanddatenow">
+                                        <div className="timenow">
+                                            <Clock
+                                                format={'hh:mm A'}
+                                                ticking={true}
+                                            />
+                                        </div>
+                                        <div className="datenow">
+                                            <Clock
+                                            format={'dddd, Do MMMM'}
+                                            />
+                                        </div>
+                                    </div>
+                                    <ul className="cards">
                                         <li className="cards__item">
                                             <div className="card">
                                                 <div className="card__content">
-                                                    <div className="card__title"></div>
+                                                    <div className="_events_pane">
+                                                        <div className="_events_header">
+                                                            <div className="card__title">Events</div>
+                                                            <div className="_filter_form">
+                                                                <button className="_add_event btn-primary" data-toggle="modal" data-target="#_event_modal"><i className="fas fa-plus"></i></button>
+                                                            </div>
+                                                        </div>
+                                                        <div className="_events_content">
+                                                            <div className="_events_data data-container">
+                                                                <ul className="events_list">
+                                                                    {
+                                                                        _.orderBy(events, ['_date_start'], ['asc']).map((event_it, index) => {
+                                                                            return (
+                                                                                <li className="event_card event_anchor row">
+                                                                                    <div className={"col card card_" + index} data-title={_.snakeCase(event_it._name)} data-index={_.add(index,1)}>
+                                                                                        <div className="shadow_letter">{_.head(_.head(_.words(event_it._name)))}</div>
+                                                                                        <div className="card-body">
+                                                                                            <div className="event_date">
+                                                                                                <p className="text-muted author"><b>{moment(event_it._date_start).format('ddd')}</b></p>
+                                                                                                <p className="text-muted author"><b>{moment(event_it._date_start).format('DD MMM')}</b></p>
+                                                                                            </div>
+                                                                                            <div className="event_content">
+                                                                                                <h2>
+                                                                                                    {event_it._name}
+                                                                                                    <button onClick={() => this.handleEditEvent(event_it)} className="btn btn-primary" data-toggle="modal" data-target="#_event_modal">
+                                                                                                        <i className="fas fa-pencil-alt"></i>
+                                                                                                    </button>
+                                                                                                    <button onClick={() => this.handleDeleteEvent(event_it._id)} className="btn btn-primary">
+                                                                                                        <i className="far fa-trash-alt"></i>
+                                                                                                    </button>
+                                                                                                </h2>
+                                                                                                <p className="text-muted author"><b>{event_it._days}</b> Day{event_it._days > 1 ? 's' : ''}, Starting <b>{moment(event_it._date_start).format('MMM DD, YYYY')}</b></p>
+                                                                                                <p className="text-muted author"><b>{event_it._type}</b></p>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </li>
+                                                                            )
+                                                                        })
+                                                                    }
+                                                                </ul>
+                                                            </div>
+                                                            <div id="pagination_events"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="_event_modal modal fade" id="_event_modal" tabIndex="-1" role="dialog" aria-labelledby="_event_modalLabel" aria-hidden="true">
+                                                        <div className="modal-dialog" role="document">
+                                                            <div className="modal-content">
+                                                                <div className="modal-body">
+                                                                <a title="Close" className="modal-close" data-dismiss="modal">Close</a>
+                                                                <h5 className="modal-title" id="_event_modalLabel">OKAY!</h5>
+                                                                <div className="wrapper_form_event">
+                                                                    <span>event Information : </span>
+                                                                    <div className="modal-content_event">
+                                                                        <fieldset className="input-field form-group">
+                                                                            <input
+                                                                            onChange={(ev) => this.handleChangeField('_name_event', ev)}
+                                                                            value={_event._name}
+                                                                            className="validate form-group-input _name_event" 
+                                                                            id="_name_event"
+                                                                            type="text" 
+                                                                            name="_name_event" 
+                                                                            required="required"
+                                                                            />
+                                                                            <label htmlFor='_name_event' className={_event._name ? 'active' : ''}>Event Name</label>
+                                                                            <div className="form-group-line"></div>
+                                                                        </fieldset>
+                                                                        <fieldset className="input-field form-group">
+                                                                            <input
+                                                                            onChange={(ev) => this.handleChangeField('_date_start_event', ev)}
+                                                                            value={_event._date_start}
+                                                                            className="validate datepicker form-group-input _date_start_event" 
+                                                                            id="_date_start_event"
+                                                                            type="text" 
+                                                                            name="_date_start_event" 
+                                                                            required="required"
+                                                                            />
+                                                                            <label htmlFor='_name' className={_event._date_start ? 'active' : ''}>Event Date Start</label>
+                                                                            <div className="form-group-line"></div>
+                                                                            <div className="datepicker sample"></div>
+                                                                        </fieldset>
+                                                                        <fieldset className="input-field form-group">
+                                                                            <input
+                                                                            onChange={(ev) => this.handleChangeField('_days_event', ev)}
+                                                                            value={_event._days}
+                                                                            className="validate form-group-input _days_event" 
+                                                                            id="_days_event"
+                                                                            type="number" 
+                                                                            name="_days_event" 
+                                                                            required="required"
+                                                                            />
+                                                                            <label htmlFor='_days_event' className={_event._days ? 'active' : ''}>Event Days</label>
+                                                                            <div className="form-group-line"></div>
+                                                                        </fieldset>
+                                                                        <fieldset className="input-field form-group">
+                                                                            <input
+                                                                            onChange={(ev) => this.handleChangeField('_type_event', ev)}
+                                                                            value={_event._type}
+                                                                            className="validate form-group-input _type_event" 
+                                                                            id="_type_event"
+                                                                            type="text" 
+                                                                            name="_type_event" 
+                                                                            required="required"
+                                                                            />
+                                                                            <label htmlFor='_type_event' className={_event._type ? 'active' : ''}>Event Type</label>
+                                                                            <div className="form-group-line"></div>
+                                                                        </fieldset>
+                                                                    </div>
+                                                                    <button onClick={this.handleSubmitEvent} className="btn btn-primary float-right">{eventToEdit ? 'Update' : 'Submit'}</button>
+                                                                </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
+                                                <a href="#" className="icon-button scroll">
+                                                    <span className="scroll-icon">
+                                                        <span className="scroll-icon__wheel-outer">
+                                                            <span className="scroll-icon__wheel-inner"></span>
+                                                        </span>
+                                                    </span>
+                                                </a>
                                             </div>
                                         </li>
                                         <li className="cards__item">
                                             <div className="card">
                                                 <div className="card__content">
-                                                    <div className="card__title">Dashboards</div>
+                                                    <div className="_calendars_pane">
+                                                        <div className="_calendars_header">
+                                                            <div className="card__title">Calendar</div>
+                                                            <div className="_filter_form">
+                                                                <button className="_add_calendar btn-primary" data-toggle="modal" data-target="#_calendar_modal"><i className="fas fa-plus"></i></button>
+                                                            </div>
+                                                        </div>
+                                                        <div className="_calendars_content">
+                                                            <div className="_calendars_data data-container">
+                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
+                                                <a href="#" className="icon-button scroll">
+                                                    <span className="scroll-icon">
+                                                        <span className="scroll-icon__wheel-outer">
+                                                            <span className="scroll-icon__wheel-inner"></span>
+                                                        </span>
+                                                    </span>
+                                                </a>
                                             </div>
                                         </li>
-                                        <li className="cards__item">
-                                            <div className="card">
-                                                <div className="card__content">
-                                                    <div className="card__title">Dashboards</div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li className="cards__item">
-                                            <div className="card">
-                                                <div className="card__content">
-                                                    <div className="card__title">Dashboards</div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    </ul> */}
+                                    </ul>
                                 </div>
                                 <div className="attendances_pane tab-pane" id="2a">
                                     <div className="_attendances_pane">
@@ -1068,20 +1370,62 @@ class Dashboard extends React.Component {
                                                 </div>
                                             </div>
                                             <div className="_filter_form">
-                                                <button className="_add_attendance btn-primary" data-toggle="modal" data-target="#_attendance_modal"><i className="fas fa-plus"></i></button>
+
+                                                <fieldset className="input-field form-group">
+                                                    <select 
+                                                    onChange={(ev) => this.handleChangeField('_attendance_by_classrooms', ev)}
+                                                    value={_attendance_by_classrooms}
+                                                    className="validate form-group-input _attendance_by_classrooms" 
+                                                    id="_attendance_by_classrooms"
+                                                    name="_attendance_by_classrooms" 
+                                                    required="required"
+                                                    >
+                                                        {
+                                                            _.orderBy(classrooms, ['createdAt'], ['desc']).map((classroom, index) => {
+                                                                return (
+                                                                    <option value={classroom._id}>{classroom._code}</option>
+                                                                )
+                                                            })
+                                                        }
+                                                    </select>
+                                                    <label htmlFor='_attendance_by_classrooms' className={_attendance_by_classrooms ? 'active' : ''}>_attendance_by_classrooms</label>
+                                                    <div className="form-group-line"></div>
+                                                </fieldset>
+
+                                                <fieldset className="input-field form-group">
+                                                    <select 
+                                                    onChange={(ev) => this.handleChangeField('_attendance_by_options', ev)}
+                                                    value={_attendance_by_options}
+                                                    className="validate form-group-input _attendance_by_options" 
+                                                    id="_attendance_by_options"
+                                                    name="_attendance_by_options" 
+                                                    required="required"
+                                                    >
+                                                        <option value='_by_last_name'>_by_last_name</option>
+                                                        <option value='_by_first_name'>_by_first_name</option>
+                                                        <option value='_by_age'>_by_age</option>
+                                                        <option value='_by_monthly_attendance'>_by_monthly_attendance</option>
+                                                        <option value='_by_yearly_attendance'>_by_yearly_attendance</option>
+                                                    </select>
+                                                    <label htmlFor='_attendance_by_options' className={_attendance_by_options ? 'active' : ''}>_attendance_by_options</label>
+                                                    <div className="form-group-line"></div>
+                                                </fieldset>
+
+                                                <button className={moment().format('dddd') === 'Sunday' || _.find(events, {'_date_start': moment().format()}) ? '_add_attendance btn-primary disabled' : '_add_attendance btn-primary'} data-toggle="modal" data-target="#_attendance_modal"><i className="fas fa-plus"></i></button>
+                                            
                                             </div>
                                         </div>
                                         <div className="_attendances_content">
                                             <div className="_attendances_data data-container">
                                                 <ul className="attendances_list">
                                                     {
-                                                        _.orderBy(students, ['createdAt'], ['desc']).map((student, index) => {
+                                                        _.filter(_.orderBy(students, [_attendance_by_options === '_by_last_name' ? '_last_name' : _attendance_by_options === '_by_first_name' ? '_first_name' : _attendance_by_options === '_by_age' ? '_dateofbirth' : '_registration_number'], ['asc']), {'_classroom': _attendance_by_classrooms}).map((student, index) => {
                                                             return (
                                                                 <li className="attendance_card attendance_anchor row">
                                                                     <div className={"col card card_" + index} data-title={_.snakeCase(student._first_name)} data-index={_.add(index,1)}>
                                                                         <div className="shadow_letter">{_.head(_.head(_.words(student._first_name)))}</div>
                                                                         <div className="card-body">
-                                                                            <h2>{student._first_name} {student._last_name}</h2>
+                                                                            <h2>{student._first_name} <b>{student._last_name}</b></h2>
                                                                             <p className="text-muted author"><b>{moment().diff(new Date(student._dateofbirth), 'years')}</b> Yo, {_.get(_.find(classrooms, {'_id': student._classroom}), '_code')}</p>
                                                                             <hr/>
                                                                             <div className="_diagrams">
@@ -1112,32 +1456,67 @@ class Dashboard extends React.Component {
                                                     <a title="Close" className="modal-close" data-dismiss="modal">Close</a>
                                                     <h5 className="modal-title" id="_attendance_modalLabel">OKAY!</h5>
                                                     <div className="wrapper_form_attendance">
-                                                        <span>{ moment().format('MMMM Do YYYY') }</span>
                                                         <div className="modal-content_attendance">
-                                                            <fieldset className="input-field form-group">
-                                                                <select 
-                                                                onChange={(ev) => this.handleChangeField('_classroom_attendance', ev)}
-                                                                value={_classroom_attendance}
-                                                                className="validate form-group-input _classroom_attendance" 
-                                                                id="_classroom_attendance"
-                                                                name="_classroom_attendance" 
-                                                                required="required"
-                                                                >
-                                                                    {
-                                                                        _.orderBy(classrooms, ['createdAt'], ['desc']).map((classroom, index) => {
-                                                                            return (
-                                                                                <option value={classroom._id}>{classroom._code}</option>
-                                                                            )
-                                                                        })
-                                                                    }
-                                                                </select>
-                                                                <label htmlFor='_classroom_attendance' className={_classroom_attendance ? 'active' : ''}>_classroom_attendance</label>
-                                                                <div className="form-group-line"></div>
-                                                            </fieldset>
+                                                            <div className="timedateandfieldset">
+                                                                <div className="timeanddatenow">
+                                                                    <div className="timenow">
+                                                                        <Clock
+                                                                            format={'hh:mm A'}
+                                                                            ticking={true}
+                                                                        />
+                                                                    </div>
+                                                                    <div className="datenow">
+                                                                        <Clock
+                                                                        format={'dddd, Do MMMM'}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                                                    
+                                                                    <fieldset className="input-field form-group">
+                                                                        <select 
+                                                                        onChange={(ev) => this.handleChangeField('_attendance_by_classrooms_modal', ev)}
+                                                                        value={_attendance_by_classrooms_modal}
+                                                                        className="validate form-group-input _attendance_by_classrooms_modal" 
+                                                                        id="_attendance_by_classrooms_modal"
+                                                                        name="_attendance_by_classrooms_modal" 
+                                                                        required="required"
+                                                                        >
+                                                                            {
+                                                                                _.orderBy(classrooms, ['createdAt'], ['desc']).map((classroom, index) => {
+                                                                                    return (
+                                                                                        <option value={classroom._id}>{classroom._code}</option>
+                                                                                    )
+                                                                                })
+                                                                            }
+                                                                        </select>
+                                                                        <label htmlFor='_attendance_by_classrooms_modal' className={_attendance_by_classrooms_modal ? 'active' : ''}>_attendance_by_classrooms_modal</label>
+                                                                        <div className="form-group-line"></div>
+                                                                    </fieldset>
+
+                                                                    <fieldset className="input-field form-group">
+                                                                        <select 
+                                                                        onChange={(ev) => this.handleChangeField('_attendance_by_options_modal', ev)}
+                                                                        value={_attendance_by_options_modal}
+                                                                        className="validate form-group-input _attendance_by_options_modal" 
+                                                                        id="_attendance_by_options_modal"
+                                                                        name="_attendance_by_options_modal" 
+                                                                        required="required"
+                                                                        >
+                                                                            <option value='_by_last_name'>_by_last_name</option>
+                                                                            <option value='_by_first_name'>_by_first_name</option>
+                                                                            <option value='_by_age'>_by_age</option>
+                                                                            <option value='_by_monthly_attendance'>_by_monthly_attendance</option>
+                                                                            <option value='_by_yearly_attendance'>_by_yearly_attendance</option>
+                                                                        </select>
+                                                                        <label htmlFor='_attendance_by_options_modal' className={_attendance_by_options_modal ? 'active' : ''}>_attendance_by_options_modal</label>
+                                                                        <div className="form-group-line"></div>
+                                                                    </fieldset>
+
+                                                            </div>
                                                             <div className="_attendances_data data-container">
                                                                 <ul className="attendances_list">
                                                                     {
-                                                                        _.filter(_.orderBy(students, ['createdAt'], ['desc']), {'_classroom': _classroom_attendance}).map((student, index) => {
+                                                                        _.filter(_.orderBy(students, [_attendance_by_options_modal === '_by_last_name' ? '_last_name' : _attendance_by_options_modal === '_by_first_name' ? '_first_name' : _attendance_by_options_modal === '_by_age' ? '_dateofbirth' : '_registration_number'], ['asc']), {'_classroom': _attendance_by_classrooms_modal}).map((student, index) => {
                                                                             return (
                                                                                 <li className="attendance_card attendance_anchor row">
                                                                                     <div className={"col card card_" + index} data-title={_.snakeCase(student._first_name)} data-index={_.add(index,1)}>
@@ -1145,9 +1524,11 @@ class Dashboard extends React.Component {
                                                                                         <div className="card-body">
                                                                                             <h2>{student._first_name} {student._last_name}</h2>
                                                                                             <p className="text-muted author"><b>{moment().diff(new Date(student._dateofbirth), 'years')}</b> Yo, {_.get(_.find(classrooms, {'_id': student._classroom}), '_code')}</p>
-                                                                                            <hr/>
-                                                                                            <div className="_CHECKINPUTS">
-                                                                                                
+                                                                                            <div className="custom-control custom-switch">
+                                                                                                <input type="radio" id={'present_'+index} name={'attendance_to_student_'+index} value="true" checked/>
+                                                                                                <label for={'present_'+index}>Present</label>
+                                                                                                <input type="radio" id={'absent_'+index} name={'attendance_to_student_'+index} value="false"/>
+                                                                                                <label for={'absent_'+index}>Absent</label>
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
@@ -1808,7 +2189,6 @@ class Dashboard extends React.Component {
                                                                                     <i className="far fa-trash-alt"></i>
                                                                                 </button>
                                                                             </h2>
-
                                                                             <p className="text-muted author">{_.get(_.find(classrooms, {'_id': subject._classroom}), '_code')}</p>
                                                                             <hr/>
                                                                             <ul className="text-muted">
@@ -2140,6 +2520,9 @@ const mapStateToProps = state => ({
     
     courses: state.home.courses,
     courseToEdit: state.home.courseToEdit,
+    
+    events: state.home.events,
+    eventToEdit: state.home.eventToEdit,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -2172,6 +2555,12 @@ const mapDispatchToProps = dispatch => ({
     onEditCourse: data => dispatch({ type: 'EDIT_COURSE', data }),
     onDeleteCourse: id => dispatch({ type : 'DELETE_COURSE', id }),
     setEditCourse: course => dispatch({ type: 'SET_EDIT_COURSE', course }),
+
+    onLoadEvent: data => dispatch({ type: 'EVENT_PAGE_LOADED', data }),
+    onSubmitEvent: data => dispatch({ type: 'SUBMIT_EVENT', data }),
+    onEditEvent: data => dispatch({ type: 'EDIT_EVENT', data }),
+    onDeleteEvent: id => dispatch({ type : 'DELETE_EVENT', id }),
+    setEditEvent: event => dispatch({ type: 'SET_EDIT_EVENT', event }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard) 

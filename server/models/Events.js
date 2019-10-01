@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 const EventsSchema = new Schema({
     _name: String,
     _date_start: Date,
-    _days: Date,
+    _days: Number,
     _type: String,
 }, { timestamps: true });
 EventsSchema.methods.toJSON = function() {
