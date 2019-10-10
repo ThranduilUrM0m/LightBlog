@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
 import Footer from '../Footer/Footer';
+import Calendar from './Calendar';
 import { connect } from 'react-redux';
 import { FullPage, Slide } from 'react-full-page';
 import { Link } from 'react-router-dom';
@@ -73,80 +74,96 @@ class Dashboard extends React.Component {
         const { onLoadClassroom, onLoadStudent, onLoadSubject, onLoadModule, onLoadCourse, onLoadEvent } = this.props;
         const self = this;
 
-        this.get_user();
+        this.get_user()
+        .then(() => {
+            const { _user } = self.state;
 
-        axios('http://localhost:8000/api/classrooms')
-        .then((res) => onLoadClassroom(res.data))
-        .then((res) => {
-            self.setState({
-                _attendance_by_classrooms_modal: _.get(_.head(res.data.classrooms), '_id', 'default'),
-                _classroom_subject: _.get(_.head(res.data.classrooms), '_id', 'default'),
-                _attendance_by_classrooms: _.get(_.head(res.data.classrooms), '_id', 'default'),
-            });
-        })
-        .catch(function (error) {
-            // handle error
-            console.log(error);
-        });
+            /* CLASSROOMS */
+            axios('http://localhost:8000/api/classrooms')
+            .then((res) => {
+                let obj = {
+                    classrooms: _.filter(res.data.classrooms, {'_teacher': _user._id})
+                }
+                onLoadClassroom(obj)
+                self.setState({
+                    _attendance_by_classrooms_modal: _.get(_.head(_.filter(res.data.classrooms, {'_teacher': _user._id})), '_id', 'default'),
+                    _classroom_subject: _.get(_.head(_.filter(res.data.classrooms, {'_teacher': _user._id})), '_id', 'default'),
+                    _attendance_by_classrooms: _.get(_.head(_.filter(res.data.classrooms, {'_teacher': _user._id})), '_id', 'default'),
+                });
 
-        axios('http://localhost:8000/api/students')
-        .then((res) => onLoadStudent(res.data))
-        .then((res) => {
-            res.data.students.map((S, I) => {
-                return (
-                    self.setState(prevState => ({
-                        _events: {                   // object that we want to update
-                            ...prevState._events,    // keep all other key-value pairs
-                            start: S._dateofbirth,
-                            end: S._dateofbirth,
-                            title: 'Birthday',
+                /* STUDENTS */
+                axios('http://localhost:8000/api/students')
+                .then((res) => {
+                    let obj_students = {
+                        students: _.filter(res.data.students, (S) => {
+                            return _.includes(_.map(obj.classrooms, '_id'), S._classroom);
+                        })
+                    }
+                    onLoadStudent(obj_students)
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                });
+
+                /* SUBJECTS */
+                axios('http://localhost:8000/api/subjects')
+                .then((res) => {
+                    let obj_subjects = {
+                        subjects: _.filter(res.data.subjects, (S) => {
+                            return _.includes(_.map(obj.classrooms, '_id'), S._classroom);
+                        })
+                    }
+                    onLoadSubject(obj_subjects)
+
+                    /* MODULES */
+                    axios('http://localhost:8000/api/modules')
+                    .then((res) => {
+                        let obj_modules = {
+                            modules: _.filter(res.data.modules, (M) => {
+                                return _.includes(_.map(obj_subjects.subjects, '_id'), M._subject);
+                            })
                         }
-                    }))
-                )
+                        onLoadModule(obj_modules)
+                    })
+                    .catch(function (error) {
+                        // handle error
+                        console.log(error);
+                    });
+
+                    /* COURSES */
+                    axios('http://localhost:8000/api/courses')
+                    .then((res) => {
+                        let obj_courses = {
+                            courses: _.filter(res.data.courses, (C) => {
+                                return _.includes(_.map(obj_subjects.subjects, '_id'), C._subject);
+                            })
+                        }
+                        onLoadCourse(obj_courses)
+                    })
+                    .catch(function (error) {
+                        // handle error
+                        console.log(error);
+                    });
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                });
             })
-        })
-        .catch(function (error) {
-            // handle error
-            console.log(error);
-        });
+            .catch(function (error) {
+                // handle error
+                console.log(error);
+            });
 
-        axios('http://localhost:8000/api/subjects')
-        .then((res) => onLoadSubject(res.data))
-        .then((res) => {
-            
-        })
-        .catch(function (error) {
-            // handle error
-            console.log(error);
-        });
-
-        axios('http://localhost:8000/api/modules')
-        .then((res) => onLoadModule(res.data))
-        .then((res) => {
-            
-        })
-        .catch(function (error) {
-            // handle error
-            console.log(error);
-        });
-
-        axios('http://localhost:8000/api/courses')
-        .then((res) => onLoadCourse(res.data))
-        .then((res) => {
-            
-        })
-        .catch(function (error) {
-            // handle error
-            console.log(error);
-        });
-
-        axios('http://localhost:8000/api/events')
-        .then((res) => onLoadEvent(res.data))
-        .then((res) => {
-        })
-        .catch(function (error) {
-            // handle error
-            console.log(error);
+            axios('http://localhost:8000/api/events')
+            .then((res) => onLoadEvent(res.data))
+            .then((res) => {
+            })
+            .catch(function (error) {
+                // handle error
+                console.log(error);
+            });
         });
 
         this._handleTap('_students');
@@ -1343,7 +1360,7 @@ class Dashboard extends React.Component {
                                                         </div>
                                                         <div className="_calendars_content">
                                                             <div className="_calendars_data data-container">
-                                                                
+                                                                <Calendar/>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1526,9 +1543,9 @@ class Dashboard extends React.Component {
                                                                                             <p className="text-muted author"><b>{moment().diff(new Date(student._dateofbirth), 'years')}</b> Yo, {_.get(_.find(classrooms, {'_id': student._classroom}), '_code')}</p>
                                                                                             <div className="custom-control custom-switch">
                                                                                                 <input type="radio" id={'present_'+index} name={'attendance_to_student_'+index} value="true" checked/>
-                                                                                                <label for={'present_'+index}>Present</label>
+                                                                                                <label htmlFor={'present_'+index}>Present</label>
                                                                                                 <input type="radio" id={'absent_'+index} name={'attendance_to_student_'+index} value="false"/>
-                                                                                                <label for={'absent_'+index}>Absent</label>
+                                                                                                <label htmlFor={'absent_'+index}>Absent</label>
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>

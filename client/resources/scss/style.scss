@@ -3,6 +3,15 @@
 @import url('https://fonts.googleapis.com/css?family=Abril+Fatface&display=swap');
 @import "~bootstrap/scss/bootstrap";
 @import url('https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,700');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+$main-color: #1a8fff;
+$text-color: #777;
+$text-color-light: #ccc;
+$border-color: #eee;
+$bg-color: #f9f9f9;
+$neutral-color: #fff;
 
 $roboto: "Roboto", Helvetica, Arial, sans-serif;
 $calendar-red: #DD5044;
@@ -1971,12 +1980,15 @@ body, html {
 									padding: 1rem;
 									width: auto;
 									min-width: 30vw;
+									&:nth-of-type(2) {
+										min-width: 40vw;
+									}
 									&:first-of-type {
 										max-height: 20vw;
 									}
 								}
 								.card {
-									background-color: white;
+									background: $bg-color;
 									border-radius: 0.25rem;
 									box-shadow: 0rem 0rem 2rem -1rem rgba(0, 0, 0, 0.25);
 									display: flex;
@@ -2002,15 +2014,15 @@ body, html {
 										flex: 1 1 auto;
 										flex-direction: column;
 										padding: 1rem;
-										._events_pane {
+										._events_pane, ._calendars_pane {
 											height: 100%;
-											._events_header {
+											._events_header, ._calendars_header {
 												display: flex;
 												justify-content: space-between;
 												padding: 0.25rem;
 												._filter_form {
 													display: flex;
-													._filter, ._add_event {
+													._filter, ._add_event, ._add_calendar {
 														color: black;
 														background: none;
 														border: solid 0.05rem black;
@@ -2058,7 +2070,7 @@ body, html {
 													}
 												}
 											}
-											._events_content {
+											._events_content, ._calendars_content {
 												padding: 1rem;
 												._events_data {
 													width: 100%;
@@ -2218,6 +2230,271 @@ body, html {
 																		}
 																	}
 																}
+															}
+														}
+													}
+												}
+												._calendars_data {
+													width: 100%;
+													display: block;
+													margin: 0 auto;
+													max-width: 50em;
+													font-size: 1em;
+													font-weight: 300;
+													line-height: 1.5;
+													position: relative;
+													.icon {
+														font-family: 'Material Icons', serif;
+														font-style: normal;
+														display: inline-block;
+														vertical-align: middle;
+														line-height: 1;
+														text-transform: none;
+														letter-spacing: normal;
+														word-wrap: normal;
+														white-space: nowrap;
+														direction: ltr;
+														
+														-webkit-font-smoothing: antialiased;
+														text-rendering: optimizeLegibility;
+														-moz-osx-font-smoothing: grayscale;
+														font-feature-settings: 'liga';
+													}
+													* {
+														box-sizing: border-box;
+													}
+													/* GRID */
+													.row {
+														margin: 0;
+														padding: 0;
+														display: flex;
+														flex-direction: row;
+														flex-wrap: wrap;
+														align-items: center;
+														width: 100%;
+													}
+													.row-middle {
+														align-items: center;
+													}
+													.col {
+														flex-grow: 1;
+														flex-basis: calc(100%/7);
+														max-width: 100%;
+														width: calc(100%/7);
+													}
+													.col-start {
+														display: flex;
+														justify-content: flex-start;
+														align-items: center;
+														text-align: left;
+														flex-grow: 9;
+														.calendar_icon_div {
+															position: relative;
+															float: left;
+															font-size: small;
+															margin-right: 0.75rem;
+															.calendar_icon {
+																background: #ccc;
+																text-align: center;
+
+																-moz-border-radius: 0.25rem;
+																-webkit-border-radius: 0.25rem;
+																border-radius: 0.25rem;
+
+																padding-top: 5px;
+																width: 3rem;
+																height: 2.5rem;
+
+																display: flex;
+																flex-direction: column;
+
+																margin: 0;
+																.a{
+																	text-transform: uppercase;
+																	padding: 0.15rem 0.25rem 0 0.25rem;
+																}
+																.b{
+																	background: #ccc;
+																	padding: 0 0.25rem 0.15rem 0.25rem;
+																	-moz-border-radius: 0.25rem;
+																	-webkit-border-radius: 0.25rem;
+																	border-radius: 0.25rem;
+
+																	&::before, &::after {
+																		content:'';
+																		float:left;
+																		position:absolute;
+																		top: -0.25rem;
+																		width: 0.25rem;
+																		height: 0.25rem;
+																		background: #ccc;
+																		
+																		z-index:2;
+
+																		-moz-border-radius: 0.25rem;
+																		-webkit-border-radius: 0.25rem;
+																		border-radius: 0.25rem;
+																	}
+																	&:before{
+																		left: 0.45rem;
+																	}
+																	&:after{
+																		right: 0.45rem;
+																	}
+																}
+																&::before, &::after {
+																	content:'';
+																	float: left;
+																	position: absolute;
+																	top: 0.2rem;	
+																	width: 0.4rem;
+																	height: 0.4rem;
+																	background: #f9f9f9;
+																	z-index:1;
+																	-moz-border-radius: 100%;
+																	-webkit-border-radius: 100%;
+																	border-radius: 100%;
+																	-moz-box-shadow:0 1px 1px #fff;
+																	-webkit-box-shadow:0 1px 1px #fff;
+																	box-shadow:0 1px 1px #fff;
+																}
+																&:before{
+																	left: 0.4rem;
+																}
+																&:after{
+																	right: 0.4rem;
+																}
+															}
+														}
+														.p {
+															font-size: larger;
+														}
+													}
+													.col-center {
+														justify-content: center;
+														text-align: center;
+														z-index: 9999;
+													}
+													.col-end {
+														justify-content: flex-end;
+														text-align: right;
+														z-index: 9999;
+													}
+													/* Calendar */
+													.calendar {
+														display: block;
+														position: relative;
+														width: 100%;
+														.header {
+															font-weight: 700;
+															font-size: 115%;
+															padding: 1.5em 0;
+															.icon {
+																cursor: pointer;
+																transition: .15s ease-out;
+																&:hover {
+																	transform: scale(1.75);
+																	transition: .25s ease-out;
+																	color: $main-color;
+																}
+																&:first-of-type {
+																	margin-left: 1em;
+																}
+																&:last-of-type {
+																	margin-right: 1em;
+																}
+															}
+														}
+														.days {
+															text-transform: uppercase;
+															font-weight: 400;
+															color: $text-color-light;
+															font-size: 70%;
+															padding: .75em 0;
+															border-bottom: 1px solid $border-color;
+														}
+														.body {
+															.cell {
+																position: relative;
+																height: 2rem;
+																overflow: hidden;
+																cursor: pointer;
+																transition: 0.25s ease-out;
+																text-align: center;
+																z-index: 9999;
+																&:hover {
+																	background: $bg-color;
+																	transition: 0.5s ease-out;
+																	.bg {
+																		opacity: 0.05;
+																		transition: .5s ease-in;
+																	}
+																}
+																&:last-child {
+																	border-right: none;
+																}
+																.number {
+																	font-size: 82.5%;
+																	line-height: 1;
+																	font-weight: 700;
+																}
+																.bg {
+																	font-weight: 700;
+																	line-height: 1;
+																	color: $main-color;
+																	opacity: 0;
+																	font-size: 8em;
+																	position: absolute;
+																	top: -.2em;
+																	right: -.05em;
+																	transition: .25s ease-out;
+																	letter-spacing: -.07em;
+																}
+															}
+															.selected {
+																border-left: 10px solid transparent;
+																border-image: linear-gradient(45deg, #1a8fff 0%,#53cbf1 40%);
+																border-image-slice: 1;
+																padding-left: 0;
+																.bg  {
+																	opacity: 0.05;
+																	transition: .5s ease-in;
+																}
+															}
+															.row {
+																&:last-child {
+																	border-bottom: none;
+																}
+															}
+															.disabled {
+																color: $text-color-light;
+																pointer-events: none;
+															}
+															.col {
+																flex-grow: 0;
+																flex-basis: calc(100%/7);
+																width: calc(100%/7);
+															}
+														}
+														&::after{
+															position: absolute;
+															top:0;
+															left: 0;
+															right:0;
+															bottom: 0;
+															/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#a29ca9+0,95909b+99 */
+															background: #a29ca9; /* Old browsers */
+															background: -moz-linear-gradient(-45deg, #a29ca9 0%, #95909b 99%); /* FF3.6-15 */
+															background: -webkit-linear-gradient(-45deg, #a29ca9 0%,#95909b 99%); /* Chrome10-25,Safari5.1-6 */
+															background: linear-gradient(135deg, #a29ca9 0%,#95909b 99%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+															filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a29ca9', endColorstr='#95909b',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+															content: '';
+															opacity: 0.05;
+															transition: opacity 0.9s ease 0s; 
+														}
+														&:hover {
+															&::after{
+																opacity: 0.4;
 															}
 														}
 													}

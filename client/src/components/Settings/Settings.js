@@ -149,10 +149,7 @@ class Settings extends React.Component {
             }
             if(key === "_new_password") {
                 this.setState(prevState => ({
-                    _user: {                   // object that we want to update
-                        ...prevState._user,    // keep all other key-value pairs
-                        password: _val       // update the value of specific key
-                    }
+                    _new_password: _val
                 }));
             }
             if(key === "firstname") {
