@@ -39,9 +39,9 @@ class AccountForm extends React.Component {
                 sibling.classList.add('slide-up');
             } else {
                 const parent = this.parentElement;
-                const sibling = parent.previousElementSibling;
-                parent.classList.remove('slide-up');
-                sibling.classList.add('slide-up');
+                
+                parent.classList.add('slide-up');
+                $('.login_form').classList.remove('slide-up');
             }
         }
         loginBtn.addEventListener('click', slideUp);
@@ -99,13 +99,26 @@ class AccountForm extends React.Component {
     render() {
         return (
             <div href="#" className="icon-button accountFormHolder">
-                <i className="far fa-user togglebtn"></i>
+                <i className="icon far fa-user togglebtn"></i>
                 <span className="hover_effect"></span>
                 <div className="login form-structor">
                     <div className="signup_form slide-up">
                         <div className="form-title" id="signup_toggle">
                             <a className="question_signup" href="#" title="">Don't have an account yet?</a>
-                            <a className="title_signup" href="#" title="">Sign Up</a>
+                            <a className="title_signup" href="#" title="">Sign Up to Risala</a>
+                        </div>
+                        <div className="form-sm-holder">
+                            <div className="row">
+                                <div className="col-2">
+                                    <button type="button" class="btn btn-light"><i className="fab fa-twitter"></i></button>
+                                </div>
+                                <div className="col-2">
+                                    <button type="button" class="btn btn-light"><i className="fab fa-facebook-f"></i></button>
+                                </div>
+                                <div className="col-8">
+                                    <button type="button" class="btn btn-light"><i className="fab fa-google"></i> Sign up with Google</button>
+                                </div>
+                            </div>
                         </div>
                         <div className="form-holder">
 
@@ -155,9 +168,6 @@ class AccountForm extends React.Component {
                                     <label htmlFor='signup_password'>Password</label>
                                     <div className="form-group-line"></div>
                                 </div>
-                            </div>
-
-                            <div className='row'>
                                 <div className='input-field col s12'>
                                     <input 
                                     className='validate form-group-input' 
@@ -173,6 +183,10 @@ class AccountForm extends React.Component {
                                 </div>
                             </div>
 
+                            <label>
+                                <input type="checkbox"/>Creating an account means you're okay with our Terms of Services, Privacy Policy, and our default Notifications Settings.
+                            </label>
+
                             <section className="center">
                                 <div className='row'>
                                     <button 
@@ -187,11 +201,28 @@ class AccountForm extends React.Component {
                             </section>
 
                         </div>
+                        <div className="form-title" id="login_toggle">
+                            <a className="question_login" href="#" title="">Already a member?</a>
+                            <a className="title_login" href="#" title="">Sign in to Risala</a>
+                        </div>
                     </div>
                     <div className="login_form">
-                        <div className="form-title" id="login_toggle">
-                            <a className="title_login" href="#" title="">Log in</a>
-                            <a className="question_login" href="#" title="">Already have an account?</a>
+                        <div className="form-title">
+                            <a className="question_login" href="#" title="">Already a member?</a>
+                            <a className="title_login" href="#" title="">Sign in to Risala</a>
+                        </div>
+                        <div className="form-sm-holder">
+                            <div className="row">
+                                <div className="col-2">
+                                    <button type="button" class="btn btn-light"><i className="fab fa-twitter"></i></button>
+                                </div>
+                                <div className="col-2">
+                                    <button type="button" class="btn btn-light"><i className="fab fa-facebook-f"></i></button>
+                                </div>
+                                <div className="col-8">
+                                    <button type="button" class="btn btn-light"><i className="fab fa-google"></i> Sign in with Google</button>
+                                </div>
+                            </div>
                         </div>
                         <div className="form-holder">
                             
@@ -278,7 +309,7 @@ class AccountProfil extends React.Component {
             <div href="#" className="icon-button accountProfilHolder">
                 <div className='menu_button'>
                     <span className="hover_effect"></span>
-                    <i className="far fa-user togglebtn"></i>
+                    <i className="icon far fa-user togglebtn"></i>
                     <span className="title">{localStorage.getItem('username')}</span>
                 </div>
                 <div className="menu-dropdown">

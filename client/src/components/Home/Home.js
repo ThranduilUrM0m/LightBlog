@@ -10,6 +10,7 @@ import {
   Link,
   Switch
 } from 'react-router-dom'
+import tounarouz from '../../../resources/media/TOUNAROUZ.svg';
 import { Form } from '../Article';
 import 'whatwg-fetch';
 var _ = require('lodash');
@@ -263,7 +264,10 @@ class Home extends React.Component {
                     <section className="active first_section">
                         <div className="wrapper left_part">
                             <div id="image">
-                                <div className="highlight"></div>
+                                <div className="highlight">
+                                    <span>Reach out to your inner kid <br/> to your childhood dream ! </span>
+                                    <span>Tounarouz Inc. <img className="tounarouz img-fluid" src={tounarouz} alt="Tounarouz"/>{/*<i className="fas fa-circle"></i>*/}</span>
+                                </div>
                             </div>
                         </div>
                         <div className="wrapper right_part">

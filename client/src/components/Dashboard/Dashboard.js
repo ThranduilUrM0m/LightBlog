@@ -1240,7 +1240,14 @@ class Dashboard extends React.Component {
                                                                                 <li className="event_card event_anchor row">
                                                                                     <div className={"col card card_" + index} data-title={_.snakeCase(event_it._name)} data-index={_.add(index,1)}>
                                                                                         <div className="shadow_letter">{_.head(_.head(_.words(event_it._name)))}</div>
-                                                                                        <div className="card-body">
+                                                                                        <div className={`card-body ${
+                                                                                            ! moment(moment(moment(new Date()).startOf('M')).startOf('week')).isSame(moment(new Date()).startOf('M'), 'month')
+                                                                                            ? "Past"
+                                                                                            : moment(moment(moment(new Date()).startOf('M')).startOf('week')).isSame(new Date(), 'day')
+                                                                                            ? "Today"
+                                                                                            : ""
+                                                                                        }`}
+                                                                                        id={`type_${_.trim(event_it._type)}`}>
                                                                                             <div className="event_date">
                                                                                                 <p className="text-muted author"><b>{moment(event_it._date_start).format('ddd')}</b></p>
                                                                                                 <p className="text-muted author"><b>{moment(event_it._date_start).format('DD MMM')}</b></p>
@@ -1360,7 +1367,7 @@ class Dashboard extends React.Component {
                                                         </div>
                                                         <div className="_calendars_content">
                                                             <div className="_calendars_data data-container">
-                                                                <Calendar/>
+                                                                <Calendar STUDENTS={students} EVENTS={events}/>
                                                             </div>
                                                         </div>
                                                     </div>

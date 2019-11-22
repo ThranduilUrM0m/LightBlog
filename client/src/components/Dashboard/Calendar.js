@@ -18,20 +18,6 @@ class Calendar extends React.Component {
         this.nextMonth = this.nextMonth.bind(this);
         this.prevMonth = this.prevMonth.bind(this);
     }
-    componentDidMount() {
-        /* const { onLoadStudent, onLoadEvent } = this.props;
-        const self = this;
-
-        axios('http://localhost:8000/api/students')
-        .then((res) => onLoadStudent(res.data))
-        .then((res) => {
-            
-        })
-        .catch(function (error) {
-            // handle error
-            console.log(error);
-        }); */
-    }
     renderHeader() {
         return (
             <div className="header row flex-middle">
@@ -78,20 +64,33 @@ class Calendar extends React.Component {
         let days = [];
         let day = startDate;
         let formattedDate = "";
+        let names = [];
+        let _event_dates = [];
+        
+        _.each(_.map(this.props.EVENTS, i => _.pick(i, '_date_start', '_days')), (value) => {
+            const m = moment(value._date_start).format('YYYY-MM-DD');
+            _.range(value._days).forEach((current, index, range) => {
+                _event_dates.push(moment(m.toString()).add(index, 'day').format('YYYY-MM-DD'));
+            });
+        });
 
         while (day <= endDate) {
             for (let i = 0; i < 7; i++) {
                 formattedDate = moment(day).format('D');
                 const cloneDay = day;
+                names = _.map(_.filter(this.props.STUDENTS, (item) => { return _.isEqual(moment(item._dateofbirth).format('MMMM Do'), moment(day).format('MMMM Do')) }), (student) => { return '['+student._first_name+']'; });
+                
                 days.push(
                     <div
                     className={`col cell ${
-                        !moment(day).isSame(monthStart, 'month')
+                        ! moment(day).isSame(monthStart, 'month')
                         ? "disabled"
                         : moment(day).isSame(selectedDate, 'day')
                         ? "selected"
-                        : moment(day).isSame()
-                        ? "birthday"
+                        : _.includes(_.map(_.map(this.props.STUDENTS, '_dateofbirth'), (item) => { return moment(item).format('MMMM Do') }), moment(day).format('MMMM Do'))
+                        ? "birthday "+names
+                        : _.includes(_.map(_event_dates, (item) => { return moment(item).format('MMMM Do') }), moment(day).format('MMMM Do'))
+                        ? "event "+_.map(_.filter(this.props.EVENTS, (event) => { return moment(day).isSame(moment(event._date_start), 'day') || moment(day).isBetween(moment(event._date_start), moment(event._date_start).add(event._days, 'day'), 'day') }), '_name')
                         : ""
                     }`}
                     key={day}
