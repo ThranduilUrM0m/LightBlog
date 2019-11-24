@@ -2135,6 +2135,9 @@ body, html {
 																	&#type_WorkDay {
 																		border-left: 0.25rem solid $itemBg1;
 																	}
+																	&#type_Meeting {
+																		border-left: 0.25rem solid $itemBg4;
+																	}
 																	position: relative;
 																	display: flex;
 																	h2{
@@ -2497,8 +2500,7 @@ body, html {
 																}
 															}
 															.birthday {
-																color: $green;
-																/* &::before{
+																&::before{
 																	content: "";
 																	position: absolute;
 																	top: 100%;
@@ -2506,10 +2508,10 @@ body, html {
 																	transform: translate(-50%, -120%);
 																	height: 0.5rem;
 																	width: 0.5rem;
-																	background-color: #2ecc71;
+																	background-color: $green;
 																	border-radius: 50%;
 																	display: inline-block;
-																} */
+																}
 																.bg  {
 																	opacity: 0.15;
 																	transition: .5s ease-in;
@@ -2517,6 +2519,7 @@ body, html {
 															}
 															.event {
 																color: $itemBg1;
+																background-color: rgba($itemBg1, 0.2);
 																.bg  {
 																	opacity: 0.15;
 																	transition: .5s ease-in;
@@ -2614,6 +2617,7 @@ body, html {
 											}
 										}
 										._event_modal {
+											z-index: 10000;
 											&.modal {
 												height: fit-content;
 												max-height: 100%;

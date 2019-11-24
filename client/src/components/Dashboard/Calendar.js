@@ -90,7 +90,7 @@ class Calendar extends React.Component {
                         : _.includes(_.map(_.map(this.props.STUDENTS, '_dateofbirth'), (item) => { return moment(item).format('MMMM Do') }), moment(day).format('MMMM Do'))
                         ? "birthday "+names
                         : _.includes(_.map(_event_dates, (item) => { return moment(item).format('MMMM Do') }), moment(day).format('MMMM Do'))
-                        ? "event "+_.map(_.filter(this.props.EVENTS, (event) => { return moment(day).isSame(moment(event._date_start), 'day') || moment(day).isBetween(moment(event._date_start), moment(event._date_start).add(event._days, 'day'), 'day') }), '_name')
+                        ? "event ["+_.map(_.filter(this.props.EVENTS, (event) => { return moment(day).isSame(moment(event._date_start), 'day') || moment(day).isBetween(moment(event._date_start), moment(event._date_start).add(event._days, 'day'), 'day') }), '_name')+"] ["+_.map(_.filter(this.props.EVENTS, (event) => { return moment(day).isSame(moment(event._date_start), 'day') || moment(day).isBetween(moment(event._date_start), moment(event._date_start).add(event._days, 'day'), 'day') }), '_type')+"]"
                         : ""
                     }`}
                     key={day}
