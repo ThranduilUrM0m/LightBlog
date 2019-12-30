@@ -3264,27 +3264,77 @@ body, html {
 													.modal-content_attendance {
 														.timedateandfieldset {
 															display: flex;
-															.timeanddatenow {
-																flex: 1;
-																.timenow {
-																	font-size: 1.5rem;
-																	text-align: start;
-																	color: rgba(0, 0, 0, 0.5);
-																}
-																.datenow {
-																	font-size: 1rem;
-																	text-align: start;
-																	color: rgba(0, 0, 0, 0.5);
-																}
-															}
 															fieldset {
 																width: fit-content;
 																margin: 0 1rem auto 1rem;
-																select:not(.datepicker-select) {
+																&:first-of-type {
+																	margin-right: auto;
+    																position: relative;
+																}
+																select:not(.datepicker-select), input:not(.select-dropdown) {
 																	display: initial;
 																	border: none;
 																	width: unset;
 																	min-width: 10rem;
+																	box-sizing: border-box;
+																	height: 3rem;
+																}
+																.datepicker-modal {
+																	width: fit-content;
+																	max-width: fit-content;
+																	height: fit-content;
+																	max-height: fit-content;
+																	overflow-x: initial;
+																	overflow-y: initial;
+																	position: absolute;
+																	left: 50%;
+																	z-index: 10000 !important;
+																	.datepicker-container {
+																		padding: 0.5rem;
+																		width: 40rem;
+																		height: fit-content;
+																		.datepicker-calendar-container {
+																			.datepicker-calendar {
+																				/* .datepicker-controls, .datepicker-table, .datepicker-footer {
+																					@media only screen and (min-width: 601px) {
+																						width: unset;
+																					}
+																				} */
+																				.datepicker-controls {
+																					.month-prev, .month-next {
+																						margin: 0;
+																					}
+																					.selects-container {
+																						.select-wrapper input.select-dropdown {
+																							border-bottom: none;
+																							margin: 0;
+																						}
+																					}
+																				}
+																				.datepicker-table-wrapper {
+																					table {
+																						thead {
+																							tr {
+																								th {
+																									abbr[title], abbr[data-original-title] {
+																										text-decoration: none;
+																										cursor: text;
+																									}
+																								}
+																							}
+																						}
+																					}
+																				}
+																			}
+																		}
+																	}
+																}
+																.modal-overlay {
+																	display: none !important;
+																}
+																& > input {
+																	padding: 5px;
+																	margin: 0;
 																}
 																label {
 																	left: 0.2rem;
@@ -3447,7 +3497,7 @@ body, html {
 															}
 														}
 													}
-													button {
+													button:not(.month-prev):not(.month-next):not(.datepicker-day-button):not(.datepicker-cancel):not(.datepicker-done) {
 														color: black;
 														background: none;
 														border: solid 0.05rem black;

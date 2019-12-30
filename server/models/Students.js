@@ -15,11 +15,11 @@ const StudentsSchema = new Schema({
     },
     _dateofbirth: Date,
     _registration_date: Date,
-    _attendance: {
+    _attendance: [{
         _date: Date,
         _status: Boolean,
         _checked_at: Date,
-    },
+    }],
     _first_parent: {
         _full_name_first_parent: String,
         _gender_first_parent: {

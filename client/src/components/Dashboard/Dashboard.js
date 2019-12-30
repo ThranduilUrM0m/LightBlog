@@ -18,6 +18,7 @@ class Dashboard extends React.Component {
             _user: {},
             _classroom: {},
             _student: {},
+            _students: [],
             _first_parent: {},
             _second_parent: {},
             _guardian: {},
@@ -33,6 +34,9 @@ class Dashboard extends React.Component {
             _course: {},
             _event: {},
             _events: [],
+            _attendance_date: moment().format('MMM DD, YYYY'),
+            _dayAttended: false,
+            _attendance: [],
         };
 
         this.handleChangeField = this.handleChangeField.bind(this);
@@ -46,6 +50,7 @@ class Dashboard extends React.Component {
         this.handleSubmitStudent = this.handleSubmitStudent.bind(this);
         this.handleDeleteStudent = this.handleDeleteStudent.bind(this);
         this.handleEditStudent = this.handleEditStudent.bind(this);
+        this.handleSubmitAttendance = this.handleSubmitAttendance.bind(this);
 
         /* SUBJECT */
         this.handleSubmitSubject = this.handleSubmitSubject.bind(this);
@@ -68,6 +73,8 @@ class Dashboard extends React.Component {
         this.handleEditEvent = this.handleEditEvent.bind(this);
         
         this.get_user = this.get_user.bind(this);
+
+        this.getBusinessDays = this.getBusinessDays.bind(this);
     }
 
     componentDidMount() {
@@ -99,7 +106,17 @@ class Dashboard extends React.Component {
                             return _.includes(_.map(obj.classrooms, '_id'), S._classroom);
                         })
                     }
-                    onLoadStudent(obj_students)
+                    onLoadStudent(obj_students);
+                    
+                    const { _attendance_by_options_modal, _attendance_by_classrooms_modal, _attendance_date } = this.state;
+                    const _Ss = _.filter(_.orderBy(obj_students.students, [_attendance_by_options_modal === '_by_last_name' ? '_last_name' : _attendance_by_options_modal === '_by_first_name' ? '_first_name' : _attendance_by_options_modal === '_by_age' ? '_dateofbirth' : '_registration_number'], ['asc']), {'_classroom': _attendance_by_classrooms_modal})
+                    
+                    _.filter(_.map(_Ss, '_attendance'), (_A) => { 
+                        self.setState({
+                            _dayAttended: moment(_A._date).isSame(moment(_attendance_date)),
+                            _students: obj_students.students,
+                        });
+                    })
                 })
                 .catch(function (error) {
                     // handle error
@@ -216,7 +233,7 @@ class Dashboard extends React.Component {
             changeYear: true,
             defaultDate: +0,
             showAnim: "fold",
-            onSelect: function(dateText) {
+            onSelect: function(dateText, ev) {
                 if(($(this)[0].$el)[0].id === "_dateofbirth"){
                     self.setState(prevState => ({
                         _student: {                   // object that we want to update
@@ -241,6 +258,18 @@ class Dashboard extends React.Component {
                         }
                     }));
                 }
+                if(($(this)[0].$el)[0].id === "_attendance_date"){
+                    const { _attendance_by_options_modal, _attendance_by_classrooms_modal, _students } = self.state;
+                    const _Ss = _.filter(_.orderBy(_students, [_attendance_by_options_modal === '_by_last_name' ? '_last_name' : _attendance_by_options_modal === '_by_first_name' ? '_first_name' : _attendance_by_options_modal === '_by_age' ? '_dateofbirth' : '_registration_number'], ['asc']), {'_classroom': _attendance_by_classrooms_modal})
+                    _.filter(_.map(_Ss, '_attendance'), (_A) => {
+                        self.setState({
+                            _dayAttended: moment(_A._date).isSame(moment(dateText)),
+                        });
+                    });
+                    self.setState(prevState => ({
+                        _attendance_date: moment(dateText).format('MMM DD, YYYY'),
+                    }));
+                }
             },
         });
         $('.datepicker.sample').datepicker({
@@ -251,8 +280,8 @@ class Dashboard extends React.Component {
             defaultDate: +0,
             showAnim: "fold"
         });
-        
-		document.getElementById('dashboard_page').parentElement.style.height = 'initial';
+
+        document.getElementById('dashboard_page').parentElement.style.height = 'initial';
     }
 
     _handleSteps(_class) {
@@ -518,7 +547,7 @@ class Dashboard extends React.Component {
         }), () => {
             const { _user } = this.state;
             const { onSubmitStudent, studentToEdit, onEditStudent } = this.props;
-            const { _registration_number, _first_name, _last_name, _classroom, _gender, _dateofbirth, _registration_date, _attendance, _first_parent, _second_parent, _guardian} = this.state._student;
+            const { _registration_number, _first_name, _last_name, _classroom, _gender, _dateofbirth, _registration_date, _attendance, _first_parent, _second_parent, _guardian } = this.state._student;
             const self = this;
             if(!studentToEdit) {
                 return axios.post('http://localhost:8000/api/students', {
@@ -546,7 +575,7 @@ class Dashboard extends React.Component {
                                 _gender: '',
                                 _dateofbirth: '',
                                 _registration_date: '',
-                                _attendance: {},
+                                _attendance: [],
                                 _first_parent: {},
                                 _second_parent: {},
                                 _guardian: {},
@@ -580,7 +609,7 @@ class Dashboard extends React.Component {
                                 _gender: '',
                                 _dateofbirth: '',
                                 _registration_date: '',
-                                _attendance: {},
+                                _attendance: [],
                                 _first_parent: {},
                                 _second_parent: {},
                                 _guardian: {},
@@ -599,6 +628,52 @@ class Dashboard extends React.Component {
     handleEditStudent(student) {
         const { setEditStudent } = this.props;
         setEditStudent(student);
+    }
+    handleSubmitAttendance(){
+        const self = this;
+        const { _attendance_by_options_modal, _attendance_by_classrooms_modal, _students, _attendance_date } = self.state;
+        _.filter(_.orderBy(_students, [_attendance_by_options_modal === '_by_last_name' ? '_last_name' : _attendance_by_options_modal === '_by_first_name' ? '_first_name' : _attendance_by_options_modal === '_by_age' ? '_dateofbirth' : '_registration_number'], ['asc']), {'_classroom': _attendance_by_classrooms_modal}).map((student, index) => {
+            self.handleEditStudent(student);
+            const attendance_value_per_student = $('form#form_'+index+' input[type=radio]:checked').val();
+
+            if(_.includes(student._attendance, _attendance_date)){
+                console.log('bgha y modifier ezzamel');
+            } else {
+                self.setState(prevState => ({
+                    _attendance: [...student._attendance, {_date: _attendance_date, _status: attendance_value_per_student, _checked_at: moment().format()}],
+                }), () => {
+                    const { onEditStudent } = self.props;
+                    const { _attendance } = self.state;
+                    const { _registration_number, _first_name, _last_name, _classroom, _gender, _dateofbirth, _registration_date, _first_parent, _second_parent, _guardian } = student;
+                    
+                    return axios.patch(`http://localhost:8000/api/students/${student._id}`, {
+                        _registration_number,
+                        _first_name,
+                        _last_name,
+                        _classroom,
+                        _gender,
+                        _dateofbirth,
+                        _registration_date,
+                        _attendance,
+                        _first_parent,
+                        _second_parent,
+                        _guardian,
+                    })
+                        .then((res) => onEditStudent(res.data))
+                        .then((res) => {
+                            
+                            var index = _.findIndex(_students, {id: _.get(res.data.student, '_id')});
+                            //khessni n updater state li hya students wlkn rah tableau dial les objets li tbedel fihum wa7ed tableau dial objets, wa tfrgue3
+                            self.setState(prevState => ({
+                                _students: {
+                                    ...prevState._students,
+                                    [prevState._students[index]]: res.data.student,
+                                },
+                            }));
+                        });
+                });
+            }
+        });
     }
     
     /* SUBJECT */
@@ -1159,9 +1234,22 @@ class Dashboard extends React.Component {
         });
     }
     
+    getBusinessDays(startDate, endDate){
+        var startDateMoment = moment(startDate);
+        var endDateMoment = moment(endDate)
+        var days = Math.round(startDateMoment.diff(endDateMoment, 'days') - startDateMoment .diff(endDateMoment, 'days') / 7 * 2);
+        if (endDateMoment.day() === 6) {
+          days--;
+        }
+        if (startDateMoment.day() === 7) {
+          days--;
+        }
+        return days;
+    }
+    
     render() {
         const { articles, classrooms, classroomToEdit, courses, courseToEdit, exams, homeworks, letters, reports, schools, students, studentToEdit, subjects, subjectToEdit, modules, moduleToEdit, user, events, eventToEdit } = this.props;
-        const { _classroom, _attendance_by_options, _attendance_by_options_modal, _attendance_by_classrooms, _attendance_by_classrooms_modal, _user, _school, _student, _first_parent, _second_parent, _guardian, _subject, _classroom_subject, _module, _session, _course, _event, _events } = this.state;
+        const { _classroom, _attendance_by_options, _attendance_by_options_modal, _attendance_by_classrooms, _attendance_by_classrooms_modal, _user, _school, _student, _first_parent, _second_parent, _guardian, _subject, _classroom_subject, _module, _session, _course, _event, _events, _attendance_date, _dayAttended } = this.state;
         return(
             <FullPage scrollMode={'normal'}>
 				<Slide>
@@ -1308,7 +1396,7 @@ class Dashboard extends React.Component {
                                                                             name="_date_start_event" 
                                                                             required="required"
                                                                             />
-                                                                            <label htmlFor='_name' className={_event._date_start ? 'active' : ''}>Event Date Start</label>
+                                                                            <label htmlFor='_date_start_event' className={_event._date_start ? 'active' : ''}>Event Date Start</label>
                                                                             <div className="form-group-line"></div>
                                                                             <div className="datepicker sample"></div>
                                                                         </fieldset>
@@ -1454,11 +1542,19 @@ class Dashboard extends React.Component {
                                                                             <hr/>
                                                                             <div className="_diagrams">
                                                                                 <div className="Monthly">
-                                                                                    <span className="diagram_monthly"></span>
+                                                                                    <span className="diagram_monthly">
+                                                                                        {
+                                                                                            moment(_.get(_.find(events, {'_type': 'Closing'}), '_date_start')).diff(moment(_.get(_.find(events, {'_type': 'Opening'}), '_date_start')), 'days')
+                                                                                        }
+                                                                                    </span>
                                                                                     <span>Monthly</span>
                                                                                 </div>
                                                                                 <div className="Yearly">
-                                                                                    <span className="diagram_yearly"></span>
+                                                                                    <span className="diagram_yearly">
+                                                                                        {
+                                                                                            this.getBusinessDays(_.get(_.find(events, {'_type': 'Closing'}), '_date_start'), _.get(_.find(events, {'_type': 'Opening'}), '_date_start'))
+                                                                                        }
+                                                                                    </span>
                                                                                     <span>Yearly</span>
                                                                                 </div>
                                                                             </div>
@@ -1482,64 +1578,66 @@ class Dashboard extends React.Component {
                                                     <div className="wrapper_form_attendance">
                                                         <div className="modal-content_attendance">
                                                             <div className="timedateandfieldset">
-                                                                <div className="timeanddatenow">
-                                                                    <div className="timenow">
-                                                                        <Clock
-                                                                            format={'hh:mm A'}
-                                                                            ticking={true}
-                                                                        />
-                                                                    </div>
-                                                                    <div className="datenow">
-                                                                        <Clock
-                                                                        format={'dddd, Do MMMM'}
-                                                                        />
-                                                                    </div>
-                                                                </div>
-                                                                                    
-                                                                    <fieldset className="input-field form-group">
-                                                                        <select 
-                                                                        onChange={(ev) => this.handleChangeField('_attendance_by_classrooms_modal', ev)}
-                                                                        value={_attendance_by_classrooms_modal}
-                                                                        className="validate form-group-input _attendance_by_classrooms_modal" 
-                                                                        id="_attendance_by_classrooms_modal"
-                                                                        name="_attendance_by_classrooms_modal" 
-                                                                        required="required"
-                                                                        >
-                                                                            {
-                                                                                _.orderBy(classrooms, ['createdAt'], ['desc']).map((classroom, index) => {
-                                                                                    return (
-                                                                                        <option value={classroom._id}>{classroom._code}</option>
-                                                                                    )
-                                                                                })
-                                                                            }
-                                                                        </select>
-                                                                        <label htmlFor='_attendance_by_classrooms_modal' className={_attendance_by_classrooms_modal ? 'active' : ''}>_attendance_by_classrooms_modal</label>
-                                                                        <div className="form-group-line"></div>
-                                                                    </fieldset>
+                                                                
+                                                                <fieldset className="input-field form-group">
+                                                                    <input
+                                                                    onChange={(ev) => this.handleChangeField('_attendance_date', ev)}
+                                                                    value={_attendance_date}
+                                                                    className="validate datepicker form-group-input _attendance_date" 
+                                                                    id="_attendance_date"
+                                                                    type="text" 
+                                                                    name="_attendance_date" 
+                                                                    required="required"
+                                                                    />
+                                                                    <label htmlFor='_attendance_date' className={_attendance_date ? 'active' : ''}>{moment(_attendance_date).format('dddd')}</label>
+                                                                    <div className="form-group-line"></div>
+                                                                    <div className="datepicker sample"></div>
+                                                                </fieldset>
+                                                                
+                                                                <fieldset className="input-field form-group">
+                                                                    <select 
+                                                                    onChange={(ev) => this.handleChangeField('_attendance_by_classrooms_modal', ev)}
+                                                                    value={_attendance_by_classrooms_modal}
+                                                                    className="validate form-group-input _attendance_by_classrooms_modal" 
+                                                                    id="_attendance_by_classrooms_modal"
+                                                                    name="_attendance_by_classrooms_modal" 
+                                                                    required="required"
+                                                                    >
+                                                                        {
+                                                                            _.orderBy(classrooms, ['createdAt'], ['desc']).map((classroom, index) => {
+                                                                                return (
+                                                                                    <option value={classroom._id}>{classroom._code}</option>
+                                                                                )
+                                                                            })
+                                                                        }
+                                                                    </select>
+                                                                    <label htmlFor='_attendance_by_classrooms_modal' className={_attendance_by_classrooms_modal ? 'active' : ''}>_attendance_by_classrooms_modal</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
 
-                                                                    <fieldset className="input-field form-group">
-                                                                        <select 
-                                                                        onChange={(ev) => this.handleChangeField('_attendance_by_options_modal', ev)}
-                                                                        value={_attendance_by_options_modal}
-                                                                        className="validate form-group-input _attendance_by_options_modal" 
-                                                                        id="_attendance_by_options_modal"
-                                                                        name="_attendance_by_options_modal" 
-                                                                        required="required"
-                                                                        >
-                                                                            <option value='_by_last_name'>_by_last_name</option>
-                                                                            <option value='_by_first_name'>_by_first_name</option>
-                                                                            <option value='_by_age'>_by_age</option>
-                                                                            <option value='_by_monthly_attendance'>_by_monthly_attendance</option>
-                                                                            <option value='_by_yearly_attendance'>_by_yearly_attendance</option>
-                                                                        </select>
-                                                                        <label htmlFor='_attendance_by_options_modal' className={_attendance_by_options_modal ? 'active' : ''}>_attendance_by_options_modal</label>
-                                                                        <div className="form-group-line"></div>
-                                                                    </fieldset>
+                                                                <fieldset className="input-field form-group">
+                                                                    <select 
+                                                                    onChange={(ev) => this.handleChangeField('_attendance_by_options_modal', ev)}
+                                                                    value={_attendance_by_options_modal}
+                                                                    className="validate form-group-input _attendance_by_options_modal" 
+                                                                    id="_attendance_by_options_modal"
+                                                                    name="_attendance_by_options_modal" 
+                                                                    required="required"
+                                                                    >
+                                                                        <option value='_by_last_name'>_by_last_name</option>
+                                                                        <option value='_by_first_name'>_by_first_name</option>
+                                                                        <option value='_by_age'>_by_age</option>
+                                                                        <option value='_by_monthly_attendance'>_by_monthly_attendance</option>
+                                                                        <option value='_by_yearly_attendance'>_by_yearly_attendance</option>
+                                                                    </select>
+                                                                    <label htmlFor='_attendance_by_options_modal' className={_attendance_by_options_modal ? 'active' : ''}>_attendance_by_options_modal</label>
+                                                                    <div className="form-group-line"></div>
+                                                                </fieldset>
 
                                                             </div>
                                                             <div className="_attendances_data data-container">
                                                                 <ul className="attendances_list">
-                                                                    {
+                                                                    { 
                                                                         _.filter(_.orderBy(students, [_attendance_by_options_modal === '_by_last_name' ? '_last_name' : _attendance_by_options_modal === '_by_first_name' ? '_first_name' : _attendance_by_options_modal === '_by_age' ? '_dateofbirth' : '_registration_number'], ['asc']), {'_classroom': _attendance_by_classrooms_modal}).map((student, index) => {
                                                                             return (
                                                                                 <li className="attendance_card attendance_anchor row">
@@ -1549,10 +1647,12 @@ class Dashboard extends React.Component {
                                                                                             <h2>{student._first_name} {student._last_name}</h2>
                                                                                             <p className="text-muted author"><b>{moment().diff(new Date(student._dateofbirth), 'years')}</b> Yo, {_.get(_.find(classrooms, {'_id': student._classroom}), '_code')}</p>
                                                                                             <div className="custom-control custom-switch">
-                                                                                                <input type="radio" id={'present_'+index} name={'attendance_to_student_'+index} value="true" checked/>
-                                                                                                <label htmlFor={'present_'+index}>Present</label>
-                                                                                                <input type="radio" id={'absent_'+index} name={'attendance_to_student_'+index} value="false"/>
-                                                                                                <label htmlFor={'absent_'+index}>Absent</label>
+                                                                                                <form id={'form_'+index}>
+                                                                                                    <input type="radio" id={'present_'+index} name={'attendance_to_student_'+index} value="true" data-index={index} checked/>
+                                                                                                    <label htmlFor={'present_'+index}>Present</label>
+                                                                                                    <input type="radio" id={'absent_'+index} name={'attendance_to_student_'+index} value="false" data-index={index}/>
+                                                                                                    <label htmlFor={'absent_'+index}>Absent</label>
+                                                                                                </form>
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
@@ -1563,7 +1663,7 @@ class Dashboard extends React.Component {
                                                                 </ul>
                                                             </div>
                                                         </div>
-                                                        <button onClick={this.handleSubmitStudent} className="btn btn-primary float-right">{studentToEdit ? 'Update' : 'Submit'}</button>
+                                                        <button onClick={this.handleSubmitAttendance} className="btn btn-primary float-right">{ _dayAttended ? 'Update' : 'Submit'}</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -2588,3 +2688,5 @@ const mapDispatchToProps = dispatch => ({
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard) 
+
+/* PAGE DASHBOARD a blog box nd upon click it takes the whole zone to show recent articles, and main articles and how to manage articles */
